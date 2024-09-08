@@ -1,10 +1,11 @@
-import { StyleSheet, Text, View, Image,ScrollView } from 'react-native'
+import { StyleSheet, Text, View,SafeAreaView,ScrollView } from 'react-native'
 import React from 'react'
 import RoutinesCards from '@/components/RoutinesCards'
 
 const HomeScreen = () => {
   return (
-    <ScrollView style={{marginTop:50}}>
+    <ScrollView>
+    <SafeAreaView>
       <View style={{ backgroundColor: "#CD853F", padding: 10, height: 200, width: "100%" }}>
         <Text style={{ color: "white", fontWeight: "bold", fontSize: 18 }}>DAILY FITZ</Text>
 
@@ -29,6 +30,7 @@ const HomeScreen = () => {
         </View>
         <RoutinesCards/>
       </View>
+    </SafeAreaView>
     </ScrollView>
   )
 }
