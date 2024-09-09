@@ -6,8 +6,8 @@ const TrainingScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const [index, setIndex] = useState(0);
-  const excersises = route.params.excersises;
-  const current = excersises[index];
+  const exercises = route.params.excersises;
+  const current = exercises[index];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -18,35 +18,59 @@ const TrainingScreen = () => {
       <Text style={styles.exerciseName}>{current.name}</Text>
       <Text style={styles.exerciseSets}>x{current.sets}</Text>
 
-      {index + 1 >= excersises.length ? (
-         <Pressable
-         onPress={() => {
-           navigation.navigate("Home");
-         }}
-         style={styles.button}
-       >
-         <Text style={styles.buttonText}>FINALIZADO</Text>
-       </Pressable>
+      {index + 1 >= exercises.length ? (
+        <Pressable
+          onPress={() => {
+            navigation.navigate("Home");
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>FINALIZADO</Text>
+        </Pressable>
       ) : (
         <Pressable
-        onPress={() => {
-          navigation.navigate("Rest");
-          setTimeout(() => setIndex(index + 1), 2000);
-        }}
-        style={styles.button}
-      >
-        <Text style={styles.buttonText}>FINALIZADO</Text>
-      </Pressable>
+          onPress={() => {
+            navigation.navigate("Rest");
+            setTimeout(() => setIndex(index + 1), 2000);
+          }}
+          style={styles.button}
+        >
+          <Text style={styles.buttonText}>FINALIZADO</Text>
+        </Pressable>
       )}
 
       <View style={styles.buttonContainer}>
-        <Pressable style={styles.actionButton}>
+        <Pressable 
+        disabled={index === 0}
+        onPress={()=>{
+          navigation.navigate("Rest");
+          setTimeout(()=> {
+            setIndex(index - 1)
+          },2000)
+          }}style={styles.actionButton}>
           <Text style={styles.actionButtonText}>ANTERIOR</Text>
         </Pressable>
 
-        <Pressable style={styles.actionButton}>
-          <Text style={styles.actionButtonText}>SALTEAR</Text>
-        </Pressable>
+        {index + 1 >= exercises.length ? (
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Home");
+            }}
+            style={styles.actionButton}
+          >
+            <Text style={styles.actionButtonText}>SALTEAR</Text>
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => {
+              navigation.navigate("Rest");
+              setTimeout(() => setIndex(index + 1), 2000);
+            }}
+            style={styles.actionButton}
+          >
+            <Text style={styles.actionButtonText}>SALTEAR</Text>
+          </Pressable>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -93,8 +117,8 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginLeft:'auto',
-    marginRight:'auto',
+    marginLeft: 'auto',
+    marginRight: 'auto',
     marginTop: 50,
   },
   actionButton: {
