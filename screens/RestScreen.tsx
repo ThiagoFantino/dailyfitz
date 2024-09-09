@@ -50,8 +50,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   timer: {
-    fontSize: 50,
-    fontWeight: 'bold',
-    marginTop: 20,
+    fontSize: 40,
+    fontWeight: '800',
+    marginTop: 50,
+    textAlign: 'center',
   },
 });
