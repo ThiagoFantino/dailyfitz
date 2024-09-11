@@ -11,7 +11,7 @@ const HomeScreen = () => {
 
           <View style={styles.statsContainer}>
             <View style={styles.stat}>
-              <Text style={styles.statValue}>1</Text>
+              <Text style={styles.statValue}>0</Text>
               <Text style={styles.statLabel}>RUTINAS</Text>
             </View>
 
