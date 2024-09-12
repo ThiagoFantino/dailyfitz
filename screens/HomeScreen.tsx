@@ -4,8 +4,8 @@ import RoutinesCards from '@/components/RoutinesCards';
 
 const HomeScreen = () => {
   return (
-    <ScrollView>
-      <SafeAreaView>
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
           <Text style={styles.title}>DAILY FITZ</Text>
 
@@ -38,10 +38,13 @@ const HomeScreen = () => {
 export default HomeScreen;
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flex: 1,
+  },
   header: {
     backgroundColor: '#CD853F',
     padding: 10,
-    height: 200,
+    height: '50%',
     width: '100%',
   },
   title: {
@@ -53,7 +56,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: 20,
+    marginTop: '10%',
   },
   stat: {
     alignItems: 'center',

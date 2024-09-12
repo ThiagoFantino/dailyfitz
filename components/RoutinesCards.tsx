@@ -7,7 +7,7 @@ const Routines = () => {
   const navigation = useNavigation<any>();
 
   return (
-    <View>
+    <View style={styles.container}>
       {routines.map((item, key) => (
         <Pressable
           onPress={() =>
@@ -31,13 +31,19 @@ const Routines = () => {
 export default Routines;
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: "column",
+    paddingHorizontal: 10,
+    alignItems: "center",
+  },
   pressable: {
     alignItems: "center",
+    width: "95%",
     justifyContent: "center",
-    margin: 10,
+    marginVertical: 10,
   },
   image: {
-    width: "95%",
+    width: "100%",
     height: 140,
     borderRadius: 7,
   },
