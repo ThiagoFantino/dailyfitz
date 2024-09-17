@@ -77,7 +77,7 @@ export default [
     },
     {
       id: "2",
-      image: "https://s1.1zoom.me/big0/494/Men_Bodybuilding_Muscle_Hands_Workout_582601_1280x853.jpg",
+      image: "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.blogs.es%2F64a82e%2F2560_3000%2F840_560.jpeg&f=1&nofb=1&ipt=ba5da11cc43b337bae60c769b36aba0fb8251a3a50504042248151ea54df0d2f&ipo=images",
       name: "BRAZOS PARA PRINCIPIANTES",
       excersises: [
         {

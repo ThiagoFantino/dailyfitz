@@ -55,11 +55,13 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginTop: '10%',
+    width: '100%',
   },
   stat: {
     alignItems: 'center',
+    justifyContent: 'center',
   },
   statValue: {
     textAlign: 'center',
@@ -70,7 +72,7 @@ const styles = StyleSheet.create({
   statLabel: {
     color: '#D0D0D0',
     fontSize: 17,
-    marginTop: '10%',
+    marginTop: '5%',
   },
   centeredContent: {
     justifyContent: 'center',

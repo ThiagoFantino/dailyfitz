@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   image: {
     width: "100%",
     height: 140,
-    borderRadius: 7,
+    borderRadius: 15,
   },
   text: {
     position: "absolute",
