@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, Dimensions } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -10,10 +10,12 @@ const TrainingScreen = () => {
   const current = exercises[index];
 
   return (
+    
     <SafeAreaView style={styles.container}>
       <Image
         style={styles.image}
         source={{ uri: current.image }}
+        resizeMode="contain"
       />
       <Text style={styles.exerciseName}>{current.name}</Text>
       <Text style={styles.exerciseSets}>x{current.sets}</Text>
@@ -81,6 +83,7 @@ export default TrainingScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexGrow: 1,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
@@ -90,14 +93,14 @@ const styles = StyleSheet.create({
     height: 370,
   },
   exerciseName: {
-    marginTop: 30,
-    fontSize: 30,
+    marginTop: 5,
+    fontSize: 15,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   exerciseSets: {
     marginTop: 30,
-    fontSize: 38,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 18,
     color: 'white',
   },
   buttonContainer: {
@@ -130,6 +133,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: 'white',
+    fontSize: 12,
     fontWeight: 'bold',
     textAlign: 'center',
   },
