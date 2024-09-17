@@ -39,7 +39,7 @@ export default HomeScreen;
 
 const styles = StyleSheet.create({
   scrollContent: {
-    flex: 1,
+    flexGrow: 1,
   },
   header: {
     backgroundColor: '#CD853F',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   statLabel: {
     color: '#D0D0D0',
     fontSize: 17,
-    marginTop: 6,
+    marginTop: '10%',
   },
   centeredContent: {
     justifyContent: 'center',
