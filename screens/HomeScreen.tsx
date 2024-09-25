@@ -7,27 +7,7 @@ const HomeScreen = () => {
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
-          <Text style={styles.title}>DAILY FITZ</Text>
-
-          <View style={styles.statsContainer}>
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>0</Text>
-              <Text style={styles.statLabel}>RUTINAS</Text>
-            </View>
-
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>0</Text>
-              <Text style={styles.statLabel}>CALORÍAS</Text>
-            </View>
-
-            <View style={styles.stat}>
-              <Text style={styles.statValue}>0</Text>
-              <Text style={styles.statLabel}>MINUTOS</Text>
-            </View>
-          </View>
-
-          <View style={styles.centeredContent}>
-          </View>
+          <Text style={styles.title}>DAILY FITZ</Text>          
           <RoutinesCards />
         </View>
       </SafeAreaView>
@@ -42,7 +22,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   header: {
-    backgroundColor: '#CD853F',
+    backgroundColor: '#246EE9',
     padding: 10,
     height: '50%',
     width: '100%',
@@ -51,31 +31,5 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
     fontSize: 18,
-  },
-  statsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    marginTop: '10%',
-    width: '100%',
-  },
-  stat: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  statValue: {
-    textAlign: 'center',
-    fontWeight: 'bold',
-    color: 'white',
-    fontSize: 18,
-  },
-  statLabel: {
-    color: '#D0D0D0',
-    fontSize: 17,
-    marginTop: '5%',
-  },
-  centeredContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
