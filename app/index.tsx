@@ -1,12 +1,12 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
-import StackNavigator from "./StackNavigator";
+import TabNavigator from "./TabNavigator";
 
 export default function App() {
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
-      <StackNavigator />
+      <TabNavigator />
     </View>
   );
 }
