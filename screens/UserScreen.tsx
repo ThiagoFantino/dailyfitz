@@ -1,25 +1,42 @@
 // UserStatsScreen.tsx
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
 import React from 'react';
+import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons'; // Asegúrate de tener instalada la librería de iconos
 
 const UserStatsScreen = () => {
-  // Aquí podrías añadir lógica para obtener estadísticas de usuario
-
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Estadísticas del Usuario</Text>
-      {/* Aquí puedes mostrar estadísticas, gráficas, etc. */}
-      <View style={styles.statistic}>
-        <Text style={styles.statisticTitle}>Ejercicios Completados:</Text>
-        <Text style={styles.statisticValue}>15</Text>
-      </View>
-      <View style={styles.statistic}>
-        <Text style={styles.statisticTitle}>Tiempo Total de Entrenamiento:</Text>
-        <Text style={styles.statisticValue}>10 horas</Text>
-      </View>
-      <View style={styles.statistic}>
-        <Text style={styles.statisticTitle}>Calorías Quemadas:</Text>
-        <Text style={styles.statisticValue}>2000 kcal</Text>
+      {/* Foto de perfil genérica */}
+      <Image 
+        style={styles.profilePicture} 
+        source={{ uri: 'https://www.w3schools.com/w3images/avatar2.png' }} 
+      />
+      
+      {/* Nombre de usuario */}
+      <Text style={styles.userName}>John Doe</Text>
+
+      {/* Estadísticas del usuario */}
+      <View style={styles.statsContainer}>
+        {/* Entrenamientos */}
+        <View style={styles.statCard}>
+          <MaterialIcons name="fitness-center" size={40} color="#4CAF50" />
+          <Text style={styles.statNumber}>20</Text>
+          <Text style={styles.statLabel}>Entrenamientos</Text>
+        </View>
+
+        {/* Calorías Quemadas */}
+        <View style={styles.statCard}>
+          <FontAwesome5 name="fire" size={40} color="#F44336" />
+          <Text style={styles.statNumber}>1500</Text>
+          <Text style={styles.statLabel}>Calorías Quemadas</Text>
+        </View>
+
+        {/* Minutos */}
+        <View style={styles.statCard}>
+          <Ionicons name="time" size={40} color="#2196F3" />
+          <Text style={styles.statNumber}>300</Text>
+          <Text style={styles.statLabel}>Minutos</Text>
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -30,28 +47,51 @@ export default UserStatsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-    padding: 20,
+    alignItems: 'center',
+    paddingTop: 20,
+    backgroundColor: '#f5f5f5',
   },
-  title: {
-    fontSize: 30,
+  profilePicture: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 15,
+  },
+  userName: {
+    fontSize: 24,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 20,
+    marginBottom: 25,
+    color: '#333',
   },
-  statistic: {
-    marginBottom: 20,
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '90%',
+  },
+  statCard: {
+    alignItems: 'center',
+    backgroundColor: '#fff',
     padding: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
+    borderRadius: 10,
+    width: '30%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3, // Para Android
   },
-  statisticTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  statisticValue: {
+  statNumber: {
     fontSize: 22,
+    fontWeight: 'bold',
+    marginTop: 10,
+    color: '#333',
+  },
+  statLabel: {
+    fontSize: 16,
+    color: '#777',
     marginTop: 5,
+    textAlign: 'center',
   },
 });
+
