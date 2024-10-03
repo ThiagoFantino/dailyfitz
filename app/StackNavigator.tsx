@@ -6,6 +6,7 @@ import HomeScreen from "@/screens/HomeScreen";
 import RoutineScreen from "@/screens/RoutineScreen";
 import TrainingScreen from "@/screens/TrainingScreen";
 import RestScreen from "@/screens/RestScreen";
+import TabNavigator from "@/app/TabNavigator";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,7 +16,7 @@ const StackNavigator = () => {
       <Stack.Navigator>
         <Stack.Screen
           name="Home"
-          component={HomeScreen}
+          component={TabNavigator}
           options={{ headerShown: false }}
         />
         <Stack.Screen

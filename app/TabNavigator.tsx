@@ -31,7 +31,7 @@ const TabNavigator = () => {
     >
       <Tab.Screen
         name="Rutinas"
-        component={StackNavigator}
+        component={HomeScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen
