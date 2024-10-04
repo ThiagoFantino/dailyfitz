@@ -1,13 +1,14 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import StackNavigator from "./StackNavigator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar backgroundColor="#246EE9" />
       <StackNavigator />
-    </View>
+    </SafeAreaView>
   );
 }
 

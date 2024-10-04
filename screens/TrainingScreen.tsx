@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
@@ -10,7 +10,6 @@ const TrainingScreen = () => {
   const current = exercises[index];
 
   return (
-    
     <SafeAreaView style={styles.container}>
       <Image
         style={styles.image}
@@ -23,7 +22,7 @@ const TrainingScreen = () => {
       {index + 1 >= exercises.length ? (
         <Pressable
           onPress={() => {
-            navigation.navigate("Home");
+            navigation.navigate("Congratulations"); // Redirigir a CongratulationsScreen
           }}
           style={styles.button}
         >
@@ -44,19 +43,19 @@ const TrainingScreen = () => {
       <View style={styles.buttonContainer}>
         <Pressable 
         disabled={index === 0}
-        onPress={()=>{
+        onPress={()=> {
           navigation.navigate("Rest");
-          setTimeout(()=> {
-            setIndex(index - 1)
-          },2000)
-          }}style={styles.actionButton}>
+          setTimeout(() => {
+            setIndex(index - 1);
+          }, 2000);
+        }} style={styles.actionButton}>
           <Text style={styles.actionButtonText}>ANTERIOR</Text>
         </Pressable>
 
         {index + 1 >= exercises.length ? (
           <Pressable
             onPress={() => {
-              navigation.navigate("Home");
+              navigation.navigate("Congratulations");
             }}
             style={styles.actionButton}
           >
@@ -138,4 +137,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 

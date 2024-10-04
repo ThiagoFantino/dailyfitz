@@ -4,14 +4,14 @@ import RoutinesCards from '@/components/RoutinesCards';
 
 const HomeScreen = () => {
   return (
-    <ScrollView contentContainerStyle={styles.scrollContent}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={styles.header}>
-          <Text style={styles.title}>DAILY FITZ</Text>
-        </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <Text style={styles.title}>DAILY FITZ</Text>
+      </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
         <RoutinesCards />
-      </SafeAreaView>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -35,3 +35,4 @@ const styles = StyleSheet.create({
     fontSize: 20, 
   },
 });
+

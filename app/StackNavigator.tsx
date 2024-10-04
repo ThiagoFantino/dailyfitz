@@ -7,6 +7,7 @@ import RoutineScreen from "@/screens/RoutineScreen";
 import TrainingScreen from "@/screens/TrainingScreen";
 import RestScreen from "@/screens/RestScreen";
 import TabNavigator from "@/app/TabNavigator";
+import CongratulationsScreen from "@/screens/CongratulationsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -32,6 +33,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Rest"
           component={RestScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Congratulations"
+          component={CongratulationsScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
