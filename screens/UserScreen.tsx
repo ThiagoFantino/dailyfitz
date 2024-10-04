@@ -1,4 +1,3 @@
-// UserStatsScreen.tsx
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
 import React from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons'; // Asegúrate de tener instalada la librería de iconos
@@ -6,32 +5,28 @@ import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons'; // A
 const UserStatsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      {/* Foto de perfil genérica */}
+
       <Image 
         style={styles.profilePicture} 
         source={{ uri: 'https://www.w3schools.com/w3images/avatar2.png' }} 
       />
       
-      {/* Nombre de usuario */}
-      <Text style={styles.userName}>John Doe</Text>
+      <Text style={styles.userName}>Juan Perez</Text>
 
-      {/* Estadísticas del usuario */}
       <View style={styles.statsContainer}>
-        {/* Entrenamientos */}
+
         <View style={styles.statCard}>
           <MaterialIcons name="fitness-center" size={40} color="#4CAF50" />
           <Text style={styles.statNumber}>20</Text>
           <Text style={styles.statLabel}>Entrenamientos</Text>
         </View>
 
-        {/* Calorías Quemadas */}
         <View style={styles.statCard}>
           <FontAwesome5 name="fire" size={40} color="#F44336" />
           <Text style={styles.statNumber}>1500</Text>
           <Text style={styles.statLabel}>Calorías Quemadas</Text>
         </View>
 
-        {/* Minutos */}
         <View style={styles.statCard}>
           <Ionicons name="time" size={40} color="#2196F3" />
           <Text style={styles.statNumber}>300</Text>
@@ -79,7 +74,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
-    elevation: 3, // Para Android
+    elevation: 3, 
   },
   statNumber: {
     fontSize: 22,

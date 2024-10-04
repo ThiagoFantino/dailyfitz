@@ -1,8 +1,7 @@
-// CongratulationsScreen.tsx
 import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
 import React from 'react';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Importa el ícono
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CongratulationsScreen = () => {
   const navigation = useNavigation();

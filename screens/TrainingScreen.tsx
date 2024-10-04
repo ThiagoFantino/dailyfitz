@@ -22,7 +22,7 @@ const TrainingScreen = () => {
       {index + 1 >= exercises.length ? (
         <Pressable
           onPress={() => {
-            navigation.navigate("Congratulations"); // Redirigir a CongratulationsScreen
+            navigation.navigate("Congratulations");
           }}
           style={styles.button}
         >
@@ -41,15 +41,14 @@ const TrainingScreen = () => {
       )}
 
       <View style={styles.buttonContainer}>
+        
         <Pressable 
-        disabled={index === 0}
-        onPress={()=> {
-          navigation.navigate("Rest");
-          setTimeout(() => {
-            setIndex(index - 1);
-          }, 2000);
-        }} style={styles.actionButton}>
-          <Text style={styles.actionButtonText}>ANTERIOR</Text>
+          onPress={() => {
+            navigation.navigate("Home");
+          }} 
+          style={styles.actionButton}
+        >
+          <Text style={styles.actionButtonText}>SALIR</Text>
         </Pressable>
 
         {index + 1 >= exercises.length ? (
@@ -137,5 +136,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 
 

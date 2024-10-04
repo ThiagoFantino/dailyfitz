@@ -15,18 +15,16 @@ const TabNavigator = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName;
 
-          // Asigna el ícono según la ruta
           if (route.name === "Rutinas") {
-            iconName = "barbell"; // Ícono de pesa
+            iconName = "barbell";
           } else if (route.name === "Estadisticas") {
-            iconName = "person-circle-outline"; // Ícono de persona en círculo
+            iconName = "person-circle-outline";
           }
 
-          // Retorna el ícono correspondiente
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#246EE9', // Color para el ícono activo
-        tabBarInactiveTintColor: "gray", // Color para el ícono inactivo
+        tabBarActiveTintColor: '#246EE9', 
+        tabBarInactiveTintColor: "gray",
       })}
     >
       <Tab.Screen

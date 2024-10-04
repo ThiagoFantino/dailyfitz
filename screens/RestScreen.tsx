@@ -6,7 +6,6 @@ const RestScreen = () => {
   const navigation = useNavigation();
   const [timeLeft, setTimeLeft] = useState(3);
   
-  // Definir la animación de escala
   const scaleValue = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
@@ -22,7 +21,7 @@ const RestScreen = () => {
   }, [timeLeft, navigation]);
 
   useEffect(() => {
-    // Función que inicia la animación de escala en loop
+    
     const startAnimation = () => {
       Animated.loop(
         Animated.sequence([
@@ -38,14 +37,14 @@ const RestScreen = () => {
       ).start();
     };
 
-    startAnimation(); // Iniciar la animación cuando el componente se monte
+    startAnimation();
   }, [scaleValue]);
 
   return (
     <SafeAreaView style={styles.container}>
       <Animated.Image
         source={{ uri: "https://www.sport.es/labolsadelcorredor/wp-content/uploads/2021/02/entrenamiento.jpeg" }}
-        style={[styles.image, { transform: [{ scale: scaleValue }] }]} // Aplicando la animación de escala
+        style={[styles.image, { transform: [{ scale: scaleValue }] }]}
         resizeMode="cover"
       />
       <Text style={styles.title}>DESCANSO</Text>
