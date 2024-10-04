@@ -7,9 +7,9 @@ const HomeScreen = () => {
     <ScrollView contentContainerStyle={styles.scrollContent}>
       <SafeAreaView style={{ flex: 1 }}>
         <View style={styles.header}>
-          <Text style={styles.title}>DAILY FITZ</Text>          
-          <RoutinesCards />
+          <Text style={styles.title}>DAILY FITZ</Text>
         </View>
+        <RoutinesCards />
       </SafeAreaView>
     </ScrollView>
   );
@@ -24,12 +24,14 @@ const styles = StyleSheet.create({
   header: {
     backgroundColor: '#246EE9',
     padding: 10,
-    height: '50%',
+    height: 80, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
     width: '100%',
   },
   title: {
     color: 'white',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 20, 
   },
 });
