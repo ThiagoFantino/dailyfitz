@@ -1,8 +1,27 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
 import React from 'react';
+import { useState , useEffect } from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons'; // Asegúrate de tener instalada la librería de iconos
 
 const UserStatsScreen = () => {
+  const [data,setData] = useState('');
+  const [users,setUsers] = useState('');
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://192.168.0.117:3000/');
+      const json = await response.json();
+      setData(json.message); // Suponiendo que tu API devuelve el nombre en un campo 'message'
+      console.log("Message from port 5000:", json.message);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -12,7 +31,7 @@ const UserStatsScreen = () => {
           source={{ uri: 'https://www.w3schools.com/w3images/avatar2.png' }} 
         />
         
-        <Text style={styles.userName}>Juan Perez</Text>
+        <Text style={styles.userName}>Juan Perez</Text> 
 
         <View style={styles.statsContainer}>
 
@@ -52,13 +71,13 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   profilePicture: {
-    width: 100, // Tamaño reducido para pantallas más pequeñas
+    width: 100,
     height: 100,
     borderRadius: 50,
     marginBottom: 15,
   },
   userName: {
-    fontSize: 22, // Tamaño de texto más pequeño
+    fontSize: 22,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
@@ -68,15 +87,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     width: '90%',
-    flexWrap: 'wrap', // Asegura que las tarjetas se distribuyan mejor en pantallas pequeñas
+    flexWrap: 'wrap',
   },
   statCard: {
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 15,
     borderRadius: 10,
-    width: '40%', // Ajustado para que se adapten mejor
-    marginVertical: 10, // Añadido margen vertical para mayor espacio
+    width: '40%',
+    marginVertical: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
