@@ -58,7 +58,7 @@ const RoutineScreen = () => {
       </ScrollView>
 
       <Pressable
-        onPress={() => navigation.navigate("Training", { exercises })} // Pasar los ejercicios a la pantalla de entrenamiento
+        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id })} // Pasar los ejercicios a la pantalla de entrenamiento
         style={styles.startButton}
       >
         <Text style={styles.startButtonText}>EMPEZAR</Text>
