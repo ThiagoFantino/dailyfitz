@@ -1,30 +1,45 @@
-import { StyleSheet, Text, View, Pressable, Image } from "react-native";
-import React from "react";
-import routines from "@/data/routines";
+import { StyleSheet, Text, View, Pressable, Image, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 const Routines = () => {
   const navigation = useNavigation<any>();
+  const [routines, setRoutines] = useState([]); // Estado para almacenar las rutinas
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://192.168.0.117:3000/routines'); // Cambia esta URL a tu endpoint
+      const json = await response.json();
+      setRoutines(json); // Asumiendo que la API devuelve un array de rutinas
+      console.log(json)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   return (
-    <View style={styles.container}>
-      {routines.map((item, key) => (
+    <ScrollView contentContainerStyle={styles.container}>
+      {routines.map((item) => (
         <Pressable
+          key={item.id}
           onPress={() =>
             navigation.navigate("Routine", {
               image: item.image,
-              excersises: item.excersises,
+              excersises: item.excersises, // Aquí necesitarás asegurarte de que `excersises` también se pase correctamente
               id: item.id,
             })
           }
           style={styles.pressable}
-          key={key}
         >
           <Image style={styles.image} source={{ uri: item.image }} />
           <Text style={styles.text}>{item.name}</Text>
         </Pressable>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -56,3 +71,4 @@ const styles = StyleSheet.create({
     top: 20,
   },
 });
+
