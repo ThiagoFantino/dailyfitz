@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, ScrollView } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
@@ -7,6 +7,26 @@ import { useNavigation } from 'expo-router';
 const RoutineScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
+
+  const [exercises, setExercises] = useState([]); // Estado para los ejercicios
+
+  useEffect(() => {
+    // Obtener los ejercicios de la rutina al cargar la pantalla
+    fetchExercises();
+  }, []);
+
+  const fetchExercises = async () => {
+    try {
+      // Usar el id de la rutina que viene en los parámetros de la ruta
+      const routineId = route.params.id; 
+      const response = await fetch(`http://192.168.0.117:3000/routines/${routineId}/exercises`); 
+      const json = await response.json();
+      setExercises(json); // Asume que la API devuelve un array de ejercicios
+    } catch (error) {
+      console.error('Error fetching exercises:', error);
+    }
+};
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -23,11 +43,11 @@ const RoutineScreen = () => {
           color="white"
         />
 
-        {route.params.excersises.map((item, index) => (
+        {exercises.map((item, index) => (
           <Pressable style={styles.exerciseItem} key={index}>
             <Image
               style={styles.exerciseImage}
-              source={{ uri: item.image }}
+              source={{ uri: item.image }} // Asume que cada ejercicio tiene una imagen
             />
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseName}>{item.name}</Text>
@@ -38,7 +58,7 @@ const RoutineScreen = () => {
       </ScrollView>
 
       <Pressable
-        onPress={() => navigation.navigate("Training", { excersises: route.params.excersises })}
+        onPress={() => navigation.navigate("Training", { exercises })} // Pasar los ejercicios a la pantalla de entrenamiento
         style={styles.startButton}
       >
         <Text style={styles.startButtonText}>EMPEZAR</Text>
@@ -100,3 +120,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+

@@ -29,7 +29,6 @@ const Routines = () => {
           onPress={() =>
             navigation.navigate("Routine", {
               image: item.image,
-              excersises: item.excersises, // Aquí necesitarás asegurarte de que `excersises` también se pase correctamente
               id: item.id,
             })
           }
