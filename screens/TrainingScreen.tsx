@@ -1,77 +1,97 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 const TrainingScreen = () => {
   const route = useRoute();
-  const navigation = useNavigation();
-  const [index, setIndex] = useState(0);
-  const exercises = route.params.excersises;
-  const current = exercises[index];
+  const navigation = useNavigation<any>();
+  
+  const [exercises, setExercises] = useState([]); // Estado para los ejercicios
+  const [index, setIndex] = useState(0); // Estado para el índice actual
+  const id = route.params?.id; // Obtener el routineId de los parámetros de la ruta
+  const current = exercises[index]; // Ejercicio actual
+
+  // Fetch ejercicios cuando se cargue la pantalla
+  useEffect(() => {
+    fetchExercises();
+  }, []);
+
+  const fetchExercises = async () => {
+    try {
+      const response = await fetch(`http://192.168.0.117:3000/routines/${id}/exercises`);
+      const json = await response.json();
+      setExercises(json); // Guardar los ejercicios obtenidos en el estado
+    } catch (error) {
+      console.error('Error fetching exercises:', error);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Image
-        style={styles.image}
-        source={{ uri: current.image }}
-      />
-      <Text style={styles.exerciseName}>{current.name}</Text>
-      <Text style={styles.exerciseSets}>x{current.sets}</Text>
+      {current && (
+        <>
+          <Image
+            style={styles.image}
+            source={{ uri: current.image }}
+            resizeMode="contain"
+          />
+          <Text style={styles.exerciseName}>{current.name}</Text>
+          <Text style={styles.exerciseSets}>x{current.sets}</Text>
 
-      {index + 1 >= exercises.length ? (
-        <Pressable
-          onPress={() => {
-            navigation.navigate("Home");
-          }}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>FINALIZADO</Text>
-        </Pressable>
-      ) : (
-        <Pressable
-          onPress={() => {
-            navigation.navigate("Rest");
-            setTimeout(() => setIndex(index + 1), 2000);
-          }}
-          style={styles.button}
-        >
-          <Text style={styles.buttonText}>FINALIZADO</Text>
-        </Pressable>
+          {index + 1 >= exercises.length ? (
+            <Pressable
+              onPress={() => {
+                navigation.navigate("Congratulations");
+              }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>FINALIZADO</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => {
+                navigation.navigate("Rest");
+                setTimeout(() => setIndex(index + 1), 2000);
+              }}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>FINALIZADO</Text>
+            </Pressable>
+          )}
+
+          <View style={styles.buttonContainer}>
+            <Pressable 
+              onPress={() => {
+                navigation.navigate("Home");
+              }} 
+              style={styles.actionButton}
+            >
+              <Text style={styles.actionButtonText}>SALIR</Text>
+            </Pressable>
+
+            {index + 1 >= exercises.length ? (
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("Congratulations");
+                }}
+                style={styles.actionButton}
+              >
+                <Text style={styles.actionButtonText}>SALTEAR</Text>
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() => {
+                  navigation.navigate("Rest");
+                  setTimeout(() => setIndex(index + 1), 2000);
+                }}
+                style={styles.actionButton}
+              >
+                <Text style={styles.actionButtonText}>SALTEAR</Text>
+              </Pressable>
+            )}
+          </View>
+        </>
       )}
-
-      <View style={styles.buttonContainer}>
-        <Pressable 
-        disabled={index === 0}
-        onPress={()=>{
-          navigation.navigate("Rest");
-          setTimeout(()=> {
-            setIndex(index - 1)
-          },2000)
-          }}style={styles.actionButton}>
-          <Text style={styles.actionButtonText}>ANTERIOR</Text>
-        </Pressable>
-
-        {index + 1 >= exercises.length ? (
-          <Pressable
-            onPress={() => {
-              navigation.navigate("Home");
-            }}
-            style={styles.actionButton}
-          >
-            <Text style={styles.actionButtonText}>SALTEAR</Text>
-          </Pressable>
-        ) : (
-          <Pressable
-            onPress={() => {
-              navigation.navigate("Rest");
-              setTimeout(() => setIndex(index + 1), 2000);
-            }}
-            style={styles.actionButton}
-          >
-            <Text style={styles.actionButtonText}>SALTEAR</Text>
-          </Pressable>
-        )}
-      </View>
     </SafeAreaView>
   );
 };
@@ -90,14 +110,14 @@ const styles = StyleSheet.create({
     height: 370,
   },
   exerciseName: {
-    marginTop: 30,
-    fontSize: 30,
+    marginTop: 5,
+    fontSize: 15,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   exerciseSets: {
     marginTop: 30,
-    fontSize: 38,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -111,7 +131,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontWeight: 'bold',
-    fontSize: 20,
+    fontSize: 18,
     color: 'white',
   },
   buttonContainer: {
@@ -130,8 +150,12 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     color: 'white',
+    fontSize: 12,
     fontWeight: 'bold',
     textAlign: 'center',
   },
 });
+
+
+
 

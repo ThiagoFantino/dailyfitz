@@ -1,45 +1,65 @@
-import { StyleSheet, Text, View, Pressable, Image } from "react-native";
-import React from "react";
-import routines from "@/data/routines";
+import { StyleSheet, Text, View, Pressable, Image, ScrollView } from "react-native";
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 
 const Routines = () => {
   const navigation = useNavigation<any>();
+  const [routines, setRoutines] = useState([]); // Estado para almacenar las rutinas
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch('http://192.168.0.117:3000/routines'); // Cambia esta URL a tu endpoint
+      const json = await response.json();
+      setRoutines(json); // Asumiendo que la API devuelve un array de rutinas
+      console.log(json)
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   return (
-    <View>
-      {routines.map((item, key) => (
+    <ScrollView contentContainerStyle={styles.container}>
+      {routines.map((item) => (
         <Pressable
+          key={item.id}
           onPress={() =>
             navigation.navigate("Routine", {
               image: item.image,
-              excersises: item.excersises,
               id: item.id,
             })
           }
           style={styles.pressable}
-          key={key}
         >
           <Image style={styles.image} source={{ uri: item.image }} />
           <Text style={styles.text}>{item.name}</Text>
         </Pressable>
       ))}
-    </View>
+    </ScrollView>
   );
 };
 
 export default Routines;
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: "column",
+    paddingHorizontal: 10,
+    alignItems: "center",
+  },
   pressable: {
     alignItems: "center",
+    width: "95%",
     justifyContent: "center",
-    margin: 10,
+    marginVertical: 10,
   },
   image: {
-    width: "95%",
+    width: "100%",
     height: 140,
-    borderRadius: 7,
+    borderRadius: 15,
   },
   text: {
     position: "absolute",
@@ -50,3 +70,4 @@ const styles = StyleSheet.create({
     top: 20,
   },
 });
+

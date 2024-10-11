@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View, SafeAreaView, Image } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Animated } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
 const RestScreen = () => {
   const navigation = useNavigation();
   const [timeLeft, setTimeLeft] = useState(3);
   
+  const scaleValue = useRef(new Animated.Value(1)).current;
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (timeLeft <= 0) {
@@ -18,11 +20,31 @@ const RestScreen = () => {
     return () => clearTimeout(timer);
   }, [timeLeft, navigation]);
 
+  useEffect(() => {
+    
+    const startAnimation = () => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.spring(scaleValue, {
+            toValue: 1.5,
+            useNativeDriver: false,
+          }),
+          Animated.spring(scaleValue, {
+            toValue: 1,
+            useNativeDriver: false,
+          }),
+        ])
+      ).start();
+    };
+
+    startAnimation();
+  }, [scaleValue]);
+
   return (
     <SafeAreaView style={styles.container}>
-      <Image
+      <Animated.Image
         source={{ uri: "https://www.sport.es/labolsadelcorredor/wp-content/uploads/2021/02/entrenamiento.jpeg" }}
-        style={styles.image}
+        style={[styles.image, { transform: [{ scale: scaleValue }] }]}
         resizeMode="cover"
       />
       <Text style={styles.title}>DESCANSO</Text>
@@ -56,3 +78,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
