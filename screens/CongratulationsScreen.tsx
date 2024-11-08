@@ -1,10 +1,69 @@
 import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
 import React from 'react';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const CongratulationsScreen = () => {
   const navigation = useNavigation();
+  const route = useRoute();
+  
+  // Obtener el tiempo total en minutos y el número de ejercicios completados desde los parámetros
+  const totalTimeInMinutes = route.params?.totalTime || 0;
+  const completedExercises = route.params?.completedExercises || 0;
+  const totalCalories = route.params?.totalCalories || 0;
+  const userId = 1;
+
+  // Función para convertir minutos en horas, minutos y segundos
+  const formatTime = (totalMinutes: number) => {
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = Math.floor(totalMinutes % 60);
+    const seconds = Math.floor((totalMinutes * 60) % 60);
+
+    return `${hours}h ${minutes}m ${seconds}s`;
+  };
+
+  const formattedTime = formatTime(totalTimeInMinutes);
+
+  // Función para actualizar los minutos y entrenamientos en la base de datos
+  const postTotalMinutesAndWorkouts = async (userId: string, totalMinutes: number, completedExercises: number, totalCalories: number) => {
+    try {
+      const totalSeconds = Math.round(totalMinutes * 60);
+
+      // Primero, obtén los datos actuales del usuario
+      const response = await fetch(`http://192.168.0.117:3000/users/1`);
+      const userData = await response.json();
+      
+      // Actualizar los minutos
+      const updatedMinutes = userData.minutos + totalSeconds;
+      const updatedWorkouts = userData.entrenamientos + completedExercises;
+      const updatedCalories = userData.calorias + totalCalories;
+
+      // Ahora, actualiza los minutos y los entrenamientos en la base de datos
+      await fetch(`http://192.168.0.117:3000/users/1`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          minutos: updatedMinutes, // Suma de los minutos actuales + nuevos minutos
+          entrenamientos: updatedWorkouts, // Suma de los entrenamientos actuales + los nuevos ejercicios completados
+          calorias: updatedCalories
+        }),
+      });
+
+      console.log('Minutos y entrenamientos actualizados correctamente.');
+    } catch (error) {
+      console.error('Error actualizando los minutos y entrenamientos:', error);
+    }
+  };
+
+  // Manejar el clic del botón para volver al inicio y actualizar los minutos y entrenamientos
+  const handleGoBack = () => {
+    if (userId) {
+      postTotalMinutesAndWorkouts(userId, totalTimeInMinutes, completedExercises,totalCalories);
+    }
+    navigation.navigate("Home"); // Navegar al inicio
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -12,8 +71,16 @@ const CongratulationsScreen = () => {
       <Text style={styles.title}>¡Felicidades!</Text>
       <Text style={styles.message}>Has completado tu entrenamiento.</Text>
 
+      {/* Mostrar el tiempo total formateado en horas, minutos y segundos */}
+      <Text style={styles.timeMessage}>Tiempo total: {formattedTime}</Text>
+
+      {/* Mostrar el número de ejercicios completados */}
+      <Text style={styles.exerciseMessage}>Ejercicios completados: {completedExercises}</Text>
+
+      <Text style={styles.exerciseMessage}>Calorias quemadas: {totalCalories}</Text>
+
       <Pressable
-        onPress={() => navigation.navigate("Home")}
+        onPress={handleGoBack} // Llamar a la función handleGoBack al presionar el botón
         style={styles.button}
       >
         <Text style={styles.buttonText}>VOLVER AL INICIO</Text>
@@ -45,6 +112,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
   },
+  timeMessage: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'green',
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  exerciseMessage: {
+    fontSize: 18,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
   button: {
     backgroundColor: 'blue',
     borderRadius: 20,
@@ -58,4 +137,5 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
 
