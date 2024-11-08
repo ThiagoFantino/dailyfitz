@@ -1,51 +1,109 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView,TextInput, Pressable } from 'react-native';
 import React, { useState } from 'react';
-import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons'; // Asegúrate de tener instalada la librería de iconos
 
-const UserStatsScreen = () => {
-  const [user, setUser] = useState('');
-  const [userError, setUserError] = useState('');
+
+interface LoginScreenProps {
+  onFormToggle: () => void;
+}
+
+const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
+  const [email, setEmail] = useState('');
+  const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('Error');
-
+  const [passwordError, setPasswordError] = useState('');
   
+
+
+  const [passwordView, setPasswordView] = useState(true);
+
+  const passwordViewFlip=()=>{
+    setPasswordView(!passwordView);
+  }
+
+  // Se debe consultar a la base de datos si la informacion ingresada corresponde a la de un usuario registrado
+  // Primero se realiza un prerevision de los datos ingresados antes de consultar a la base de datos
+  function loginRequest(){
+    let first_advice_email=(email.length>0) ? testInput(/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/,"Error en el email ingresado.",email) : "Email no ingresado.";
+    (first_advice_email!=="")?setEmailError(first_advice_email):setEmailError("");
+    let first_advice_password=(password.length>0) ? testInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,"Error en la contraseña ingresada.",password) : "Email no ingresado.";
+    (first_advice_password!=="")?setPasswordError(first_advice_password):setPasswordError("");
+  }
+
+
+
+  function changeEmail(input: string){
+    setEmail(input);
+    setEmailError("");
+  }
+
+
+  function changePassword(input: string){
+    setPassword(input);
+    setPasswordError("");
+  }
+
+  function testInput(regex: RegExp,advice: string,input_password: string){
+    if (!regex.test(input_password)){
+      return advice;
+    } else {
+      return "";
+    }
+  }
+
+
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Image 
-          style={styles.loginPicture} 
-          source={{ uri: 'https://cdn-icons-png.flaticon.com/256/1144/1144760.png' }} 
-        />
-        <Text style={styles.loginTittle}>Login</Text> 
-        <View >
-          <TextInput
-            style={styles.input}
-            onChangeText={setUser}
-            placeholder='Usuario, telefono o email'
-          />
+        <View style={styles.headerContainer}>
+          <Text style={styles.headerText}>DAILY FITZ</Text>
         </View>
-        <View style={styles.inputError}>
-          <Text style={styles.inputErrorMenssage}>{userError}</Text>
+        <View style={styles.loginTittleContainer}>        
+          <Text style={styles.loginTittleText}>Ingreso de usuario</Text> 
         </View>
         <View>
           <TextInput
-            style={styles.input}            
-            onChangeText={setPassword}
-            secureTextEntry={true}
-            value={password}
-            placeholder='Contraseña'
+            style={styles.input}
+            value={email}
+            onChangeText={changeEmail}
+            placeholder='Email'
+            placeholderTextColor={"#808080"}
           />
         </View>
-
+        <View style={styles.inputError}>
+          <Text style={styles.inputErrorMenssage}>{emailError}</Text>
+        </View>
+        <View>
+          <TextInput
+            style={styles.inputPassword}            
+            value={password}
+            onChangeText={changePassword}
+            secureTextEntry={passwordView}
+            placeholder='Contraseña'
+            placeholderTextColor={"#808080"}
+          />
+          <Pressable style={({ pressed }) => 
+            pressed ? styles.passwordDisplayButtonPressed : styles.passwordDisplayButton} 
+            onPress={passwordViewFlip}>
+            <Image style={styles.passwordDisplayIcon} source={{ uri: 'https://storage.needpix.com/rsynced_images/eye-2387853_1280.png' }}/>
+          </Pressable>
+        </View>  
         <View style={styles.inputError}>
           <Text style={styles.inputErrorMenssage}>{passwordError}</Text>
         </View>
         <View>
+          <Pressable style={styles.changeFormButton}
+            onPress={onFormToggle}
+          >
+            <Text style={styles.changeFormButtonText}>Crear una cuenta</Text>
+          </Pressable>
+        </View>
+        <View>
           <Pressable style={({ pressed }) => 
             pressed ? styles.submitButtonPressed : styles.submitButton
-          }>
-            <Text style={styles.SubmitButtonText}>Enviar</Text>
+            }
+            onPress={loginRequest}>
+            <Text style={styles.submitButtonText}>Enviar</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -53,93 +111,146 @@ const UserStatsScreen = () => {
   );
 };
 
-export default UserStatsScreen;
+export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#f0f4f8',
   },
   scrollContent: {
-    margin: 'auto',
-    width: 350,
-    height: 450,
-    backgroundColor: '#cce6ff',
-    justifyContent: 'center',
-    alignContent: 'center',
-    borderRadius: 20,
-    
-  },
-  loginPicture: {
-    width: 100, // Tamaño reducido para pantallas más pequeñas
-    height: 100,
-    color:"#ffffff",
-    borderRadius: 50,
-    marginBottom: 15,
-    alignSelf: 'center'
-  },
-  loginTittle: {
-    fontSize: 22, // Tamaño de texto más pequeño
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 20,
-    color: '#333',
-  },
-  input:{
-    height: 40,
-    borderColor: '#333',
-    borderWidth: 1,
     padding: 20,
-    marginHorizontal:'10%',
-    marginVertical: 10,
-    borderRadius: 5,
-    backgroundColor: '#99ceff',
-    color: '#fff',  
+    width: '90%',
+    minWidth: 350,
+    borderRadius: 15,
+    backgroundColor: '#ffffff',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 5,
+    margin:'auto',
   },
-  inputError:{
-    height:10,
-    marginHorizontal:"15%",
-  },  
-  inputErrorMenssage:{
-    fontSize:10,
-    color:"red",
+  headerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
   },
-
-  submitButton:{
-    backgroundColor:"#99ceff",
-    marginHorizontal:"auto",
-    marginTop:30,
-    marginBottom:0,
+  headerText: {
+    fontSize: 20,
+    fontWeight: '500',
+    color: '#007bff',
+    textAlign: 'center',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
+  },
+  loginTittleContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  loginTittleText: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#007bff',
+    textAlign: 'center',
+    letterSpacing: 1,
+  },
+  input: {
+    height: 50,
+    borderColor: '#ced4da',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginVertical: 15,
+    fontSize: 16,
+    backgroundColor: '#f8f9fa',
+  },
+  inputPassword: {
+    height: 50,
+    borderColor: '#ced4da',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingLeft: 15,
+    paddingRight: 45,
+    marginVertical: 15,
+    fontSize: 16,
+    backgroundColor: '#f8f9fa',
+  },
+  inputError: {
+    justifyContent: 'center',
+    marginHorizontal: '5%',
+    alignItems: 'flex-start',
+  },
+  inputErrorMenssage: {
+    position:'absolute',
+    top:-13,
+    color: 'red',
+    fontSize: 13,
+  },
+  changeFormButton: {
+    marginTop: 20,
+    backgroundColor: 'transparent',
+    alignSelf: 'center',
+  },
+  changeFormButtonText: {
+    color: '#007bff',
+    fontSize: 16,
+    textDecorationLine: 'underline',
+  },
+  passwordDisplayButton:{
     borderColor:"black",
+    borderRadius: 50,
     borderWidth:1,
-    borderRadius:5,
-    width:"20%",
-    height:"auto",
-    padding:5,
-    alignItems:"center",
-    justifyContent:"center"
+    backgroundColor:"#cccccc",
+    opacity:0.5,
+    position:"absolute",
+    marginVertical:15,
+    top:10,
+    right:10,
+    height:30,
+    width:30,
   },
-  submitButtonPressed:{
-    backgroundColor:"#66b5ff",
-    marginHorizontal:"auto",
-    marginVertical:10,
+  passwordDisplayButtonPressed:{
     borderColor:"black",
+    borderRadius: 50,
     borderWidth:1,
-    borderRadius:5,
-    width:"20%",
-    height:"auto",
-    padding:5,
-    alignItems:"center",
-    justifyContent:"center",
+    backgroundColor:"#b3b3b3",
+    opacity:0.5,
+    position:"absolute",
+    marginVertical:15,
+    top:10,
+    right:10,
+    height:30,
+    width:30,
   },
-  SubmitButtonText:{
-    color:"white",
-    fontSize: 10,
-  }
-
-  
+  submitButton: {
+    backgroundColor: '#007bff',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonPressed: {
+    backgroundColor: '#0056b3',
+    paddingVertical: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  passwordDisplayIcon: {
+      width: '100%',
+      height: '100%',
+      position:'absolute',
+      alignSelf: 'center',
+    },
 });
-
-
