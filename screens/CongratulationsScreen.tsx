@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, SafeAreaView, Pressable } from 'react-native';
 import React from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import {backendURL} from '@/config'
 
 const CongratulationsScreen = () => {
   const navigation = useNavigation();
@@ -30,7 +31,7 @@ const CongratulationsScreen = () => {
       const totalSeconds = Math.round(totalMinutes * 60);
 
       // Primero, obtén los datos actuales del usuario
-      const response = await fetch(`http://192.168.0.117:3000/users/1`);
+      const response = await fetch(`${backendURL}/users/1`);
       const userData = await response.json();
       
       // Actualizar los minutos
@@ -39,7 +40,7 @@ const CongratulationsScreen = () => {
       const updatedCalories = userData.calorias + totalCalories;
 
       // Ahora, actualiza los minutos y los entrenamientos en la base de datos
-      await fetch(`http://192.168.0.117:3000/users/1`, {
+      await fetch(`${backendURL}/users/1`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

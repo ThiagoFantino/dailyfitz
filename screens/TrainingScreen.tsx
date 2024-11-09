@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import {backendURL} from '@/config'
 
 const TrainingScreen = () => {
   const route = useRoute();
@@ -28,7 +29,7 @@ const TrainingScreen = () => {
 
   const fetchExercises = async () => {
     try {
-      const response = await fetch(`http://192.168.0.117:3000/routines/${id}/exercises`);
+      const response = await fetch(`${backendURL}/routines/${id}/exercises`);
       const json = await response.json();
       setExercises(json); // Guardar los ejercicios obtenidos en el estado
     } catch (error) {

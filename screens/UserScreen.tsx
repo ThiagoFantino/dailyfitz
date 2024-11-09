@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import {backendURL} from '@/config'
 
 const UserStatsScreen = () => {
   const [data, setData] = useState('');
@@ -12,7 +13,7 @@ const UserStatsScreen = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://192.168.0.117:3000/users/1');
+      const response = await fetch(`${backendURL}/users/1`);
       const json = await response.json();
       setUser(json); // Asumiendo que json es un array de usuarios
       console.log(json);

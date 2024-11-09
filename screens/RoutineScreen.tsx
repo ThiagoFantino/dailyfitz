@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
+import {backendURL} from '@/config'
 
 const RoutineScreen = () => {
   const route = useRoute();
@@ -19,7 +20,7 @@ const RoutineScreen = () => {
     try {
       // Usar el id de la rutina que viene en los parámetros de la ruta
       const routineId = route.params.id; 
-      const response = await fetch(`http://192.168.0.117:3000/routines/${routineId}/exercises`); 
+      const response = await fetch(`${backendURL}/routines/${routineId}/exercises`); 
       const json = await response.json();
       setExercises(json); // Asume que la API devuelve un array de ejercicios
     } catch (error) {

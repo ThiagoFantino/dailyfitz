@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, Pressable, Image, ScrollView } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
+import {backendURL} from '@/config'
 
 const Routines = () => {
   const navigation = useNavigation<any>();
@@ -12,7 +13,7 @@ const Routines = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://192.168.0.117:3000/routines'); // Cambia esta URL a tu endpoint
+      const response = await fetch(`${backendURL}/routines`); // Cambia esta URL a tu endpoint
       const json = await response.json();
       setRoutines(json); // Asumiendo que la API devuelve un array de rutinas
       console.log(json)
