@@ -73,12 +73,12 @@ const CongratulationsScreen = () => {
       <Text style={styles.message}>Has completado tu entrenamiento.</Text>
 
       {/* Mostrar el tiempo total formateado en horas, minutos y segundos */}
-      <Text style={styles.timeMessage}>Tiempo total: {formattedTime}</Text>
+      <Text style={styles.timeMessage}>Tiempo Total: {formattedTime}</Text>
 
       {/* Mostrar el número de ejercicios completados */}
-      <Text style={styles.exerciseMessage}>Ejercicios completados: {completedExercises}</Text>
+      <Text style={styles.exerciseMessage}>Ejercicios Completados: {completedExercises}</Text>
 
-      <Text style={styles.exerciseMessage}>Calorias quemadas: {totalCalories}</Text>
+      <Text style={styles.exerciseMessage}>Calorias Quemadas: {totalCalories}</Text>
 
       <Pressable
         onPress={handleGoBack} // Llamar a la función handleGoBack al presionar el botón

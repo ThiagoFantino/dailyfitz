@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import {backendURL} from '@/config'
+import { backendURL } from '@/config'
 
 const TrainingScreen = () => {
   const route = useRoute();
@@ -48,7 +48,7 @@ const TrainingScreen = () => {
   const handleFinish = () => {
     const endTime = new Date(); // Registrar la hora de finalización
     const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60); // Calcular el tiempo total en minutos
-    navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories+current.calorias });
+    navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories + current.calorias });
   };
 
   return (
@@ -62,10 +62,7 @@ const TrainingScreen = () => {
           />
           <Text style={styles.exerciseName}>{current.name}</Text>
           <Text style={styles.exerciseSets}>x{current.sets}</Text>
-          <Text style={styles.exerciseSets}>Calorias perdidas con este ejercicio: {current.calorias}</Text>
-
-          {/* Muestra el tiempo transcurrido en tiempo real */}
-          <Text style={styles.timer}>Tiempo: {formatTime(elapsedTime)}</Text>
+          <Text style={styles.exerciseSets}>Quema {current.calorias} calorias</Text>
 
           {index + 1 >= exercises.length ? (
             <Pressable
@@ -101,30 +98,6 @@ const TrainingScreen = () => {
             >
               <Text style={styles.actionButtonText}>SALIR</Text>
             </Pressable>
-
-            {index + 1 >= exercises.length ? (
-              <Pressable
-                onPress={() => {
-                  setCompletedExercises(completedExercises + 1); // Incrementar contador de ejercicios completados antes de finalizar
-                  setTotalCalories(totalCalories + current.calorias); // Acumular las calorías
-                  handleFinish();
-                }}
-                style={styles.actionButton}
-              >
-                <Text style={styles.actionButtonText}>SALTEAR</Text>
-              </Pressable>
-            ) : (
-              <Pressable
-                onPress={() => {
-                  // No incrementamos el contador si se salta el ejercicio
-                  navigation.navigate("Rest");
-                  setTimeout(() => setIndex(index + 1), 2000);
-                }}
-                style={styles.actionButton}
-              >
-                <Text style={styles.actionButtonText}>SALTEAR</Text>
-              </Pressable>
-            )}
           </View>
         </>
       )}
@@ -197,5 +170,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-
