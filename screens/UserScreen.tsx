@@ -1,17 +1,17 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, Pressable } from 'react-native';
 import React, { useState, useCallback } from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useFocusEffect , useRoute} from '@react-navigation/native';
-import {backendURL} from '@/config'
+import { useFocusEffect, useRoute, useNavigation } from '@react-navigation/native';
+import { backendURL } from '@/config';
 
 const UserStatsScreen = () => {
-  const [user, setUser] = useState({}); // Inicializar como un objeto vacío
-  const route = useRoute(); // Obtener los parámetros de la ruta
-  const userId = global.userId; // Extraer el userId de los parámetros
-  
+  const [user, setUser] = useState({});
+  const route = useRoute();
+  const userId = global.userId;
+  const navigation = useNavigation(); // Obtener el objeto de navegación
+
   useFocusEffect(
     useCallback(() => {
-      // Cada vez que la pantalla toma el foco, se ejecuta fetchData
       fetchData();
     }, [])
   );
@@ -20,11 +20,16 @@ const UserStatsScreen = () => {
     try {
       const response = await fetch(`${backendURL}/users/${userId}`);
       const json = await response.json();
-      setUser(json); // Asumir que json es un objeto de usuario
+      setUser(json);
       console.log(json);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+  };
+
+  const handleLogout = () => {
+    global.userId = null; // Limpiar el ID de usuario
+    navigation.navigate('Login'); // Redirigir a la pantalla de login
   };
 
   return (
@@ -56,6 +61,12 @@ const UserStatsScreen = () => {
             <Text style={styles.statLabel}>Minutos</Text>
           </View>
         </View>
+
+        {/* Botón de cerrar sesión */}
+        <Pressable style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+        </Pressable>
+
       </ScrollView>
     </SafeAreaView>
   );
@@ -115,5 +126,17 @@ const styles = StyleSheet.create({
     color: '#777',
     marginTop: 5,
     textAlign: 'center',
+  },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginTop: 30,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });

@@ -50,6 +50,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
           // Login exitoso, almacena el userId globalmente o navega a la siguiente pantalla
           console.log('Login exitoso');
           global.userId = data.userId;  // Guardar el userId globalmente
+
+          setEmail(''); 
+          setPassword('');
+          
           navigation.navigate('Home');
         } else {
           // Mostrar error si las credenciales no son correctas
