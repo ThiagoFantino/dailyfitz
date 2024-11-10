@@ -8,6 +8,8 @@ import TrainingScreen from "@/screens/TrainingScreen";
 import RestScreen from "@/screens/RestScreen";
 import TabNavigator from "@/app/TabNavigator";
 import CongratulationsScreen from "@/screens/CongratulationsScreen";
+import LoginScreen from "@/screens/LoginScreen";
+import SignUpScreen from "@/screens/SignUpScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -15,6 +17,16 @@ const StackNavigator = () => {
   return (
     <NavigationContainer independent={true}>
       <Stack.Navigator>
+      <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={SignUpScreen}
+          options={{ headerShown: false }}
+        />
         <Stack.Screen
           name="Home"
           component={TabNavigator}

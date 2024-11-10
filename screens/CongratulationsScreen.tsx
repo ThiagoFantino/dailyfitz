@@ -7,12 +7,12 @@ import {backendURL} from '@/config'
 const CongratulationsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const userId = global.userId; // Extraer el userId de los parámetros
   
   // Obtener el tiempo total en minutos y el número de ejercicios completados desde los parámetros
   const totalTimeInMinutes = route.params?.totalTime || 0;
   const completedExercises = route.params?.completedExercises || 0;
   const totalCalories = route.params?.totalCalories || 0;
-  const userId = 1;
 
   // Función para convertir minutos en horas, minutos y segundos
   const formatTime = (totalMinutes: number) => {
@@ -31,7 +31,7 @@ const CongratulationsScreen = () => {
       const totalSeconds = Math.round(totalMinutes * 60);
 
       // Primero, obtén los datos actuales del usuario
-      const response = await fetch(`${backendURL}/users/1`);
+      const response = await fetch(`${backendURL}/users/${userId}`);
       const userData = await response.json();
       
       // Actualizar los minutos
@@ -40,7 +40,7 @@ const CongratulationsScreen = () => {
       const updatedCalories = userData.calorias + totalCalories;
 
       // Ahora, actualiza los minutos y los entrenamientos en la base de datos
-      await fetch(`${backendURL}/users/1`, {
+      await fetch(`${backendURL}/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

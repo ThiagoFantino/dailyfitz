@@ -1,11 +1,14 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
 import React, { useState, useCallback } from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect , useRoute} from '@react-navigation/native';
+import {backendURL} from '@/config'
 
 const UserStatsScreen = () => {
   const [user, setUser] = useState({}); // Inicializar como un objeto vacío
-
+  const route = useRoute(); // Obtener los parámetros de la ruta
+  const userId = global.userId; // Extraer el userId de los parámetros
+  
   useFocusEffect(
     useCallback(() => {
       // Cada vez que la pantalla toma el foco, se ejecuta fetchData
@@ -15,7 +18,7 @@ const UserStatsScreen = () => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://192.168.0.117:3000/users/1');
+      const response = await fetch(`${backendURL}/users/${userId}`);
       const json = await response.json();
       setUser(json); // Asumir que json es un objeto de usuario
       console.log(json);

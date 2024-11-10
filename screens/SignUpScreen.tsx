@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView,TextInput, Pres
 import React, { useState } from 'react';
 
 interface SignUpScreenProps {
-  onFormToggle: () => void;
+  onFormToggle?: () => void;
 }
 
 const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
