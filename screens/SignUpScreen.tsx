@@ -60,7 +60,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         apellido,
         calorias: 0,
         entrenamientos: 0,
-        minutos: 0,
+        tiempo: 0,
         email,
         password,
       };

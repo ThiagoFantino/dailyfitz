@@ -32,6 +32,14 @@ const UserStatsScreen = () => {
     navigation.navigate('Login'); // Redirigir a la pantalla de login
   };
 
+  // Función para convertir segundos a formato horas:minutos:segundos
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -57,8 +65,9 @@ const UserStatsScreen = () => {
 
           <View style={styles.statCard}>
             <Ionicons name="time" size={36} color="#2196F3" />
-            <Text style={styles.statNumber}>{`${user.minutos || 0}`}</Text>
-            <Text style={styles.statLabel}>Minutos</Text>
+            {/* Mostrar el tiempo formateado desde la base de datos (en segundos) */}
+            <Text style={styles.statNumber}>{formatTime(user.tiempo || 0)}</Text>
+            <Text style={styles.statLabel}>Tiempo</Text>
           </View>
         </View>
 
@@ -140,3 +149,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
+

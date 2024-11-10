@@ -35,7 +35,7 @@ const CongratulationsScreen = () => {
       const userData = await response.json();
       
       // Actualizar los minutos
-      const updatedMinutes = userData.minutos + totalSeconds;
+      const updatedMinutes = userData.tiempo + totalSeconds;
       const updatedWorkouts = userData.entrenamientos + completedExercises;
       const updatedCalories = userData.calorias + totalCalories;
 
@@ -46,7 +46,7 @@ const CongratulationsScreen = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          minutos: updatedMinutes, // Suma de los minutos actuales + nuevos minutos
+          tiempo: updatedMinutes, // Suma de los minutos actuales + nuevos minutos
           entrenamientos: updatedWorkouts, // Suma de los entrenamientos actuales + los nuevos ejercicios completados
           calorias: updatedCalories
         }),
