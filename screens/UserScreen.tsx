@@ -54,7 +54,7 @@ const UserStatsScreen = () => {
           <View style={styles.statCard}>
             <MaterialIcons name="fitness-center" size={36} color="#4CAF50" />
             <Text style={styles.statNumber}>{`${user.entrenamientos || 0}`}</Text>
-            <Text style={styles.statLabel}>Entrenamientos</Text>
+            <Text style={styles.statLabel}>Ejercicios Realizados</Text>
           </View>
 
           <View style={styles.statCard}>
@@ -67,7 +67,7 @@ const UserStatsScreen = () => {
             <Ionicons name="time" size={36} color="#2196F3" />
             {/* Mostrar el tiempo formateado desde la base de datos (en segundos) */}
             <Text style={styles.statNumber}>{formatTime(user.tiempo || 0)}</Text>
-            <Text style={styles.statLabel}>Tiempo</Text>
+            <Text style={styles.statLabel}>Tiempo De Entrenamiento</Text>
           </View>
         </View>
 

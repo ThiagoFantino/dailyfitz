@@ -17,7 +17,7 @@ const TabNavigator = () => {
 
           if (route.name === "Rutinas") {
             iconName = "barbell";
-          } else if (route.name === "Estadisticas") {
+          } else if (route.name === "Perfil") {
             iconName = "person-circle-outline";
           }
 
@@ -33,7 +33,7 @@ const TabNavigator = () => {
         options={{ headerShown: false }}
       />
       <Tab.Screen
-        name="Estadisticas"
+        name="Perfil"
         component={UserScreen}
         options={{ headerShown: false }}
       />
