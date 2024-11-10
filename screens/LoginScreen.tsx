@@ -32,14 +32,32 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
     first_advice_password !== "" ? setPasswordError(first_advice_password) : setPasswordError("");
   
     if (first_advice_email === "" && first_advice_password === "") {
-      if (email === 'juanperez@gmail.com' && password === 'Hola1234') {
-        // Simulamos el comportamiento de éxito
-        console.log('Login exitoso');
-        navigation.navigate('Home'); // Navegar a la pantalla Home con un ID de usuario ficticio
-        global.userId = 2;
-      } else {
-        console.log('Credenciales inválidas');
-        Alert.alert('Error', 'Email o contraseña incorrectos');
+      try {
+        const response = await fetch(`${backendURL}/users/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          // Login exitoso, almacena el userId globalmente o navega a la siguiente pantalla
+          console.log('Login exitoso');
+          global.userId = data.userId;  // Guardar el userId globalmente
+          navigation.navigate('Home');
+        } else {
+          // Mostrar error si las credenciales no son correctas
+          Alert.alert('Error', data.error || 'Error al iniciar sesión');
+        }
+      } catch (error) {
+        console.error('Error al realizar el login:', error);
+        Alert.alert('Error', 'Hubo un problema con el login');
       }
     }
   };
