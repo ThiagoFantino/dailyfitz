@@ -1,21 +1,23 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
-import {backendURL} from '@/config'
+import { useFocusEffect } from '@react-navigation/native';
 
 const UserStatsScreen = () => {
-  const [data, setData] = useState('');
-  const [user, setUser] = useState([]); // Inicializar como un array vacío
+  const [user, setUser] = useState({}); // Inicializar como un objeto vacío
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      // Cada vez que la pantalla toma el foco, se ejecuta fetchData
+      fetchData();
+    }, [])
+  );
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${backendURL}/users/1`);
+      const response = await fetch('http://192.168.0.117:3000/users/1');
       const json = await response.json();
-      setUser(json); // Asumiendo que json es un array de usuarios
+      setUser(json); // Asumir que json es un objeto de usuario
       console.log(json);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -30,29 +32,27 @@ const UserStatsScreen = () => {
           source={{ uri: 'https://www.w3schools.com/w3images/avatar2.png' }} 
         />
         
-        <Text style={styles.userName}>{`${user.nombre} ${user.apellido}`}</Text> 
+        <Text style={styles.userName}>{`${user.nombre || ''} ${user.apellido || ''}`}</Text> 
 
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <MaterialIcons name="fitness-center" size={36} color="#4CAF50" />
-            <Text style={styles.statNumber}>{`${user.entrenamientos}`}</Text>
+            <Text style={styles.statNumber}>{`${user.entrenamientos || 0}`}</Text>
             <Text style={styles.statLabel}>Entrenamientos</Text>
           </View>
 
           <View style={styles.statCard}>
             <FontAwesome5 name="fire" size={36} color="#F44336" />
-            <Text style={styles.statNumber}>{`${user.calorias}`}</Text>
+            <Text style={styles.statNumber}>{`${user.calorias || 0}`}</Text>
             <Text style={styles.statLabel}>Calorías Quemadas</Text>
           </View>
 
           <View style={styles.statCard}>
             <Ionicons name="time" size={36} color="#2196F3" />
-            <Text style={styles.statNumber}>{`${user.minutos}`}</Text>
+            <Text style={styles.statNumber}>{`${user.minutos || 0}`}</Text>
             <Text style={styles.statLabel}>Minutos</Text>
           </View>
         </View>
-
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -114,6 +114,3 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-
-
