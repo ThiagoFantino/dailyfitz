@@ -7,48 +7,33 @@ const TrainingScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
 
-  const [exercises, setExercises] = useState([]); // Estado para los ejercicios
-  const [index, setIndex] = useState(0); // Estado para el índice actual
-  const [startTime, setStartTime] = useState<Date | null>(null); // Almacena la hora de inicio del entrenamiento
-  const [elapsedTime, setElapsedTime] = useState(0); // Almacena el tiempo transcurrido en segundos
-  const [completedExercises, setCompletedExercises] = useState(1); // Estado para contar los ejercicios completados
-  const [totalCalories, setTotalCalories] = useState(0); // Estado para contar las calorías
-  const id = route.params?.id; // Obtener el routineId de los parámetros de la ruta
-  const userId = route.params?.userId; // Obtener el userId de los parámetros de la ruta
-  const current = exercises[index]; // Ejercicio actual
+  const [exercises, setExercises] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [startTime, setStartTime] = useState<Date | null>(null); 
+  const [completedExercises, setCompletedExercises] = useState(1);
+  const [totalCalories, setTotalCalories] = useState(0); 
+  const id = route.params?.id; 
+  const userId = route.params?.userId; 
+  const current = exercises[index];
 
-  // Inicia el temporizador y obtiene los ejercicios
   useEffect(() => {
     fetchExercises();
-    setStartTime(new Date()); // Registrar la hora de inicio
-    const interval = setInterval(() => {
-      setElapsedTime(prevTime => prevTime + 1); // Incrementa el tiempo transcurrido cada segundo
-    }, 1000);
-
-    return () => clearInterval(interval); // Limpia el intervalo al salir de la pantalla
+    setStartTime(new Date());
   }, []);
 
   const fetchExercises = async () => {
     try {
       const response = await fetch(`${backendURL}/routines/${id}/exercises`);
       const json = await response.json();
-      setExercises(json); // Guardar los ejercicios obtenidos en el estado
+      setExercises(json);
     } catch (error) {
       console.error('Error fetching exercises:', error);
     }
   };
 
-  // Convertir el tiempo en formato horas, minutos y segundos
-  const formatTime = (seconds: number) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h}h ${m}m ${s}s`;
-  };
-
   const handleFinish = () => {
-    const endTime = new Date(); // Registrar la hora de finalización
-    const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60); // Calcular el tiempo total en minutos
+    const endTime = new Date();
+    const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60); 
     navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories + current.calorias, userId: userId });
   };
 
@@ -95,7 +80,7 @@ const TrainingScreen = () => {
             <Pressable
               onPress={() => {
                 setCompletedExercises(completedExercises + 1); 
-                setTotalCalories(totalCalories + current.calorias); // Acumular las calorías
+                setTotalCalories(totalCalories + current.calorias); 
                 handleFinish();
               }}
               style={styles.button}
@@ -105,8 +90,8 @@ const TrainingScreen = () => {
           ) : (
             <Pressable
               onPress={() => {
-                setCompletedExercises(completedExercises + 1); // Incrementar contador de ejercicios completados
-                setTotalCalories(totalCalories + current.calorias); // Acumular las calorías
+                setCompletedExercises(completedExercises + 1); 
+                setTotalCalories(totalCalories + current.calorias);
                 navigation.navigate("Rest");
                 setTimeout(() => setIndex(index + 1), 2000);
               }}

@@ -2,9 +2,8 @@ import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
 import React from 'react';
 import RoutinesCards from '@/components/RoutinesCards';
 
-const HomeScreen = ({route}) => {
+const HomeScreen = ({ route }) => {
   var userId = route.params.id;
-  console.log(userId);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>

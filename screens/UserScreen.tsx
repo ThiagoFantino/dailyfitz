@@ -1,14 +1,13 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, Pressable } from 'react-native';
 import React, { useState, useCallback } from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { useFocusEffect, useRoute, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { backendURL } from '@/config';
 
 const UserStatsScreen = ({route}) => {
   const [user, setUser] = useState({});
   var userId = route.params.id;
-  console.log(userId);
-  const navigation = useNavigation(); // Obtener el objeto de navegación
+  const navigation = useNavigation();
 
   useFocusEffect(
     useCallback(() => {
@@ -28,12 +27,11 @@ const UserStatsScreen = ({route}) => {
   };
 
   const handleLogout = () => {
-    userId = null; // Limpiar el ID de usuario
+    userId = null; 
     console.log(userId);
-    navigation.navigate('Login'); // Redirigir a la pantalla de login
+    navigation.navigate('Login'); 
   };
 
-  // Función para convertir segundos a formato horas:minutos:segundos
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);

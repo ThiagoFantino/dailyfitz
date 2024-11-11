@@ -1,8 +1,6 @@
-import { StyleSheet } from "react-native";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "@/screens/HomeScreen";
 import RoutineScreen from "@/screens/RoutineScreen";
 import TrainingScreen from "@/screens/TrainingScreen";
 import RestScreen from "@/screens/RestScreen";
@@ -58,5 +56,3 @@ const StackNavigator = () => {
 };
 
 export default StackNavigator;
-
-const styles = StyleSheet.create({});

@@ -28,7 +28,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   }
 
   function signUpRequest() {
-    // Validaciones de los campos
+    
     if (nombre.length <= 0) {
       setNameError("Debe ingresar un nombre.");
     } else {
@@ -53,7 +53,6 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
       setPasswordError(testPassword(password));
     }
   
-    // Si no hay errores, enviar la información al servidor
     if (!nameError && !surnameError && !emailError && !passwordError) {
       const userData = {
         nombre,
@@ -65,7 +64,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         password,
       };
   
-      fetch(`${backendURL}/users/signup`, {  // Reemplaza con la URL de tu servidor
+      fetch(`${backendURL}/users/signup`, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -75,10 +74,10 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         .then((response) => response.json())
         .then((data) => {
           console.log('Success:', data);
-          setSuccessMessage('¡Cuenta creada con éxito!'); // Establece el mensaje de éxito
+          setSuccessMessage('¡Cuenta creada con éxito!'); 
           setTimeout(() => {
-            navigation.navigate('Login'); // Asumiendo que tu pantalla de login se llama 'Login'
-          }, 3000); // La redirección se realiza después de 3 segundos
+            navigation.navigate('Login'); 
+          }, 3000); 
         })
         .catch((error) => {
           console.error('Error:', error);
@@ -228,7 +227,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         <View>
           <Pressable
             style={styles.changeFormButton}
-            onPress={() => navigation.navigate('Login')}  // Aquí realizamos la navegación al Login
+            onPress={() => navigation.navigate('Login')} 
           >
             <Text style={styles.changeFormButtonText}>Ingresar</Text>
           </Pressable>
@@ -271,7 +270,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10, // Espacio debajo del texto
+    marginBottom: 10, 
   },
   headerText: {
     fontSize: 20,

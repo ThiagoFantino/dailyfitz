@@ -19,7 +19,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
     setPasswordView(!passwordView);
   };
 
-  // Función para realizar la solicitud de inicio de sesión con fetch
   const loginRequest = async () => {
     let first_advice_email = email.length > 0
       ? testInput(/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, "Error en el email ingresado.", email)
@@ -47,16 +46,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
         const data = await response.json();
     
         if (response.ok) {
-          // Login exitoso, almacena el userId globalmente o navega a la siguiente pantalla
           console.log('Login exitoso');
           const id = data.userId;
 
           setEmail(''); 
           setPassword('');
           
-          navigation.navigate("Home",{id:id});
+          navigation.navigate("Home",{ id:id });
         } else {
-          // Mostrar error si las credenciales no son correctas
           Alert.alert('Error', data.error || 'Error al iniciar sesión');
         }
       } catch (error) {
@@ -128,7 +125,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
         <View>
   <Pressable
     style={styles.changeFormButton}
-    onPress={() => navigation.navigate('Register')} // Aquí agregamos la navegación
+    onPress={() => navigation.navigate('Register')} 
   >
     <Text style={styles.changeFormButtonText}>Crear una cuenta</Text>
   </Pressable>

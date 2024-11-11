@@ -1,8 +1,6 @@
-import { StyleSheet } from "react-native";
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from '@expo/vector-icons';
-import StackNavigator from "./StackNavigator";
 import UserScreen from "@/screens/UserScreen";
 import HomeScreen from "@/screens/HomeScreen";
 import { useRoute } from "@react-navigation/native";
@@ -11,13 +9,12 @@ const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
   const route = useRoute();
-  const id = route.params?.id; // Obtener el routineId de los parámetros de la ruta
+  const id = route.params?.id;
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-
           if (route.name === "Rutinas") {
             iconName = "barbell";
           } else if (route.name === "Perfil") {
@@ -47,5 +44,3 @@ const TabNavigator = () => {
 };
 
 export default TabNavigator;
-
-const styles = StyleSheet.create({});

@@ -9,21 +9,19 @@ const RoutineScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
 
-  const [exercises, setExercises] = useState([]); // Estado para los ejercicios
+  const [exercises, setExercises] = useState([]);
 
   useEffect(() => {
-    // Obtener los ejercicios de la rutina al cargar la pantalla
     fetchExercises();
   }, []);
 
   const fetchExercises = async () => {
     try {
-      // Usar el id de la rutina que viene en los parámetros de la ruta
+      
       const routineId = route.params.id; 
-      const userId = route.params.userId;
       const response = await fetch(`${backendURL}/routines/${routineId}/exercises`); 
       const json = await response.json();
-      setExercises(json); // Asume que la API devuelve un array de ejercicios
+      setExercises(json);
     } catch (error) {
       console.error('Error fetching exercises:', error);
     }
@@ -49,7 +47,7 @@ const RoutineScreen = () => {
           <Pressable style={styles.exerciseItem} key={index}>
             <Image
               style={styles.exerciseImage}
-              source={{ uri: item.image }} // Asume que cada ejercicio tiene una imagen
+              source={{ uri: item.image }}
             />
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseName}>{item.name}</Text>
@@ -60,7 +58,7 @@ const RoutineScreen = () => {
       </ScrollView>
 
       <Pressable
-        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id,userId:route.params.userId })} // Pasar los ejercicios a la pantalla de entrenamiento
+        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id,userId:route.params.userId })}
         style={styles.startButton}
       >
         <Text style={styles.startButtonText}>EMPEZAR</Text>
