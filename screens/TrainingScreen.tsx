@@ -121,21 +121,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     backgroundColor: 'white',
   },
   image: {
     width: '100%',
-    height: 370,
+    height: '50%',
   },
   exerciseName: {
-    marginTop: 5,
+    marginTop: '3%',
     fontSize: 15,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   exerciseSets: {
-    marginTop: 30,
+    marginTop: '2%',
     fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     width: 150,
-    marginTop: 30,
+    marginTop: '2%',
     alignItems: 'center',
   },
   buttonText: {
@@ -158,10 +158,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: 50,
+    marginTop: '2%',
   },
   actionButton: {
-    backgroundColor: 'green',
+    backgroundColor: 'red',
     padding: 10,
     borderRadius: 20,
     marginHorizontal: 20,
