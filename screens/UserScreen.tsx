@@ -1,24 +1,42 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, Pressable } from 'react-native';
+import React, { useState, useCallback } from 'react';
 import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { backendURL } from '@/config';
 
-const UserStatsScreen = () => {
-  const [data, setData] = useState('');
-  const [user, setUser] = useState([]); // Inicializar como un array vacío
+const UserStatsScreen = ({route}) => {
+  const [user, setUser] = useState({});
+  var userId = route.params.id;
+  const navigation = useNavigation();
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   const fetchData = async () => {
     try {
-      const response = await fetch('http://192.168.0.117:3000/users/1');
+      const response = await fetch(`${backendURL}/users/${userId}`);
       const json = await response.json();
-      setUser(json); // Asumiendo que json es un array de usuarios
+      setUser(json);
       console.log(json);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
+  };
+
+  const handleLogout = () => {
+    userId = null; 
+    console.log(userId);
+    navigation.navigate('Login'); 
+  };
+
+  const formatTime = (seconds) => {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -26,31 +44,36 @@ const UserStatsScreen = () => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Image 
           style={styles.profilePicture} 
-          source={{ uri: 'https://www.w3schools.com/w3images/avatar2.png' }} 
+          source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg' }} 
         />
         
-        <Text style={styles.userName}>{`${user.nombre} ${user.apellido}`}</Text> 
+        <Text style={styles.userName}>{`${user.nombre || ''} ${user.apellido || ''}`}</Text> 
 
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
             <MaterialIcons name="fitness-center" size={36} color="#4CAF50" />
-            <Text style={styles.statNumber}>{`${user.entrenamientos}`}</Text>
-            <Text style={styles.statLabel}>Entrenamientos</Text>
+            <Text style={styles.statNumber}>{`${user.entrenamientos || 0}`}</Text>
+            <Text style={styles.statLabel}>Ejercicios Realizados</Text>
           </View>
 
           <View style={styles.statCard}>
             <FontAwesome5 name="fire" size={36} color="#F44336" />
-            <Text style={styles.statNumber}>{`${user.calorias}`}</Text>
+            <Text style={styles.statNumber}>{`${user.calorias || 0}`}</Text>
             <Text style={styles.statLabel}>Calorías Quemadas</Text>
           </View>
 
           <View style={styles.statCard}>
             <Ionicons name="time" size={36} color="#2196F3" />
-            <Text style={styles.statNumber}>{`${user.minutos}`}</Text>
-            <Text style={styles.statLabel}>Minutos</Text>
+            {/* Mostrar el tiempo formateado desde la base de datos (en segundos) */}
+            <Text style={styles.statNumber}>{formatTime(user.tiempo || 0)}</Text>
+            <Text style={styles.statLabel}>Tiempo De Entrenamiento</Text>
           </View>
         </View>
 
+        {/* Botón de cerrar sesión */}
+        <Pressable style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
+        </Pressable>
 
       </ScrollView>
     </SafeAreaView>
@@ -112,7 +135,17 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center',
   },
+  logoutButton: {
+    backgroundColor: '#FF3B30',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginTop: 30,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
-
-
 

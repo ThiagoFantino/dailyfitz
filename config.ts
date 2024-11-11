@@ -1,0 +1,1 @@
+export const backendURL = process.env.EXPO_PUBLIC_BACKEND_URL as string
