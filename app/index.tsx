@@ -6,7 +6,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function App() {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#246EE9" />
       <StackNavigator />
     </SafeAreaView>
   );
@@ -16,6 +15,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+    position: 'absolute',
+top: 0,
+left: 0,
+right: 0,
+bottom: 0,
   },
 });
 
