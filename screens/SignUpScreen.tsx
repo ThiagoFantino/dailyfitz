@@ -1,14 +1,17 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView,TextInput, Pressable } from 'react-native';
 import React, { useState } from 'react';
+import {backendURL} from '@/config'
+import { useNavigation } from '@react-navigation/native'
 
 interface SignUpScreenProps {
-  onFormToggle: () => void;
+  onFormToggle?: () => void;
 }
 
 const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
 
-  const [name, setName] = useState('');
-  const [surname, setSurname] = useState('');
+  const navigation = useNavigation();
+  const [nombre, setName] = useState('');
+  const [apellido, setSurname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -18,19 +21,70 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   const [passwordError, setPasswordError] = useState('');
 
   const [passwordView, setPasswordView] = useState(true);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const passwordViewFlip=()=>{
     setPasswordView(!passwordView);
   }
 
-  function signUpRequest(){
-    (name.length<=0)?setNameError("Debe ingresar un nombre."):setNameError(testProfileText(name));
-    (surname.length<=0)?setSurnameError("Debe ingresar un apellido."):setSurnameError(testProfileText(surname));
-    (email.length<=0)?setEmailError("Debe ingresar un email."):setEmailError(testEmail(email));
-    (password.length<=0)?setPasswordError("Debe ingresar una contraseña."):setPasswordError(testPassword(password));
-    if (name===surname && surname===email && email===password){
+  function signUpRequest() {
+    
+    if (nombre.length <= 0) {
+      setNameError("Debe ingresar un nombre.");
+    } else {
+      setNameError(testProfileText(nombre));
+    }
+    
+    if (apellido.length <= 0) {
+      setSurnameError("Debe ingresar un apellido.");
+    } else {
+      setSurnameError(testProfileText(apellido));
+    }
+  
+    if (email.length <= 0) {
+      setEmailError("Debe ingresar un email.");
+    } else {
+      setEmailError(testEmail(email));
+    }
+  
+    if (password.length <= 0) {
+      setPasswordError("Debe ingresar una contraseña.");
+    } else {
+      setPasswordError(testPassword(password));
+    }
+  
+    if (!nameError && !surnameError && !emailError && !passwordError) {
+      const userData = {
+        nombre,
+        apellido,
+        calorias: 0,
+        entrenamientos: 0,
+        tiempo: 0,
+        email,
+        password,
+      };
+  
+      fetch(`${backendURL}/users/signup`, { 
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success:', data);
+          setSuccessMessage('¡Cuenta creada con éxito!'); 
+          setTimeout(() => {
+            navigation.navigate('Login'); 
+          }, 3000); 
+        })
+        .catch((error) => {
+          console.error('Error:', error);
+        });
     }
   }
+  
 
   function testRegexWithAdvice(regex:RegExp,error_message:string,input_value:string){
     return (!regex.test(input_value)) ? error_message : "";
@@ -110,10 +164,16 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         <View style={styles.loginTittleContainer}>        
           <Text style={styles.loginTittleText}>Registro de usuario</Text> 
         </View>
+
+        {successMessage ? (
+          <View style={styles.successMessageContainer}>
+            <Text style={styles.successMessage}>{successMessage}</Text>
+          </View>
+        ) : null}
         <View>
           <TextInput
             style={styles.input}
-            value={name}
+            value={nombre}
             onChangeText={changeName}
             placeholder='Ingrese su nombre'
             placeholderTextColor={"#808080"}
@@ -125,7 +185,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         <View>
           <TextInput
             style={styles.input}
-            value={surname}
+            value={apellido}
             onChangeText={changeSurname}
             placeholder='Ingrese su apellido'
             placeholderTextColor={"#808080"}
@@ -165,8 +225,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
           <Text style={styles.inputErrorMenssage}>{passwordError}</Text>
         </View>
         <View>
-          <Pressable style={styles.changeFormButton}          
-          onPress={onFormToggle}
+          <Pressable
+            style={styles.changeFormButton}
+            onPress={() => navigation.navigate('Login')} 
           >
             <Text style={styles.changeFormButtonText}>Ingresar</Text>
           </Pressable>
@@ -209,7 +270,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10, // Espacio debajo del texto
+    marginBottom: 10, 
   },
   headerText: {
     fontSize: 20,
@@ -319,6 +380,15 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 18,
     fontWeight: '600',
+  },
+  successMessageContainer: {
+    marginBottom: 15,
+  },
+  successMessage: {
+    color: 'green',
+    fontSize: 16,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   passwordDisplayIcon: {
       width: '100%',

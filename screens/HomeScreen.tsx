@@ -2,14 +2,15 @@ import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
 import React from 'react';
 import RoutinesCards from '@/components/RoutinesCards';
 
-const HomeScreen = () => {
+const HomeScreen = ({ route }) => {
+  var userId = route.params.id;
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
         <Text style={styles.title}>DAILY FITZ</Text>
       </View>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <RoutinesCards />
+        <RoutinesCards userId={userId}/>
       </ScrollView>
     </SafeAreaView>
   );

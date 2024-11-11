@@ -1,9 +1,10 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView,TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, TextInput, Pressable, Alert } from 'react-native';
 import React, { useState } from 'react';
-
+import { useNavigation } from '@react-navigation/native';
+import {backendURL} from '@/config'
 
 interface LoginScreenProps {
-  onFormToggle: () => void;
+  onFormToggle?: () => void;
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
@@ -11,46 +12,75 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  
-
-
   const [passwordView, setPasswordView] = useState(true);
+  const navigation = useNavigation();
 
-  const passwordViewFlip=()=>{
+  const passwordViewFlip = () => {
     setPasswordView(!passwordView);
-  }
+  };
 
-  // Se debe consultar a la base de datos si la informacion ingresada corresponde a la de un usuario registrado
-  // Primero se realiza un prerevision de los datos ingresados antes de consultar a la base de datos
-  function loginRequest(){
-    let first_advice_email=(email.length>0) ? testInput(/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/,"Error en el email ingresado.",email) : "Email no ingresado.";
-    (first_advice_email!=="")?setEmailError(first_advice_email):setEmailError("");
-    let first_advice_password=(password.length>0) ? testInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/,"Error en la contraseña ingresada.",password) : "Email no ingresado.";
-    (first_advice_password!=="")?setPasswordError(first_advice_password):setPasswordError("");
-  }
+  const loginRequest = async () => {
+    let first_advice_email = email.length > 0
+      ? testInput(/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, "Error en el email ingresado.", email)
+      : "Email no ingresado.";
+    first_advice_email !== "" ? setEmailError(first_advice_email) : setEmailError("");
+  
+    let first_advice_password = password.length > 0
+      ? testInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/, "Error en la contraseña ingresada.", password)
+      : "Contraseña no ingresada.";
+    first_advice_password !== "" ? setPasswordError(first_advice_password) : setPasswordError("");
+  
+    if (first_advice_email === "" && first_advice_password === "") {
+      try {
+        const response = await fetch(`${backendURL}/users/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
+          }),
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          console.log('Login exitoso');
+          const id = data.userId;
 
-
-
-  function changeEmail(input: string){
+          setEmail(''); 
+          setPassword('');
+          
+          navigation.navigate("Home",{ id:id });
+        } else {
+          Alert.alert('Error', data.error || 'Error al iniciar sesión');
+        }
+      } catch (error) {
+        console.error('Error al realizar el login:', error);
+        Alert.alert('Error', 'Hubo un problema con el login');
+      }
+    }
+  };
+  
+  
+  const changeEmail = (input: string) => {
     setEmail(input);
     setEmailError("");
-  }
+  };
 
-
-  function changePassword(input: string){
+  const changePassword = (input: string) => {
     setPassword(input);
     setPasswordError("");
-  }
+  };
 
-  function testInput(regex: RegExp,advice: string,input_password: string){
-    if (!regex.test(input_password)){
+  const testInput = (regex: RegExp, advice: string, input_password: string) => {
+    if (!regex.test(input_password)) {
       return advice;
     } else {
       return "";
     }
-  }
-
-
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -58,8 +88,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>DAILY FITZ</Text>
         </View>
-        <View style={styles.loginTittleContainer}>        
-          <Text style={styles.loginTittleText}>Ingreso de usuario</Text> 
+        <View style={styles.loginTittleContainer}>
+          <Text style={styles.loginTittleText}>Ingreso de usuario</Text>
         </View>
         <View>
           <TextInput
@@ -75,34 +105,37 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
         </View>
         <View>
           <TextInput
-            style={styles.inputPassword}            
+            style={styles.inputPassword}
             value={password}
             onChangeText={changePassword}
             secureTextEntry={passwordView}
             placeholder='Contraseña'
             placeholderTextColor={"#808080"}
           />
-          <Pressable style={({ pressed }) => 
-            pressed ? styles.passwordDisplayButtonPressed : styles.passwordDisplayButton} 
-            onPress={passwordViewFlip}>
-            <Image style={styles.passwordDisplayIcon} source={{ uri: 'https://storage.needpix.com/rsynced_images/eye-2387853_1280.png' }}/>
+          <Pressable
+            style={({ pressed }) => pressed ? styles.passwordDisplayButtonPressed : styles.passwordDisplayButton}
+            onPress={passwordViewFlip}
+          >
+            <Image style={styles.passwordDisplayIcon} source={{ uri: 'https://storage.needpix.com/rsynced_images/eye-2387853_1280.png' }} />
           </Pressable>
-        </View>  
+        </View>
         <View style={styles.inputError}>
           <Text style={styles.inputErrorMenssage}>{passwordError}</Text>
         </View>
         <View>
-          <Pressable style={styles.changeFormButton}
-            onPress={onFormToggle}
-          >
-            <Text style={styles.changeFormButtonText}>Crear una cuenta</Text>
-          </Pressable>
-        </View>
+  <Pressable
+    style={styles.changeFormButton}
+    onPress={() => navigation.navigate('Register')} 
+  >
+    <Text style={styles.changeFormButtonText}>Crear una cuenta</Text>
+  </Pressable>
+</View>
+
         <View>
-          <Pressable style={({ pressed }) => 
-            pressed ? styles.submitButtonPressed : styles.submitButton
-            }
-            onPress={loginRequest}>
+          <Pressable
+            style={({ pressed }) => pressed ? styles.submitButtonPressed : styles.submitButton}
+            onPress={loginRequest}
+          >
             <Text style={styles.submitButtonText}>Enviar</Text>
           </Pressable>
         </View>

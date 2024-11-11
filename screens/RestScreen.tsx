@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Animated } from 'react-native';
+import { StyleSheet, Text, SafeAreaView, Animated } from 'react-native';
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
