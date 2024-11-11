@@ -4,10 +4,10 @@ import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useRoute, useNavigation } from '@react-navigation/native';
 import { backendURL } from '@/config';
 
-const UserStatsScreen = () => {
+const UserStatsScreen = ({route}) => {
   const [user, setUser] = useState({});
-  const route = useRoute();
-  const userId = global.userId;
+  var userId = route.params.id;
+  console.log(userId);
   const navigation = useNavigation(); // Obtener el objeto de navegación
 
   useFocusEffect(
@@ -28,7 +28,8 @@ const UserStatsScreen = () => {
   };
 
   const handleLogout = () => {
-    global.userId = null; // Limpiar el ID de usuario
+    userId = null; // Limpiar el ID de usuario
+    console.log(userId);
     navigation.navigate('Login'); // Redirigir a la pantalla de login
   };
 

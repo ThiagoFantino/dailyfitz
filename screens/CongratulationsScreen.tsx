@@ -7,12 +7,12 @@ import {backendURL} from '@/config'
 const CongratulationsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const userId = global.userId; // Extraer el userId de los parámetros
   
   // Obtener el tiempo total en minutos y el número de ejercicios completados desde los parámetros
   const totalTimeInMinutes = route.params?.totalTime || 0;
   const completedExercises = route.params?.completedExercises || 0;
   const totalCalories = route.params?.totalCalories || 0;
+  const userId = route.params?.userId || 0;
 
   // Función para convertir minutos en horas, minutos y segundos
   const formatTime = (totalMinutes: number) => {
@@ -63,7 +63,7 @@ const CongratulationsScreen = () => {
     if (userId) {
       postTotalMinutesAndWorkouts(userId, totalTimeInMinutes, completedExercises,totalCalories);
     }
-    navigation.navigate("Home"); // Navegar al inicio
+    navigation.navigate("Home",{id:userId}); // Navegar al inicio
   };
 
   return (

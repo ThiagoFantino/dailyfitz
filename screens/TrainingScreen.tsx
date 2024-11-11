@@ -1,7 +1,7 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, Alert, Platform } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { backendURL } from '@/config'
+import { backendURL } from '@/config';
 
 const TrainingScreen = () => {
   const route = useRoute();
@@ -14,6 +14,7 @@ const TrainingScreen = () => {
   const [completedExercises, setCompletedExercises] = useState(1); // Estado para contar los ejercicios completados
   const [totalCalories, setTotalCalories] = useState(0); // Estado para contar las calorías
   const id = route.params?.id; // Obtener el routineId de los parámetros de la ruta
+  const userId = route.params?.userId; // Obtener el userId de los parámetros de la ruta
   const current = exercises[index]; // Ejercicio actual
 
   // Inicia el temporizador y obtiene los ejercicios
@@ -48,7 +49,33 @@ const TrainingScreen = () => {
   const handleFinish = () => {
     const endTime = new Date(); // Registrar la hora de finalización
     const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60); // Calcular el tiempo total en minutos
-    navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories + current.calorias });
+    navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories + current.calorias, userId: userId });
+  };
+
+  const handleExit = () => {
+    if (Platform.OS === 'web') {
+      const confirmExit = window.confirm('Se perderá todo el progreso. ¿Está seguro de que desea salir?');
+      if (confirmExit) {
+        navigation.navigate("Home", { id: id });
+      }
+    } else {
+      Alert.alert(
+        'Advertencia',
+        'Se perderá todo el progreso. ¿Está seguro de que desea salir?',
+        [
+          {
+            text: 'Cancelar',
+            style: 'cancel',
+          },
+          {
+            text: 'Salir',
+            onPress: () => navigation.navigate("Home", { id: id }),
+            style: 'destructive',
+          },
+        ],
+        { cancelable: true }
+      );
+    }
   };
 
   return (
@@ -91,9 +118,7 @@ const TrainingScreen = () => {
 
           <View style={styles.buttonContainer}>
             <Pressable 
-              onPress={() => {
-                navigation.navigate("Home");
-              }} 
+              onPress={handleExit} 
               style={styles.actionButton}
             >
               <Text style={styles.actionButtonText}>SALIR</Text>
@@ -127,12 +152,6 @@ const styles = StyleSheet.create({
   exerciseSets: {
     marginTop: 30,
     fontSize: 20,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  timer: {
-    marginTop: 20,
-    fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
   },
@@ -170,3 +189,4 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+

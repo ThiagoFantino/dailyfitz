@@ -20,6 +20,7 @@ const RoutineScreen = () => {
     try {
       // Usar el id de la rutina que viene en los parámetros de la ruta
       const routineId = route.params.id; 
+      const userId = route.params.userId;
       const response = await fetch(`${backendURL}/routines/${routineId}/exercises`); 
       const json = await response.json();
       setExercises(json); // Asume que la API devuelve un array de ejercicios
@@ -59,7 +60,7 @@ const RoutineScreen = () => {
       </ScrollView>
 
       <Pressable
-        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id })} // Pasar los ejercicios a la pantalla de entrenamiento
+        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id,userId:route.params.userId })} // Pasar los ejercicios a la pantalla de entrenamiento
         style={styles.startButton}
       >
         <Text style={styles.startButtonText}>EMPEZAR</Text>

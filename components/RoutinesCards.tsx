@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {backendURL} from '@/config'
 
-const Routines = () => {
+const Routines = ({userId}) => {
   const navigation = useNavigation<any>();
   const [routines, setRoutines] = useState([]); // Estado para almacenar las rutinas
 
@@ -31,6 +31,7 @@ const Routines = () => {
             navigation.navigate("Routine", {
               image: item.image,
               id: item.id,
+              userId: userId,
             })
           }
           style={styles.pressable}

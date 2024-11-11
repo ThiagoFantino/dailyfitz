@@ -5,10 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import StackNavigator from "./StackNavigator";
 import UserScreen from "@/screens/UserScreen";
 import HomeScreen from "@/screens/HomeScreen";
+import { useRoute } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+  const route = useRoute();
+  const id = route.params?.id; // Obtener el routineId de los parámetros de la ruta
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -31,11 +34,13 @@ const TabNavigator = () => {
         name="Rutinas"
         component={HomeScreen}
         options={{ headerShown: false }}
+        initialParams={{ id: id }}
       />
       <Tab.Screen
         name="Perfil"
         component={UserScreen}
         options={{ headerShown: false }}
+        initialParams={{ id: id }}
       />
     </Tab.Navigator>
   );
