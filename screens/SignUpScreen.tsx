@@ -2,12 +2,11 @@ import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView,TextInput, Pres
 import React, { useState } from 'react';
 import {backendURL} from '@/config'
 import { useNavigation } from '@react-navigation/native'
+import LoadingOverlay from '../components/LoadingOverlay';
 
-interface SignUpScreenProps {
-  onFormToggle?: () => void;
-}
 
-const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
+
+const SignUpScreen = function() {
 
   const navigation = useNavigation();
   const [nombre, setName] = useState('');
@@ -27,8 +26,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
     setPasswordView(!passwordView);
   }
 
+  const [loading,setLoading]=useState(false);
+
   function signUpRequest() {
-    
     if (nombre.length <= 0) {
       setNameError("Debe ingresar un nombre.");
     } else {
@@ -54,6 +54,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
     }
   
     if (!nameError && !surnameError && !emailError && !passwordError) {
+      setLoading(true);
       const userData = {
         nombre,
         apellido,
@@ -81,7 +82,8 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         })
         .catch((error) => {
           console.error('Error:', error);
-        });
+        })
+        .finally(()=>setLoading(false));
     }
   }
   
@@ -157,6 +159,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {loading && <LoadingOverlay/>}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>DAILY FITZ</Text>

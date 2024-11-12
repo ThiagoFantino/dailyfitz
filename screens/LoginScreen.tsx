@@ -2,12 +2,11 @@ import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, TextInput, Pre
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {backendURL} from '@/config'
+import LoadingOverlay from '../components/LoadingOverlay';
 
-interface LoginScreenProps {
-  onFormToggle?: () => void;
-}
 
-const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
+
+const LoginScreen= function() {
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
   const [password, setPassword] = useState('');
@@ -18,6 +17,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
   const passwordViewFlip = () => {
     setPasswordView(!passwordView);
   };
+
+  const [loading,setLoading]=useState(false);
 
   const loginRequest = async () => {
     let first_advice_email = email.length > 0
@@ -31,7 +32,8 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
     first_advice_password !== "" ? setPasswordError(first_advice_password) : setPasswordError("");
   
     if (first_advice_email === "" && first_advice_password === "") {
-      try {
+      try {    
+        setLoading(true);
         const response = await fetch(`${backendURL}/users/login`, {
           method: 'POST',
           headers: {
@@ -59,7 +61,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
       } catch (error) {
         console.error('Error al realizar el login:', error);
         Alert.alert('Error', 'Hubo un problema con el login');
+      } finally {
+        setLoading(false);
       }
+      
     }
   };
   
@@ -84,6 +89,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {loading && <LoadingOverlay/>}
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>DAILY FITZ</Text>
