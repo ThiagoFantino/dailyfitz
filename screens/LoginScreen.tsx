@@ -54,7 +54,8 @@ const LoginScreen= function() {
           setEmail(''); 
           setPassword('');
           
-          navigation.navigate("Home",{ id:id });
+          setTimeout(()=>navigation.navigate("Home",{ id:id }),1000)
+      //    navigation.navigate("Home",{ id:id });
         } else {
           Alert.alert('Error', data.error || 'Error al iniciar sesión');
         }
