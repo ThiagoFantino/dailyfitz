@@ -1,7 +1,7 @@
 import React from 'react';
-import { ActivityIndicator, StyleSheet, View, Button } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-const loadingAnimation = () => {
+const loadingAnimation = function(){
   return (
       <View style={styles.overlay}>
         <View>
