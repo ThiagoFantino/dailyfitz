@@ -1,15 +1,16 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
-import {backendURL} from '@/config'
+import { backendURL } from '@/config';
 
 const RoutineScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
 
-  const [exercises, setExercises] = useState([]);
+  const [exercises, setExercises] = useState<any[]>([]);
+  const [loadingImages, setLoadingImages] = useState<any>({}); // Estado para controlar el loading de cada imagen
 
   useEffect(() => {
     fetchExercises();
@@ -17,16 +18,22 @@ const RoutineScreen = () => {
 
   const fetchExercises = async () => {
     try {
-      
-      const routineId = route.params.id; 
-      const response = await fetch(`${backendURL}/routines/${routineId}/exercises`); 
+      const routineId = route.params.id;
+      const response = await fetch(`${backendURL}/routines/${routineId}/exercises`);
       const json = await response.json();
       setExercises(json);
     } catch (error) {
       console.error('Error fetching exercises:', error);
     }
-};
+  };
 
+  const handleImageLoad = (id: string) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: false })); // Cambia el estado de carga para la imagen
+  };
+
+  const handleImageLoadStart = (id: string) => {
+    setLoadingImages((prev) => ({ ...prev, [id]: true })); // Marca la imagen como cargando
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,10 +52,21 @@ const RoutineScreen = () => {
 
         {exercises.map((item, index) => (
           <Pressable style={styles.exerciseItem} key={index}>
-            <Image
-              style={styles.exerciseImage}
-              source={{ uri: item.image }}
-            />
+            <View style={styles.imageContainer}>
+              {loadingImages[item.id] && (
+                <ActivityIndicator
+                  size="large"
+                  color="#0000ff"
+                  style={styles.loadingIndicator}
+                />
+              )}
+              <Image
+                style={styles.exerciseImage}
+                source={{ uri: item.image }}
+                onLoad={() => handleImageLoad(item.id)} // Cuando la imagen se carga, actualizar el estado
+                onLoadStart={() => handleImageLoadStart(item.id)} // Cuando la carga comienza
+              />
+            </View>
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseName}>{item.name}</Text>
               <Text style={styles.exerciseSets}>x{item.sets}</Text>
@@ -58,7 +76,7 @@ const RoutineScreen = () => {
       </ScrollView>
 
       <Pressable
-        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id,userId:route.params.userId })}
+        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id, userId: route.params.userId })}
         style={styles.startButton}
       >
         <Text style={styles.startButtonText}>EMPEZAR</Text>
@@ -88,9 +106,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  exerciseImage: {
+  imageContainer: {
+    position: 'relative',
     width: 90,
     height: 90,
+  },
+  loadingIndicator: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginLeft: -20,
+    marginTop: -20,
+  },
+  exerciseImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 10,
   },
   exerciseInfo: {
     marginLeft: 10,
@@ -120,5 +151,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
 
 
