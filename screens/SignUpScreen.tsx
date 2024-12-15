@@ -121,8 +121,8 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   }
 
   function testProfileText(input_password:string){
-    const length_exp=regexWithAdvice(/^.{1,}$/,"Error en la cantidad de letras.");
-    const words_exp=regexWithAdvice(/^[a-zA-Z]+( [a-zA-Z]+)*$/,"Error de escritura.");
+    const length_exp=regexWithAdvice(/^.{1,}$/,"El campo no puede estar vacío");
+    const words_exp=regexWithAdvice(/^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ' -]+$/,"Solo se permiten letras, espacios y caracteres como tildes, ñ, apóstrofes o guiones.");
     const regex_set=[length_exp,words_exp];
     return (testRegexWithAdviceSet(regex_set,input_password));
   }
@@ -134,8 +134,8 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   }
 
   function testEmail(input_password: string){
-    const length_exp=regexWithAdvice(/^.{1,}$/,"Error en la cantidad de digitos.");
-    const format_exp=regexWithAdvice(/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/,"El email no es valido.");
+    const length_exp=regexWithAdvice(/^.{1,}$/,"El campo no puede estar vacío");
+    const format_exp=regexWithAdvice(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/,"El email no es valido.");
     const regex_set=[length_exp,format_exp];
     return (testRegexWithAdviceSet(regex_set,input_password));
   }
@@ -148,11 +148,13 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
 
   function testPassword(input_password: string){
     const length_exp=regexWithAdvice(/^.{8,}$/,"Debe ingrear como minimo 8 caracteres.");
-    const uppercase_exp=regexWithAdvice(/[A-Z]/,"Debe incluir al menos una letra mayúscula.");
-    const lowercase_exp=regexWithAdvice(/[a-z]/,"Debe incluir al menos una letra minúscula.");
-    const number_exp=regexWithAdvice(/[0-9]/,"Debe incluir al menos un número.");
-    const regex_set=[uppercase_exp,lowercase_exp,number_exp,length_exp];
-    return (testRegexWithAdviceSet(regex_set,input_password));
+    const uppercase_exp=regexWithAdvice(/(?=.*[A-Z])/,"Debe incluir al menos una letra mayúscula.");
+    const lowercase_exp=regexWithAdvice(/(?=.*[a-z])/,"Debe incluir al menos una letra minúscula.");
+    const number_exp=regexWithAdvice(/(?=.*\d)/,"Debe incluir al menos un número.");
+    const special_char_exp = regexWithAdvice(/(?=.*[@$!%*?&])/,"Debe incluir al menos un carácter especial (@$!%*?&).");
+    const no_whitespace_exp = regexWithAdvice(/^\S*$/, "No se permiten espacios en blanco.");
+    const regex_set = [length_exp, uppercase_exp, lowercase_exp, number_exp, special_char_exp, no_whitespace_exp];
+    return testRegexWithAdviceSet(regex_set, input_password);
   }
 
   return (
