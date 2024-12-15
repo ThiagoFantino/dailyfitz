@@ -21,12 +21,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
 
   const loginRequest = async () => {
     let first_advice_email = email.length > 0
-      ? testInput(/^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/, "Error en el email ingresado.", email)
+      ? testInput(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "Error en el email ingresado.", email)
       : "Email no ingresado.";
     first_advice_email !== "" ? setEmailError(first_advice_email) : setEmailError("");
   
     let first_advice_password = password.length > 0
-      ? testInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/, "Error en la contraseña ingresada.", password)
+      ? testInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/, "Error en la contraseña ingresada.", password)
       : "Contraseña no ingresada.";
     first_advice_password !== "" ? setPasswordError(first_advice_password) : setPasswordError("");
   
