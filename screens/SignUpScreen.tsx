@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, TextInput, Pressable } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, TextInput, Pressable, Alert } from 'react-native';
 import React, { useState } from 'react';
 import { backendURL } from '@/config';
 import { useNavigation } from '@react-navigation/native';
@@ -75,14 +75,47 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         .then((data) => {
           console.log('Success:', data);
           setSuccessMessage('¡Cuenta creada con éxito!'); 
-          setTimeout(() => {
-            navigation.navigate('Login'); 
-          }, 3000); 
+          
+          loginAfterSignUp(email,password)
         })
         .catch((error) => {
           console.error('Error:', error);
         });
     }
+  }
+
+  function loginAfterSignUp(email, password) {
+    // Realiza la solicitud de login después de un registro exitoso
+    fetch(`${backendURL}/users/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        password: password,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data && data.userId) {  // Verificamos si la respuesta contiene userId
+          console.log('Login exitoso');
+          const id = data.userId;
+  
+          // Limpiar campos
+          setEmail('');
+          setPassword('');
+  
+          // Redirigir al home
+          navigation.navigate("Home", { id: id });
+        } else {
+          Alert.alert('Error', data.error || 'Error al iniciar sesión');
+        }
+      })
+      .catch((error) => {
+        console.error('Error al realizar el login:', error);
+        Alert.alert('Error', 'Hubo un problema con el login');
+      });
   }
   
 
