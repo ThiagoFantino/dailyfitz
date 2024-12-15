@@ -64,7 +64,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         password,
       };
   
-      fetch(`${backendURL}/users/signup`, { 
+      fetch(`${backendURL}/users/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -73,10 +73,14 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
       })
         .then((response) => response.json())
         .then((data) => {
-          console.log('Success:', data);
-          setSuccessMessage('¡Cuenta creada con éxito!'); 
-          
-          loginAfterSignUp(email,password)
+          if (data.error && data.error === 'El email ya está registrado.') {
+            // Si el error es que el email ya está registrado
+            setEmailError(data.error); // Mostrar el mensaje de error
+          } else {
+            console.log('Success:', data);
+            setSuccessMessage('¡Cuenta creada con éxito!');
+            loginAfterSignUp(email, password);
+          }
         })
         .catch((error) => {
           console.error('Error:', error);
