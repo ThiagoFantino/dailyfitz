@@ -43,7 +43,7 @@ const RestScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <Animated.Image
-        source={{ uri: "https://www.sport.es/labolsadelcorredor/wp-content/uploads/2021/02/entrenamiento.jpeg" }}
+        source={{ uri: "https://i.blogs.es/b395b9/descargar-1-/1200_800.webp" }}
         style={[styles.image, { transform: [{ scale: scaleValue }] }]}
         resizeMode="cover"
       />
