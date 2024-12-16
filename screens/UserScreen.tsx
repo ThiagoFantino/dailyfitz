@@ -4,7 +4,7 @@ import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { backendURL } from '@/config';
 
-const UserStatsScreen = ({route}) => {
+const UserStatsScreen = ({ route }) => {
   const [user, setUser] = useState({});
   var userId = route.params.id;
   const navigation = useNavigation();
@@ -30,6 +30,10 @@ const UserStatsScreen = ({route}) => {
     userId = null; 
     console.log(userId);
     navigation.navigate('Login'); 
+  };
+
+  const navigateToSettings = () => {
+    navigation.navigate('Settings', { id: userId }); // Pasa el userId como parámetro
   };
 
   const formatTime = (seconds) => {
@@ -75,12 +79,15 @@ const UserStatsScreen = ({route}) => {
           <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
         </Pressable>
 
+        {/* Botón para ir a la pantalla de configuración */}
+        <Pressable style={styles.settingsButton} onPress={navigateToSettings}>
+          <Text style={styles.settingsButtonText}>Ir a Configuración</Text>
+        </Pressable>
+
       </ScrollView>
     </SafeAreaView>
   );
 };
-
-export default UserStatsScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -147,5 +154,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  settingsButton: {
+    backgroundColor: '#4CAF50',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  settingsButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
+
+export default UserStatsScreen;
+
 

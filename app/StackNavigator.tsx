@@ -8,6 +8,7 @@ import TabNavigator from "@/app/TabNavigator";
 import CongratulationsScreen from "@/screens/CongratulationsScreen";
 import LoginScreen from "@/screens/LoginScreen";
 import SignUpScreen from "@/screens/SignUpScreen";
+import SettingsScreen from "@/screens/SettingsScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -48,6 +49,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Congratulations"
           component={CongratulationsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
