@@ -45,11 +45,18 @@ const SettingsScreen = ({ route, navigation }) => {
         }),
       });
 
+      const data = await response.json();
+
       if (response.ok) {
         Alert.alert('Éxito', 'Los datos se han actualizado correctamente');
         navigation.goBack(); // Volver a la pantalla anterior
       } else {
-        Alert.alert('Error', 'Hubo un problema al actualizar los datos');
+        // Manejar errores del servidor, como el email ya registrado
+        if (data.error === 'El email ya está registrado.') {
+          Alert.alert('Error', data.error); // Mostrar el error del email ya registrado
+        } else {
+          Alert.alert('Error', 'Hubo un problema al actualizar los datos');
+        }
       }
     } catch (error) {
       console.error('Error updating user data:', error);
