@@ -9,6 +9,7 @@ import CongratulationsScreen from "@/screens/CongratulationsScreen";
 import LoginScreen from "@/screens/LoginScreen";
 import SignUpScreen from "@/screens/SignUpScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
+import ProfilePictureScreen from "@/screens/ProfilePictureScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -54,6 +55,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="Settings"
           component={SettingsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ProfilePicture"
+          component={ProfilePictureScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

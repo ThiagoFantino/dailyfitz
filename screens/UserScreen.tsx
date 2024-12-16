@@ -36,6 +36,10 @@ const UserStatsScreen = ({ route }) => {
     navigation.navigate('Settings', { id: userId }); // Pasa el userId como parámetro
   };
 
+  const navigateToChangeProfilePicture = () => {
+    navigation.navigate('ProfilePicture', { id: userId }); // Redirige a la pantalla de configuración de foto
+  };
+
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -48,7 +52,7 @@ const UserStatsScreen = ({ route }) => {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Image 
           style={styles.profilePicture} 
-          source={{ uri: 'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg' }} 
+          source={{ uri: user.profilePicture }} 
         />
         
         <Text style={styles.userName}>{`${user.nombre || ''} ${user.apellido || ''}`}</Text> 
@@ -82,6 +86,11 @@ const UserStatsScreen = ({ route }) => {
         {/* Botón para ir a la pantalla de configuración */}
         <Pressable style={styles.settingsButton} onPress={navigateToSettings}>
           <Text style={styles.settingsButtonText}>Ir a Configuración</Text>
+        </Pressable>
+
+        {/* Nuevo botón para cambiar la foto de perfil */}
+        <Pressable style={styles.changeProfilePictureButton} onPress={navigateToChangeProfilePicture}>
+          <Text style={styles.changeProfilePictureButtonText}>Cambiar Foto de Perfil</Text>
         </Pressable>
 
       </ScrollView>
@@ -166,8 +175,21 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  changeProfilePictureButton: {
+    backgroundColor: '#FF9800',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  changeProfilePictureButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
 
 export default UserStatsScreen;
+
 
 

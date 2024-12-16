@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, ScrollView, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from 'expo-router';
@@ -27,13 +27,25 @@ const RoutineScreen = () => {
     }
   };
 
-  const handleImageLoad = (id: string) => {
-    setLoadingImages((prev) => ({ ...prev, [id]: false })); // Cambia el estado de carga para la imagen
-  };
+  // Función para manejar la carga de imagen (cuando empieza la carga)
+  const handleImageLoadStart = useCallback((id: string) => {
+    setLoadingImages((prev) => {
+      if (prev[id] !== true) { // Verifica si ya está en el estado correcto
+        return { ...prev, [id]: true };
+      }
+      return prev;
+    });
+  }, []);
 
-  const handleImageLoadStart = (id: string) => {
-    setLoadingImages((prev) => ({ ...prev, [id]: true })); // Marca la imagen como cargando
-  };
+  // Función para manejar cuando la imagen ha sido cargada
+  const handleImageLoad = useCallback((id: string) => {
+    setLoadingImages((prev) => {
+      if (prev[id] !== false) { // Verifica si la imagen ya fue marcada como cargada
+        return { ...prev, [id]: false };
+      }
+      return prev;
+    });
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,8 +62,8 @@ const RoutineScreen = () => {
           color="white"
         />
 
-        {exercises.map((item, index) => (
-          <Pressable style={styles.exerciseItem} key={index}>
+        {exercises.map((item) => (
+          <Pressable style={styles.exerciseItem} key={item.id}>
             <View style={styles.imageContainer}>
               {loadingImages[item.id] && (
                 <ActivityIndicator
@@ -151,6 +163,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
 
 
 
