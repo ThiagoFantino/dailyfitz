@@ -121,7 +121,7 @@ const UserStatsScreen = ({ route }) => {
     const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/); // Coincide con el formato YYYY-MM-DD
     if (match) {
       const [, year, month, day] = match; // Extrae las partes de la fecha
-      return `${day}/${parseInt(month, 10)}/${year}`; // El mes se convierte a número, eliminando el 0 si es menor que 10
+      return `${parseInt(day, 10)}/${parseInt(month, 10)}/${year}`; // El mes se convierte a número, eliminando el 0 si es menor que 10
     }
     return date; // Si no coincide, retorna la fecha original
   };
