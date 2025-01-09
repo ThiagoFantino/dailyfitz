@@ -75,6 +75,14 @@ const Routines = ({ userId }) => {
           <Text style={styles.text}>{item.name}</Text>
         </Pressable>
       ))}
+
+      {/* Botón para crear una rutina personalizada */}
+      <Pressable
+        onPress={() => navigation.navigate("CustomRoutine", { userId })}
+        style={styles.createRoutineButton}
+      >
+        <Text style={styles.createRoutineButtonText}>Crear Rutina Personalizada</Text>
+      </Pressable>
     </ScrollView>
   );
 };
@@ -118,5 +126,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     left: 20,
     top: 20,
+  },
+  createRoutineButton: {
+    marginTop: 20,
+    backgroundColor: "#4CAF50",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    width: "90%",
+  },
+  createRoutineButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
