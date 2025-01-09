@@ -4,15 +4,15 @@ import { useNavigation } from "@react-navigation/native";
 import { backendURL } from "@/config";
 
 const CustomRoutineScreen = ({ route, navigation }) => {
-  const { userId } = route.params; // Obtener el userId desde los parámetros
-  const [exercises, setExercises] = useState([]); // Estado para los ejercicios
-  const [selectedExercises, setSelectedExercises] = useState([]); // Estado para los ejercicios seleccionados
-  const [sets, setSets] = useState(""); // Estado para sets
-  const [reps, setReps] = useState(""); // Estado para repeticiones
-  const [loadingExercises, setLoadingExercises] = useState(true); // Estado para saber si estamos cargando los ejercicios
-  const [selectedImage, setSelectedImage] = useState(''); // Estado para la imagen seleccionada para la rutina
+  const { userId } = route.params;
+  const [exercises, setExercises] = useState([]);
+  const [selectedExercises, setSelectedExercises] = useState([]);
+  const [sets, setSets] = useState("");
+  const [reps, setReps] = useState("");
+  const [loadingExercises, setLoadingExercises] = useState(true);
+  const [selectedImage, setSelectedImage] = useState("");
+  const [routineName, setRoutineName] = useState(""); // Estado para el nombre de la rutina
 
-  // Función para obtener los ejercicios desde el servidor
   useEffect(() => {
     fetch(`${backendURL}/routines/exercises`)
       .then((response) => response.json())
@@ -26,29 +26,31 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       });
   }, []);
 
-  // Manejo de la selección de un ejercicio
   const handleSelectExercise = (exercise) => {
     if (!sets || !reps) {
       alert("Por favor, ingresa sets y reps para el ejercicio.");
       return;
     }
 
-    // Asegurarnos de enviar sets y reps como números enteros
     setSelectedExercises((prevState) => [
       ...prevState,
       { ...exercise, sets: parseInt(sets, 10), reps: parseInt(reps, 10) },
     ]);
-    setSets(""); // Limpiar sets
-    setReps(""); // Limpiar reps
+    setSets("");
+    setReps("");
   };
 
-  // Guardar rutina personalizada
   const handleSaveRoutine = () => {
+    if (!routineName.trim()) {
+      alert("Por favor, ingresa un nombre para la rutina.");
+      return;
+    }
+
     const routineData = {
-      name: "Rutina Personalizada", // Aquí puedes dejar que el usuario ingrese un nombre
+      name: routineName, // Utilizamos el nombre ingresado
       userId: userId,
-      exercises: selectedExercises, // Los ejercicios seleccionados
-      image: selectedImage || "", // La imagen seleccionada para la rutina
+      exercises: selectedExercises,
+      image: selectedImage || "",
     };
 
     fetch(`${backendURL}/routines/create-custom-routine`, {
@@ -61,21 +63,19 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Rutina guardada:", data);
-        navigation.navigate("Home"); // Redirigir a la página principal
+        navigation.navigate("Home");
       })
       .catch((error) => console.error("Error saving routine:", error));
   };
 
-  // Mostrar un indicador de carga mientras se obtienen los ejercicios
   if (loadingExercises) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
-  // Imágenes para la rutina
   const routineImages = [
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lionel_Messi_WC2022.jpg/640px-Lionel_Messi_WC2022.jpg',
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cristiano_Ronaldo_2018.jpg/400px-Cristiano_Ronaldo_2018.jpg',
-    'https://images.ctfassets.net/3mv54pzvptwz/55YLwKPDnRXkqMBITRpWbC/0c2aefc04afa455c20e9ca0d209698e0/53174188191_42d4c831ae_o.jpg',
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lionel_Messi_WC2022.jpg/640px-Lionel_Messi_WC2022.jpg",
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cristiano_Ronaldo_2018.jpg/400px-Cristiano_Ronaldo_2018.jpg",
+    "https://images.ctfassets.net/3mv54pzvptwz/55YLwKPDnRXkqMBITRpWbC/0c2aefc04afa455c20e9ca0d209698e0/53174188191_42d4c831ae_o.jpg",
   ];
 
   const handleImageSelect = (imageUrl) => {
@@ -92,6 +92,13 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Crear Rutina Personalizada</Text>
+
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre de la rutina"
+        value={routineName}
+        onChangeText={setRoutineName}
+      />
 
       <Text style={styles.subtitle}>Selecciona los ejercicios</Text>
       <FlatList
@@ -128,7 +135,9 @@ const CustomRoutineScreen = ({ route, navigation }) => {
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item }) => (
           <View style={styles.selectedExercise}>
-            <Text>{item.name} - Sets: {item.sets} - Reps: {item.reps}</Text>
+            <Text>
+              {item.name} - Sets: {item.sets} - Reps: {item.reps}
+            </Text>
           </View>
         )}
       />
