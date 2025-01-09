@@ -5,8 +5,8 @@ import { backendURL } from '@/config';
 
 const Routines = ({ userId }) => {
   const navigation = useNavigation();
-  const [routines, setRoutines] = useState<any[]>([]);
-  const [loadingImages, setLoadingImages] = useState<any>({}); // Estado de carga por imagen
+  const [routines, setRoutines] = useState([]);
+  const [loadingImages, setLoadingImages] = useState({}); // Estado de carga por imagen
 
   const fetchData = async () => {
     try {
@@ -18,7 +18,6 @@ const Routines = ({ userId }) => {
     }
   };
 
-  // Ejecuta fetchData cada vez que se enfoca la pantalla
   useFocusEffect(
     useCallback(() => {
       fetchData();
@@ -26,17 +25,23 @@ const Routines = ({ userId }) => {
   );
 
   const handleImageLoadStart = useCallback((id: string) => {
-    setLoadingImages(prev => ({
-      ...prev,
-      [id]: true,
-    }));
+    setLoadingImages(prev => {
+      if (prev[id] === true) return prev; // Si ya está en "cargando", no hacer nada
+      return {
+        ...prev,
+        [id]: true,
+      };
+    });
   }, []);
 
   const handleImageLoad = useCallback((id: string) => {
-    setLoadingImages(prev => ({
-      ...prev,
-      [id]: false,
-    }));
+    setLoadingImages(prev => {
+      if (prev[id] === false) return prev; // Si ya está "cargado", no hacer nada
+      return {
+        ...prev,
+        [id]: false,
+      };
+    });
   }, []);
 
   return (
@@ -72,7 +77,6 @@ const Routines = ({ userId }) => {
         </Pressable>
       ))}
 
-      {/* Botón para crear una rutina personalizada */}
       <Pressable
         onPress={() => navigation.navigate("CustomRoutine", { userId })}
         style={styles.createRoutineButton}
@@ -137,4 +141,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
