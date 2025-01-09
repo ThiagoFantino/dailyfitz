@@ -34,7 +34,7 @@ const TrainingScreen = () => {
   const handleFinish = () => {
     const endTime = new Date();
     const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60); 
-    navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories + current.calorias, userId: userId });
+    navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories + current.calories, userId: userId });
   };
 
   const handleExit = () => {
@@ -74,13 +74,13 @@ const TrainingScreen = () => {
           />
           <Text style={styles.exerciseName}>{current.name}</Text>
           <Text style={styles.exerciseSets}>x{current.sets}</Text>
-          <Text style={styles.exerciseSets}>Quema {current.calorias} calorias</Text>
+          <Text style={styles.exerciseSets}>Quema {current.calories} calorias</Text>
 
           {index + 1 >= exercises.length ? (
             <Pressable
               onPress={() => {
                 setCompletedExercises(completedExercises + 1); 
-                setTotalCalories(totalCalories + current.calorias); 
+                setTotalCalories(totalCalories + current.calories); 
                 handleFinish();
               }}
               style={styles.button}
@@ -91,7 +91,7 @@ const TrainingScreen = () => {
             <Pressable
               onPress={() => {
                 setCompletedExercises(completedExercises + 1); 
-                setTotalCalories(totalCalories + current.calorias);
+                setTotalCalories(totalCalories + current.calories);
                 navigation.navigate("Rest");
                 setTimeout(() => setIndex(index + 1), 2000);
               }}

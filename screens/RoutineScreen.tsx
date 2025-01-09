@@ -23,6 +23,7 @@ const RoutineScreen = () => {
       const response = await fetch(`${backendURL}/routines/${routineId}/exercises`);
       const data = await response.json();
       console.log('Ejercicios de la rutina:', data); 
+  
       // Transformamos los datos para manejar `RoutineExercise` correctamente
       const formattedExercises = data.map((item: any) => ({
         id: item.id,
@@ -30,15 +31,17 @@ const RoutineScreen = () => {
         image: item.image,
         sets: item.sets,
         reps: item.reps,
+        calories: item.calories, // Incluimos el campo de calorías
       }));
-
-       setRoutineExercises(formattedExercises);
+  
+      setRoutineExercises(formattedExercises);
     } catch (error) {
       console.error('Error fetching routine exercises:', error);
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleImageLoadStart = useCallback((id: string) => {
     // Solo actualiza si el valor no está ya en `true`
