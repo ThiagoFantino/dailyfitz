@@ -1,17 +1,12 @@
 import { StyleSheet, Text, Pressable, Image, ScrollView, View, ActivityIndicator } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigation } from "@react-navigation/native";
+import React, { useState, useCallback } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { backendURL } from '@/config';
 
 const Routines = ({ userId }) => {
   const navigation = useNavigation();
   const [routines, setRoutines] = useState<any[]>([]);
   const [loadingImages, setLoadingImages] = useState<any>({}); // Estado de carga por imagen
-
-  // Función para obtener los datos de las rutinas
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   const fetchData = async () => {
     try {
@@ -23,24 +18,25 @@ const Routines = ({ userId }) => {
     }
   };
 
-  // Función de manejo de inicio de carga de imagen
+  // Ejecuta fetchData cada vez que se enfoca la pantalla
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
+
   const handleImageLoadStart = useCallback((id: string) => {
-    setLoadingImages(prev => {
-      if (prev[id] !== true) {
-        return { ...prev, [id]: true }; // Solo actualiza si no está en el estado correcto
-      }
-      return prev;
-    });
+    setLoadingImages(prev => ({
+      ...prev,
+      [id]: true,
+    }));
   }, []);
 
-  // Función de manejo de fin de carga de imagen
   const handleImageLoad = useCallback((id: string) => {
-    setLoadingImages(prev => {
-      if (prev[id] !== false) {
-        return { ...prev, [id]: false }; // Solo actualiza si no está en el estado correcto
-      }
-      return prev;
-    });
+    setLoadingImages(prev => ({
+      ...prev,
+      [id]: false,
+    }));
   }, []);
 
   return (
@@ -68,8 +64,8 @@ const Routines = ({ userId }) => {
             <Image
               style={styles.image}
               source={{ uri: item.image }}
-              onLoadStart={() => handleImageLoadStart(item.id)} // Cuando empieza la carga
-              onLoad={() => handleImageLoad(item.id)} // Cuando termina la carga
+              onLoadStart={() => handleImageLoadStart(item.id)}
+              onLoad={() => handleImageLoad(item.id)}
             />
           </View>
           <Text style={styles.text}>{item.name}</Text>
@@ -141,3 +137,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
