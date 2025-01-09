@@ -9,51 +9,70 @@ const RoutineScreen = () => {
   const route = useRoute();
   const navigation = useNavigation<any>();
 
-  const [exercises, setExercises] = useState<any[]>([]);
-  const [loadingImages, setLoadingImages] = useState<any>({}); // Estado para controlar el loading de cada imagen
+  const [routineExercises, setRoutineExercises] = useState<any[]>([]);
+  const [loadingImages, setLoadingImages] = useState<any>({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchExercises();
+    fetchRoutineExercises();
   }, []);
 
-  const fetchExercises = async () => {
+  const fetchRoutineExercises = async () => {
     try {
       const routineId = route.params.id;
       const response = await fetch(`${backendURL}/routines/${routineId}/exercises`);
-      const json = await response.json();
-      setExercises(json);
+      const data = await response.json();
+      console.log('Ejercicios de la rutina:', data); 
+      // Transformamos los datos para manejar `RoutineExercise` correctamente
+      const formattedExercises = data.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        image: item.image,
+        sets: item.sets,
+        reps: item.reps,
+      }));
+
+       setRoutineExercises(formattedExercises);
     } catch (error) {
-      console.error('Error fetching exercises:', error);
+      console.error('Error fetching routine exercises:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Función para manejar la carga de imagen (cuando empieza la carga)
   const handleImageLoadStart = useCallback((id: string) => {
+    // Solo actualiza si el valor no está ya en `true`
     setLoadingImages((prev) => {
-      if (prev[id] !== true) { // Verifica si ya está en el estado correcto
+      if (!prev[id]) {
         return { ...prev, [id]: true };
       }
       return prev;
     });
   }, []);
-
-  // Función para manejar cuando la imagen ha sido cargada
+  
   const handleImageLoad = useCallback((id: string) => {
+    // Solo actualiza si el valor no está ya en `false`
     setLoadingImages((prev) => {
-      if (prev[id] !== false) { // Verifica si la imagen ya fue marcada como cargada
+      if (prev[id]) {
         return { ...prev, [id]: false };
       }
       return prev;
     });
   }, []);
+  
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#246EE9" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <Image
-          style={styles.image}
-          source={{ uri: route.params.image }}
-        />
+        <Image style={styles.image} source={{ uri: route.params.image }} />
         <Ionicons
           onPress={() => navigation.goBack()}
           style={styles.backIcon}
@@ -62,7 +81,7 @@ const RoutineScreen = () => {
           color="white"
         />
 
-        {exercises.map((item) => (
+        {routineExercises.map((item) => (
           <Pressable style={styles.exerciseItem} key={item.id}>
             <View style={styles.imageContainer}>
               {loadingImages[item.id] && (
@@ -75,20 +94,28 @@ const RoutineScreen = () => {
               <Image
                 style={styles.exerciseImage}
                 source={{ uri: item.image }}
-                onLoad={() => handleImageLoad(item.id)} // Cuando la imagen se carga, actualizar el estado
-                onLoadStart={() => handleImageLoadStart(item.id)} // Cuando la carga comienza
+                onLoad={() => handleImageLoad(item.id)}
+                onLoadStart={() => handleImageLoadStart(item.id)}
               />
             </View>
             <View style={styles.exerciseInfo}>
               <Text style={styles.exerciseName}>{item.name}</Text>
-              <Text style={styles.exerciseSets}>x{item.sets}</Text>
+              <Text style={styles.exerciseSets}>
+                {item.sets} sets x {item.reps} reps
+              </Text>
             </View>
           </Pressable>
         ))}
       </ScrollView>
 
       <Pressable
-        onPress={() => navigation.navigate("Training", { exercises, id: route.params.id, userId: route.params.userId })}
+        onPress={() =>
+          navigation.navigate('Training', {
+            exercises: routineExercises,
+            id: route.params.id,
+            userId: route.params.userId,
+          })
+        }
         style={styles.startButton}
       >
         <Text style={styles.startButtonText}>EMPEZAR</Text>
@@ -103,6 +130,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     width: '100%',
@@ -163,6 +195,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
 
 
 
