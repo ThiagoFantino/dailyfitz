@@ -1,6 +1,14 @@
-import { StyleSheet, Text, Pressable, TextInput, ScrollView, View, ActivityIndicator, FlatList, Alert, Image } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  Pressable,
+  TextInput,
+  View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+} from "react-native";
 import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
 import { backendURL } from "@/config";
 
 const CustomRoutineScreen = ({ route, navigation }) => {
@@ -11,7 +19,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const [reps, setReps] = useState("");
   const [loadingExercises, setLoadingExercises] = useState(true);
   const [selectedImage, setSelectedImage] = useState("");
-  const [routineName, setRoutineName] = useState(""); // Estado para el nombre de la rutina
+  const [routineName, setRoutineName] = useState("");
 
   useEffect(() => {
     fetch(`${backendURL}/routines/exercises`)
@@ -47,7 +55,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
     }
 
     const routineData = {
-      name: routineName, // Utilizamos el nombre ingresado
+      name: routineName,
       userId: userId,
       exercises: selectedExercises,
       image: selectedImage || "",
@@ -68,10 +76,6 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       .catch((error) => console.error("Error saving routine:", error));
   };
 
-  if (loadingExercises) {
-    return <ActivityIndicator size="large" color="#0000ff" />;
-  }
-
   const routineImages = [
     "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lionel_Messi_WC2022.jpg/640px-Lionel_Messi_WC2022.jpg",
     "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cristiano_Ronaldo_2018.jpg/400px-Cristiano_Ronaldo_2018.jpg",
@@ -89,72 +93,73 @@ const CustomRoutineScreen = ({ route, navigation }) => {
     </Pressable>
   );
 
+  if (loadingExercises) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
+  }
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Crear Rutina Personalizada</Text>
-
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre de la rutina"
-        value={routineName}
-        onChangeText={setRoutineName}
-      />
-
-      <Text style={styles.subtitle}>Selecciona los ejercicios</Text>
-      <FlatList
-        data={exercises}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <Pressable
-            style={styles.exerciseItem}
-            onPress={() => handleSelectExercise(item)}
-          >
-            <Text>{item.name}</Text>
+    <FlatList
+      ListHeaderComponent={
+        <View>
+          <Text style={styles.title}>Crear Rutina Personalizada</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre de la rutina"
+            value={routineName}
+            onChangeText={setRoutineName}
+          />
+          <Text style={styles.subtitle}>Selecciona los ejercicios</Text>
+        </View>
+      }
+      data={exercises}
+      keyExtractor={(item) => item.id.toString()}
+      renderItem={({ item }) => (
+        <Pressable style={styles.exerciseItem} onPress={() => handleSelectExercise(item)}>
+          <Text>{item.name}</Text>
+        </Pressable>
+      )}
+      ListFooterComponent={
+        <View>
+          <TextInput
+            style={styles.input}
+            placeholder="Sets"
+            keyboardType="numeric"
+            value={sets}
+            onChangeText={setSets}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Reps"
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={setReps}
+          />
+          <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
+          <FlatList
+            data={selectedExercises}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <View style={styles.selectedExercise}>
+                <Text>
+                  {item.name} - Sets: {item.sets} - Reps: {item.reps}
+                </Text>
+              </View>
+            )}
+          />
+          <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
+          <FlatList
+            data={routineImages}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={renderImageItem}
+            horizontal
+            contentContainerStyle={styles.imageList}
+          />
+          <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
+            <Text style={styles.saveButtonText}>Guardar Rutina</Text>
           </Pressable>
-        )}
-      />
-
-      <TextInput
-        style={styles.input}
-        placeholder="Sets"
-        keyboardType="numeric"
-        value={sets}
-        onChangeText={setSets}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Reps"
-        keyboardType="numeric"
-        value={reps}
-        onChangeText={setReps}
-      />
-
-      <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
-      <FlatList
-        data={selectedExercises}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.selectedExercise}>
-            <Text>
-              {item.name} - Sets: {item.sets} - Reps: {item.reps}
-            </Text>
-          </View>
-        )}
-      />
-
-      <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
-      <FlatList
-        data={routineImages}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderImageItem}
-        horizontal
-        contentContainerStyle={styles.imageList}
-      />
-
-      <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
-        <Text style={styles.saveButtonText}>Guardar Rutina</Text>
-      </Pressable>
-    </ScrollView>
+        </View>
+      }
+    />
   );
 };
 
@@ -228,9 +233,3 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
-
-
-
-
-
-
