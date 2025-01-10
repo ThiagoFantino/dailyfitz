@@ -20,6 +20,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const [loadingExercises, setLoadingExercises] = useState(true);
   const [selectedImage, setSelectedImage] = useState("");
   const [routineName, setRoutineName] = useState("");
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
     fetch(`${backendURL}/routines/exercises`)
@@ -86,93 +87,116 @@ const CustomRoutineScreen = ({ route, navigation }) => {
     setSelectedImage(imageUrl);
   };
 
-  const renderImageItem = ({ item }) => (
-    <Pressable onPress={() => handleImageSelect(item)} style={styles.imageContainer}>
-      <Image source={{ uri: item }} style={styles.image} />
-      {selectedImage === item && <Text style={styles.selectedText}>Seleccionado</Text>}
-    </Pressable>
-  );
+  const handleExercisePress = (exercise) => {
+    handleSelectExercise(exercise); // Seleccionamos el ejercicio
+  };
+
+  const moveToNext = () => {
+    if (currentIndex < exercises.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const moveToPrevious = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
 
   if (loadingExercises) {
     return <ActivityIndicator size="large" color="#0000ff" />;
   }
 
   return (
-    <FlatList
-      ListHeaderComponent={
-        <View>
-          <Text style={styles.title}>Crear Rutina Personalizada</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre de la rutina"
-            value={routineName}
-            onChangeText={setRoutineName}
-          />
-          <Text style={styles.subtitle}>Selecciona los ejercicios</Text>
-        </View>
-      }
-      data={exercises}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <Pressable style={styles.exerciseItem} onPress={() => handleSelectExercise(item)}>
-          <View style={styles.exerciseContainer}>
-            <Image source={{ uri: item.image }} style={styles.exerciseImage} />
-            <Text style={styles.exerciseName}>{item.name}</Text>
-          </View>
-        </Pressable>
-      )}
-      
-      
-      ListFooterComponent={
-        <View>
-          <TextInput
-            style={styles.input}
-            placeholder="Sets"
-            keyboardType="numeric"
-            value={sets}
-            onChangeText={setSets}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Reps"
-            keyboardType="numeric"
-            value={reps}
-            onChangeText={setReps}
-          />
-          <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
-          <FlatList
-            data={selectedExercises}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <View style={styles.selectedExercise}>
-                <Text>
-                  {item.name} - Sets: {item.sets} - Reps: {item.reps}
-                </Text>
-              </View>
-            )}
-          />
-          <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
-          <FlatList
-            data={routineImages}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={renderImageItem}
-            horizontal
-            contentContainerStyle={styles.imageList}
-          />
-          <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
-            <Text style={styles.saveButtonText}>Guardar Rutina</Text>
-          </Pressable>
+    <View style={styles.container}>
+      <Text style={styles.title}>Crear Rutina Personalizada</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre de la rutina"
+        value={routineName}
+        onChangeText={setRoutineName}
+      />
+      <Text style={styles.subtitle}>Selecciona los ejercicios</Text>
 
-          {/* Botón adicional para volver a la Home Page */}
-          <Pressable
-            style={styles.homeButton}
-            onPress={() => navigation.navigate("Home")}
-          >
-            <Text style={styles.homeButtonText}>Volver a Inicio</Text>
+      {/* Contenedor de carrusel para ejercicios */}
+      <View style={styles.carouselContainer}>
+        <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
+          <Text style={styles.arrowText}>{"<"}</Text>
+        </Pressable>
+
+        <View style={styles.exerciseContainer}>
+          <Pressable onPress={() => handleExercisePress(exercises[currentIndex])}>
+            <Image
+              source={{ uri: exercises[currentIndex]?.image }}
+              style={styles.exerciseImage}
+            />
+            <Text style={styles.exerciseName}>{exercises[currentIndex]?.name}</Text>
           </Pressable>
         </View>
-      }
-    />
+
+        <Pressable onPress={moveToNext} style={styles.arrowButton}>
+          <Text style={styles.arrowText}>{">"}</Text>
+        </Pressable>
+      </View>
+
+      {/* Campos para ingresar sets y reps */}
+      <TextInput
+        style={styles.input}
+        placeholder="Sets"
+        keyboardType="numeric"
+        value={sets}
+        onChangeText={setSets}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Reps"
+        keyboardType="numeric"
+        value={reps}
+        onChangeText={setReps}
+      />
+      <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
+
+      {/* Lista de ejercicios seleccionados */}
+      <FlatList
+        data={selectedExercises}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.selectedExercise}>
+            <Text>
+              {item.name} - Sets: {item.sets} - Reps: {item.reps}
+            </Text>
+          </View>
+        )}
+      />
+
+      {/* Selección de imagen de la rutina */}
+      <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
+      <FlatList
+        data={routineImages}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => handleImageSelect(item)} style={styles.imageContainer}>
+            <Image source={{ uri: item }} style={styles.image} />
+            {selectedImage === item && <Text style={styles.selectedText}>Seleccionado</Text>}
+          </Pressable>
+        )}
+        horizontal
+        contentContainerStyle={styles.imageList}
+      />
+
+      {/* Guardar rutina */}
+      <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
+        <Text style={styles.saveButtonText}>Guardar Rutina</Text>
+      </Pressable>
+
+      {/* Botón para volver a la página de inicio */}
+      <Pressable
+        style={styles.homeButton}
+        onPress={() => navigation.navigate("Home")}
+      >
+        <Text style={styles.homeButtonText}>Volver a Inicio</Text>
+      </Pressable>
+    </View>
   );
 };
 
@@ -199,11 +223,30 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 10,
   },
-  exerciseItem: {
+  carouselContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  arrowButton: {
     padding: 10,
-    backgroundColor: "#f0f0f0",
-    marginBottom: 5,
+  },
+  arrowText: {
+    fontSize: 24,
+  },
+  exerciseContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  exerciseImage: {
+    width: 100,
+    height: 100,
     borderRadius: 5,
+    marginRight: 10,
+  },
+  exerciseName: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
   selectedExercise: {
     padding: 10,
@@ -256,31 +299,11 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
     fontWeight: "bold",
   },
-  exerciseItem: {
-    padding: 10,
-    backgroundColor: "#f0f0f0",
-    marginBottom: 5,
-    borderRadius: 5,
-    flexDirection: "row",  // Alinea los elementos horizontalmente
-    alignItems: "center",  // Alinea verticalmente el contenido
-  },
-  
-  exerciseContainer: {
-    flexDirection: "row",  // Alinea la imagen y el nombre horizontalmente
-    alignItems: "center",  // Centra verticalmente
-  },
-  
-  exerciseImage: {
-    width: 50,    // Ajusta el tamaño de la imagen
-    height: 50,   // Ajusta el tamaño de la imagen
-    borderRadius: 5,
-    marginRight: 10,  // Espacio entre la imagen y el nombre
-  },
-  
-  exerciseName: {
-    fontSize: 16,   // Ajusta el tamaño de la fuente del nombre
-    fontWeight: "bold",  // Opcional: hacer el nombre en negrita
-  }  
 });
 
 export default CustomRoutineScreen;
+
+
+
+
+
