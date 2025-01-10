@@ -79,9 +79,10 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   };
 
   const routineImages = [
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lionel_Messi_WC2022.jpg/640px-Lionel_Messi_WC2022.jpg",
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cristiano_Ronaldo_2018.jpg/400px-Cristiano_Ronaldo_2018.jpg",
-    "https://images.ctfassets.net/3mv54pzvptwz/55YLwKPDnRXkqMBITRpWbC/0c2aefc04afa455c20e9ca0d209698e0/53174188191_42d4c831ae_o.jpg",
+    "https://img.freepik.com/fotos-premium/atleta-esta-parado-sobre-sus-rodillas-cerca-barra-gimnasio-esta-preparando-hacer-peso-muerto_392761-1698.jpg?w=1060",
+    "https://www.manzanaroja.eu/wp-content/uploads/2022/11/core-estabilidad-1536x1024.jpg",
+    "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.blogs.es%2F64a82e%2F2560_3000%2F840_560.jpeg&f=1&nofb=1&ipt=ba5da11cc43b337bae60c769b36aba0fb8251a3a50504042248151ea54df0d2f&ipo=images",
+    "https://www.cambiatufisico.com/wp-content/uploads/ejercicios-pecho1.jpg",
   ];
 
   const handleImageSelect = (imageUrl) => {
@@ -256,7 +257,7 @@ const styles = StyleSheet.create({
   },
   exerciseImage: {
     width: 150,
-    height: 150,
+    height: 100, // Cambié la altura para hacerla rectangular
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -303,9 +304,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
+    width: 200, // Aumenté el ancho para que sea rectangular
+    height: 120, // La altura sigue siendo más pequeña para un formato rectangular
+    borderRadius: 10,
     borderWidth: 2,
     borderColor: "#ccc",
   },
@@ -317,6 +318,8 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
+
+
 
 
 
