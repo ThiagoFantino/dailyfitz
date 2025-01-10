@@ -115,9 +115,14 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <Pressable style={styles.exerciseItem} onPress={() => handleSelectExercise(item)}>
-          <Text>{item.name}</Text>
+          <View style={styles.exerciseContainer}>
+            <Image source={{ uri: item.image }} style={styles.exerciseImage} />
+            <Text style={styles.exerciseName}>{item.name}</Text>
+          </View>
         </Pressable>
       )}
+      
+      
       ListFooterComponent={
         <View>
           <TextInput
@@ -251,6 +256,31 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
     fontWeight: "bold",
   },
+  exerciseItem: {
+    padding: 10,
+    backgroundColor: "#f0f0f0",
+    marginBottom: 5,
+    borderRadius: 5,
+    flexDirection: "row",  // Alinea los elementos horizontalmente
+    alignItems: "center",  // Alinea verticalmente el contenido
+  },
+  
+  exerciseContainer: {
+    flexDirection: "row",  // Alinea la imagen y el nombre horizontalmente
+    alignItems: "center",  // Centra verticalmente
+  },
+  
+  exerciseImage: {
+    width: 50,    // Ajusta el tamaño de la imagen
+    height: 50,   // Ajusta el tamaño de la imagen
+    borderRadius: 5,
+    marginRight: 10,  // Espacio entre la imagen y el nombre
+  },
+  
+  exerciseName: {
+    fontSize: 16,   // Ajusta el tamaño de la fuente del nombre
+    fontWeight: "bold",  // Opcional: hacer el nombre en negrita
+  }  
 });
 
 export default CustomRoutineScreen;
