@@ -229,7 +229,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   arrowButton: {
-    padding: 10,
+    padding: 20, // Aumenta el padding para hacer los botones más grandes y aumentar el espacio
+    marginHorizontal: 30, // Espacio extra entre las flechas y el contenedor
   },
   arrowText: {
     fontSize: 24,
@@ -307,6 +308,7 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
+
 
 
 
