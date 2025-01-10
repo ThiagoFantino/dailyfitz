@@ -94,12 +94,16 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const moveToNext = () => {
     if (currentIndex < exercises.length - 1) {
       setCurrentIndex(currentIndex + 1);
+    } else {
+      setCurrentIndex(0); // Vuelve al principio cuando llegas al final
     }
   };
 
   const moveToPrevious = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
+    } else {
+      setCurrentIndex(exercises.length - 1); // Vuelve al final cuando llegas al principio
     }
   };
 
@@ -308,6 +312,7 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
+
 
 
 
