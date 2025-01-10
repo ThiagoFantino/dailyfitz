@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { backendURL } from "@/config";
@@ -112,10 +113,10 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Crear Rutina Personalizada</Text>
 
-      {/* Instrucción para el nombre de rutina */}
+      {/* Nombre de la rutina */}
       <Text style={styles.instruction}>Ingrese el nombre de la rutina:</Text>
       <TextInput
         style={styles.input}
@@ -124,14 +125,14 @@ const CustomRoutineScreen = ({ route, navigation }) => {
         onChangeText={setRoutineName}
       />
 
-      {/* Instrucción para el carrusel de ejercicios */}
+      {/* Instrucción para ejercicios */}
       <Text style={styles.instruction}>
-        Ingrese la cantidad de series y repeticiones y luego seleccione el ejercicio:
+        Ingrese la cantidad de series y repeticiones y seleccione el ejercicio:
       </Text>
 
       <View style={styles.carouselContainer}>
         <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
-          <Text style={styles.arrowText}>{"<"}</Text>
+          <Text style={styles.arrowText}> {"<"} </Text>
         </Pressable>
 
         <View style={styles.exerciseContainer}>
@@ -150,11 +151,11 @@ const CustomRoutineScreen = ({ route, navigation }) => {
         </View>
 
         <Pressable onPress={moveToNext} style={styles.arrowButton}>
-          <Text style={styles.arrowText}>{">"}</Text>
+          <Text style={styles.arrowText}> {">"} </Text>
         </Pressable>
       </View>
 
-      {/* Campos para ingresar sets y reps */}
+      {/* Sets y reps */}
       <Text style={styles.instruction}>Ingrese sets y repeticiones para el ejercicio:</Text>
       <TextInput
         style={styles.input}
@@ -172,8 +173,6 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       />
 
       <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
-
-      {/* Lista de ejercicios seleccionados */}
       <FlatList
         data={selectedExercises}
         keyExtractor={(item, index) => index.toString()}
@@ -186,7 +185,6 @@ const CustomRoutineScreen = ({ route, navigation }) => {
         )}
       />
 
-      {/* Selección de imagen de la rutina */}
       <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
       <FlatList
         data={routineImages}
@@ -201,25 +199,19 @@ const CustomRoutineScreen = ({ route, navigation }) => {
         contentContainerStyle={styles.imageList}
       />
 
-      {/* Guardar rutina */}
       <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
         <Text style={styles.saveButtonText}>Guardar Rutina</Text>
       </Pressable>
 
-      {/* Botón para volver a la página de inicio */}
-      <Pressable
-        style={styles.homeButton}
-        onPress={() => navigation.navigate("Home")}
-      >
+      <Pressable style={styles.homeButton} onPress={() => navigation.navigate("Home")}>
         <Text style={styles.homeButtonText}>Volver a Inicio</Text>
       </Pressable>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
     backgroundColor: "#fff",
   },
@@ -251,15 +243,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   arrowButton: {
-    padding: 20,
+    padding: 10,
   },
   arrowText: {
     fontSize: 24,
   },
   exerciseContainer: {
-    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
   },
   exercisePressable: {
     alignItems: "center",
@@ -327,6 +317,8 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
+
+
 
 
 
