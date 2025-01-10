@@ -125,7 +125,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
         </Pressable>
 
         <View style={styles.exerciseContainer}>
-          <Pressable onPress={() => handleExercisePress(exercises[currentIndex])}>
+          <Pressable onPress={() => handleExercisePress(exercises[currentIndex])} style={styles.exercisePressable}>
             <Image
               source={{ uri: exercises[currentIndex]?.image }}
               style={styles.exerciseImage}
@@ -237,16 +237,21 @@ const styles = StyleSheet.create({
   exerciseContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+  },
+  exercisePressable: {
+    alignItems: "center",  // Centra el texto e imagen
   },
   exerciseImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 5,
-    marginRight: 10,
+    width: 150, // Agranda la imagen
+    height: 150, // Agranda la imagen
+    borderRadius: 10,
+    marginBottom: 10,
   },
   exerciseName: {
     fontSize: 16,
     fontWeight: "bold",
+    textAlign: "center",  // Asegura que el texto esté centrado debajo de la imagen
   },
   selectedExercise: {
     padding: 10,
@@ -288,9 +293,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 150, // Agranda la imagen
+    height: 150, // Agranda la imagen
+    borderRadius: 75, // Hace la imagen circular
     borderWidth: 2,
     borderColor: "#ccc",
   },
@@ -302,6 +307,7 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
+
 
 
 
