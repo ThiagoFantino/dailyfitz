@@ -88,14 +88,14 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   };
 
   const handleExercisePress = (exercise) => {
-    handleSelectExercise(exercise); // Seleccionamos el ejercicio
+    handleSelectExercise(exercise);
   };
 
   const moveToNext = () => {
     if (currentIndex < exercises.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      setCurrentIndex(0); // Vuelve al principio cuando llegas al final
+      setCurrentIndex(0);
     }
   };
 
@@ -103,7 +103,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
     } else {
-      setCurrentIndex(exercises.length - 1); // Vuelve al final cuando llegas al principio
+      setCurrentIndex(exercises.length - 1);
     }
   };
 
@@ -114,27 +114,38 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Crear Rutina Personalizada</Text>
+
+      {/* Instrucción para el nombre de rutina */}
+      <Text style={styles.instruction}>Ingrese el nombre de la rutina:</Text>
       <TextInput
         style={styles.input}
         placeholder="Nombre de la rutina"
         value={routineName}
         onChangeText={setRoutineName}
       />
-      <Text style={styles.subtitle}>Selecciona los ejercicios</Text>
 
-      {/* Contenedor de carrusel para ejercicios */}
+      {/* Instrucción para el carrusel de ejercicios */}
+      <Text style={styles.instruction}>
+        Ingrese la cantidad de series y repeticiones y luego seleccione el ejercicio:
+      </Text>
+
       <View style={styles.carouselContainer}>
         <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
           <Text style={styles.arrowText}>{"<"}</Text>
         </Pressable>
 
         <View style={styles.exerciseContainer}>
-          <Pressable onPress={() => handleExercisePress(exercises[currentIndex])} style={styles.exercisePressable}>
+          <Pressable
+            onPress={() => handleExercisePress(exercises[currentIndex])}
+            style={styles.exercisePressable}
+          >
             <Image
               source={{ uri: exercises[currentIndex]?.image }}
               style={styles.exerciseImage}
             />
-            <Text style={styles.exerciseName}>{exercises[currentIndex]?.name}</Text>
+            <Text style={styles.exerciseName}>
+              {exercises[currentIndex]?.name}
+            </Text>
           </Pressable>
         </View>
 
@@ -144,6 +155,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       </View>
 
       {/* Campos para ingresar sets y reps */}
+      <Text style={styles.instruction}>Ingrese sets y repeticiones para el ejercicio:</Text>
       <TextInput
         style={styles.input}
         placeholder="Sets"
@@ -158,6 +170,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
         value={reps}
         onChangeText={setReps}
       />
+
       <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
 
       {/* Lista de ejercicios seleccionados */}
@@ -215,6 +228,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
+  instruction: {
+    fontSize: 16,
+    marginVertical: 5,
+    color: "#333",
+  },
   subtitle: {
     fontSize: 18,
     marginVertical: 10,
@@ -233,8 +251,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   arrowButton: {
-    padding: 20, // Aumenta el padding para hacer los botones más grandes y aumentar el espacio
-    marginHorizontal: 30, // Espacio extra entre las flechas y el contenedor
+    padding: 20,
   },
   arrowText: {
     fontSize: 24,
@@ -245,18 +262,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   exercisePressable: {
-    alignItems: "center",  // Centra el texto e imagen
+    alignItems: "center",
   },
   exerciseImage: {
-    width: 150, // Agranda la imagen
-    height: 150, // Agranda la imagen
+    width: 150,
+    height: 150,
     borderRadius: 10,
     marginBottom: 10,
   },
   exerciseName: {
     fontSize: 16,
     fontWeight: "bold",
-    textAlign: "center",  // Asegura que el texto esté centrado debajo de la imagen
+    textAlign: "center",
   },
   selectedExercise: {
     padding: 10,
@@ -270,7 +287,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    width: "90%",
   },
   saveButtonText: {
     color: "white",
@@ -283,7 +299,6 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
-    width: "90%",
   },
   homeButtonText: {
     color: "white",
@@ -298,9 +313,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 150, // Agranda la imagen
-    height: 150, // Agranda la imagen
-    borderRadius: 75, // Hace la imagen circular
+    width: 150,
+    height: 150,
+    borderRadius: 75,
     borderWidth: 2,
     borderColor: "#ccc",
   },
@@ -312,6 +327,8 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
+
+
 
 
 
