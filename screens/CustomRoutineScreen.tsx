@@ -157,6 +157,14 @@ const CustomRoutineScreen = ({ route, navigation }) => {
           <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
             <Text style={styles.saveButtonText}>Guardar Rutina</Text>
           </Pressable>
+
+          {/* Botón adicional para volver a la Home Page */}
+          <Pressable
+            style={styles.homeButton}
+            onPress={() => navigation.navigate("Home")}
+          >
+            <Text style={styles.homeButtonText}>Volver a Inicio</Text>
+          </Pressable>
         </View>
       }
     />
@@ -207,6 +215,19 @@ const styles = StyleSheet.create({
     width: "90%",
   },
   saveButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  homeButton: {
+    marginTop: 10,
+    backgroundColor: "#2196F3",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    width: "90%",
+  },
+  homeButtonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
