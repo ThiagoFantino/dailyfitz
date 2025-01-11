@@ -8,7 +8,7 @@ const Routines = ({ userId }) => {
   const [routines, setRoutines] = useState([]);
   const [loadingImages, setLoadingImages] = useState({});
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const response = await fetch(`${backendURL}/routines?userId=${userId}`);
       const json = await response.json();
@@ -16,20 +16,22 @@ const Routines = ({ userId }) => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  };
+  }, [userId]);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData();
-    }, [userId])
-  );
+  useFocusEffect(fetchData);
 
   const handleImageLoadStart = useCallback((id) => {
-    setLoadingImages((prev) => ({ ...prev, [id]: true }));
+    setLoadingImages((prev) => {
+      if (prev[id]) return prev;
+      return { ...prev, [id]: true };
+    });
   }, []);
 
   const handleImageLoad = useCallback((id) => {
-    setLoadingImages((prev) => ({ ...prev, [id]: false }));
+    setLoadingImages((prev) => {
+      if (prev[id] === false) return prev;
+      return { ...prev, [id]: false };
+    });
   }, []);
 
   const customRoutines = routines.filter((item) => item.isCustom && item.userId === userId);
@@ -45,7 +47,7 @@ const Routines = ({ userId }) => {
         <Text style={styles.createRoutineButtonText}>Crear Rutina Personalizada</Text>
       </Pressable>
 
-      {/* Mostrar rutinas personalizadas si existen */}
+      {/* Mostrar rutinas personalizadas */}
       {customRoutines.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>Tus Rutinas Personalizadas</Text>
@@ -82,7 +84,7 @@ const Routines = ({ userId }) => {
         </>
       )}
 
-      {/* Mostrar rutinas predefinidas si existen */}
+      {/* Mostrar rutinas predefinidas */}
       {predefinedRoutines.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>Rutinas Predefinidas</Text>
@@ -184,6 +186,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 
 
