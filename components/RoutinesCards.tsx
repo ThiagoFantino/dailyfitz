@@ -37,6 +37,14 @@ const Routines = ({ userId }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      {/* Botón para crear una rutina personalizada */}
+      <Pressable
+        onPress={() => navigation.navigate("CustomRoutine", { userId })}
+        style={styles.createRoutineButton}
+      >
+        <Text style={styles.createRoutineButtonText}>Crear Rutina Personalizada</Text>
+      </Pressable>
+
       {/* Mostrar rutinas personalizadas si existen */}
       {customRoutines.length > 0 && (
         <>
@@ -110,14 +118,6 @@ const Routines = ({ userId }) => {
           ))}
         </>
       )}
-
-      {/* Botón para crear una rutina personalizada */}
-      <Pressable
-        onPress={() => navigation.navigate("CustomRoutine", { userId })}
-        style={styles.createRoutineButton}
-      >
-        <Text style={styles.createRoutineButtonText}>Crear Rutina Personalizada</Text>
-      </Pressable>
     </ScrollView>
   );
 };
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   createRoutineButton: {
     marginTop: 20,
-    backgroundColor: "#4CAF50",
+    backgroundColor: "#246EE9",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -184,5 +184,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
 
