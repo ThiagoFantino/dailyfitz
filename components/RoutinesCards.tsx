@@ -1,7 +1,7 @@
 import { StyleSheet, Text, Pressable, Image, ScrollView, View, ActivityIndicator } from "react-native";
 import React, { useState, useCallback } from "react";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { backendURL } from '@/config';
+import { backendURL } from "@/config";
 
 const Routines = ({ userId }) => {
   const navigation = useNavigation();
@@ -14,7 +14,7 @@ const Routines = ({ userId }) => {
       const json = await response.json();
       setRoutines(json);
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     }
   };
 
@@ -25,56 +25,60 @@ const Routines = ({ userId }) => {
   );
 
   const handleImageLoadStart = useCallback((id) => {
-    setLoadingImages(prev => ({ ...prev, [id]: true }));
+    setLoadingImages((prev) => ({ ...prev, [id]: true }));
   }, []);
 
   const handleImageLoad = useCallback((id) => {
-    setLoadingImages(prev => ({ ...prev, [id]: false }));
+    setLoadingImages((prev) => ({ ...prev, [id]: false }));
   }, []);
 
-  // Filtrar rutinas personalizadas del usuario
-  const customRoutines = routines.filter(item => item.isCustom && item.userId === userId);
-  const predefinedRoutines = routines.filter(item => !item.isCustom);
+  const customRoutines = routines.filter((item) => item.isCustom && item.userId === userId);
+  const predefinedRoutines = routines.filter((item) => !item.isCustom);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Mostrar rutinas predefinidas */}
-      {predefinedRoutines.map((item) => (
-        <Pressable
-          key={item.id}
-          onPress={() =>
-            navigation.navigate("Routine", {
-              image: item.image,
-              id: item.id,
-              userId,
-            })
-          }
-          style={styles.pressable}
-        >
-          <View style={styles.imageContainer}>
-            {loadingImages[item.id] && (
-              <ActivityIndicator
-                size="large"
-                color="#0000ff"
-                style={styles.loadingIndicator}
-              />
-            )}
-            <Image
-              style={styles.image}
-              source={{ uri: item.image }}
-              onLoadStart={() => handleImageLoadStart(item.id)}
-              onLoad={() => handleImageLoad(item.id)}
-            />
-          </View>
-          <Text style={styles.text}>{item.name}</Text>
-        </Pressable>
-      ))}
-
       {/* Mostrar rutinas personalizadas si existen */}
       {customRoutines.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>Tus Rutinas Personalizadas</Text>
           {customRoutines.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() =>
+                navigation.navigate("Routine", {
+                  image: item.image,
+                  id: item.id,
+                  userId,
+                })
+              }
+              style={styles.pressable}
+            >
+              <View style={styles.imageContainer}>
+                {loadingImages[item.id] && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0000ff"
+                    style={styles.loadingIndicator}
+                  />
+                )}
+                <Image
+                  style={styles.image}
+                  source={{ uri: item.image }}
+                  onLoadStart={() => handleImageLoadStart(item.id)}
+                  onLoad={() => handleImageLoad(item.id)}
+                />
+              </View>
+              <Text style={styles.text}>{item.name}</Text>
+            </Pressable>
+          ))}
+        </>
+      )}
+
+      {/* Mostrar rutinas predefinidas si existen */}
+      {predefinedRoutines.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Rutinas Predefinidas</Text>
+          {predefinedRoutines.map((item) => (
             <Pressable
               key={item.id}
               onPress={() =>
@@ -180,4 +184,5 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
 
