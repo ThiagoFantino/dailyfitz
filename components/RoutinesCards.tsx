@@ -10,7 +10,8 @@ const Routines = ({ userId }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${backendURL}/routines`);
+      // Agregar userId en la URL para filtrar las rutinas personalizadas y predefinidas
+      const response = await fetch(`${backendURL}/routines?userId=${userId}`);
       const json = await response.json();
       setRoutines(json);
     } catch (error) {
@@ -21,10 +22,10 @@ const Routines = ({ userId }) => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, [])
+    }, [userId]) // Asegúrate de que se refetch cuando el userId cambie
   );
 
-  const handleImageLoadStart = useCallback((id: string) => {
+  const handleImageLoadStart = useCallback((id) => {
     setLoadingImages(prev => {
       if (prev[id] === true) return prev; // Si ya está en "cargando", no hacer nada
       return {
@@ -34,7 +35,7 @@ const Routines = ({ userId }) => {
     });
   }, []);
 
-  const handleImageLoad = useCallback((id: string) => {
+  const handleImageLoad = useCallback((id) => {
     setLoadingImages(prev => {
       if (prev[id] === false) return prev; // Si ya está "cargado", no hacer nada
       return {
@@ -141,5 +142,3 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-
