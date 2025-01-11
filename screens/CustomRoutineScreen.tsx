@@ -7,7 +7,6 @@ import {
   ActivityIndicator,
   FlatList,
   Image,
-  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { backendURL } from "@/config";
@@ -114,100 +113,109 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Crear Rutina Personalizada</Text>
+    <FlatList
+      contentContainerStyle={styles.container}
+      ListHeaderComponent={
+        <>
+          <Text style={styles.title}>Crear Rutina Personalizada</Text>
 
-      {/* Nombre de la rutina */}
-      <Text style={styles.instruction}>Ingrese el nombre de la rutina:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nombre de la rutina"
-        value={routineName}
-        onChangeText={setRoutineName}
-      />
+          {/* Nombre de la rutina */}
+          <Text style={styles.instruction}>Ingrese el nombre de la rutina:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Nombre de la rutina"
+            value={routineName}
+            onChangeText={setRoutineName}
+          />
 
-      {/* Instrucción para ejercicios */}
-      <Text style={styles.instruction}>
-        Ingrese la cantidad de series y repeticiones y seleccione el ejercicio:
-      </Text>
+          {/* Instrucción para ejercicios */}
+          <Text style={styles.instruction}>
+            Ingrese la cantidad de series y repeticiones y seleccione el ejercicio:
+          </Text>
 
-      <View style={styles.carouselContainer}>
-        <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
-          <Text style={styles.arrowText}> {"<"} </Text>
-        </Pressable>
+          <View style={styles.carouselContainer}>
+            <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
+              <Text style={styles.arrowText}> {"<"} </Text>
+            </Pressable>
 
-        <View style={styles.exerciseContainer}>
-          <Pressable
-            onPress={() => handleExercisePress(exercises[currentIndex])}
-            style={styles.exercisePressable}
-          >
-            <Image
-              source={{ uri: exercises[currentIndex]?.image }}
-              style={styles.exerciseImage}
-            />
-            <Text style={styles.exerciseName}>
-              {exercises[currentIndex]?.name}
-            </Text>
-          </Pressable>
-        </View>
+            <View style={styles.exerciseContainer}>
+              <Pressable
+                onPress={() => handleExercisePress(exercises[currentIndex])}
+                style={styles.exercisePressable}
+              >
+                <Image
+                  source={{ uri: exercises[currentIndex]?.image }}
+                  style={styles.exerciseImage}
+                />
+                <Text style={styles.exerciseName}>
+                  {exercises[currentIndex]?.name}
+                </Text>
+              </Pressable>
+            </View>
 
-        <Pressable onPress={moveToNext} style={styles.arrowButton}>
-          <Text style={styles.arrowText}> {">"} </Text>
-        </Pressable>
-      </View>
-
-      {/* Sets y reps */}
-      <Text style={styles.instruction}>Ingrese sets y repeticiones para el ejercicio:</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Sets"
-        keyboardType="numeric"
-        value={sets}
-        onChangeText={setSets}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Reps"
-        keyboardType="numeric"
-        value={reps}
-        onChangeText={setReps}
-      />
-
-      <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
-      <FlatList
-        data={selectedExercises}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.selectedExercise}>
-            <Text>
-              {item.name} - Sets: {item.sets} - Reps: {item.reps}
-            </Text>
+            <Pressable onPress={moveToNext} style={styles.arrowButton}>
+              <Text style={styles.arrowText}> {">"} </Text>
+            </Pressable>
           </View>
-        )}
-      />
 
-      <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
-      <FlatList
-        data={routineImages}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <Pressable onPress={() => handleImageSelect(item)} style={styles.imageContainer}>
-            <Image source={{ uri: item }} style={styles.image} />
-            {selectedImage === item && <Text style={styles.selectedText}>Seleccionado</Text>}
+          {/* Sets y reps */}
+          <TextInput
+            style={styles.input}
+            placeholder="Sets"
+            keyboardType="numeric"
+            value={sets}
+            onChangeText={setSets}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Reps"
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={setReps}
+          />
+          <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
+        </>
+      }
+      data={selectedExercises}
+      keyExtractor={(item, index) => index.toString()}
+      renderItem={({ item }) => (
+        <View style={styles.selectedExercise}>
+          <Text>
+            {item.name} - Sets: {item.sets} - Reps: {item.reps}
+          </Text>
+        </View>
+      )}
+      ListFooterComponent={
+        <>
+          <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
+          <FlatList
+            data={routineImages}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item }) => (
+              <Pressable
+                onPress={() => handleImageSelect(item)}
+                style={styles.imageContainer}
+              >
+                <Image source={{ uri: item }} style={styles.image} />
+                {selectedImage === item && (
+                  <Text style={styles.selectedText}>Seleccionado</Text>
+                )}
+              </Pressable>
+            )}
+            horizontal
+            contentContainerStyle={styles.imageList}
+          />
+
+          <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
+            <Text style={styles.saveButtonText}>Guardar Rutina</Text>
           </Pressable>
-        )}
-        horizontal
-        contentContainerStyle={styles.imageList}
-      />
 
-      <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
-        <Text style={styles.saveButtonText}>Guardar Rutina</Text>
-      </Pressable>
-
-      <Pressable style={styles.homeButton} onPress={() => navigation.navigate("Home")}>
-        <Text style={styles.homeButtonText}>Volver a Inicio</Text>
-      </Pressable>
-    </ScrollView>
+          <Pressable style={styles.homeButton} onPress={() => navigation.navigate("Home")}>
+            <Text style={styles.homeButtonText}>Volver a Inicio</Text>
+          </Pressable>
+        </>
+      }
+    />
   );
 };
 
@@ -318,6 +326,7 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
+
 
 
 
