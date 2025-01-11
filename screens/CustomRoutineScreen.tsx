@@ -55,10 +55,12 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       return;
     }
 
+    const reversedExercises = selectedExercises.reverse();
+
     const routineData = {
       name: routineName,
       userId: userId,
-      exercises: selectedExercises,
+      exercises: reversedExercises,
       image: selectedImage || "",
     };
 
@@ -105,6 +107,30 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       setCurrentIndex(currentIndex - 1);
     } else {
       setCurrentIndex(exercises.length - 1);
+    }
+  };
+
+  const handleRemoveExercise = (index) => {
+    setSelectedExercises((prevState) => prevState.filter((_, i) => i !== index));
+  };
+
+  const handleMoveUp = (index) => {
+    if (index > 0) {
+      const newExercises = [...selectedExercises];
+      const temp = newExercises[index];
+      newExercises[index] = newExercises[index - 1];
+      newExercises[index - 1] = temp;
+      setSelectedExercises(newExercises);
+    }
+  };
+
+  const handleMoveDown = (index) => {
+    if (index < selectedExercises.length - 1) {
+      const newExercises = [...selectedExercises];
+      const temp = newExercises[index];
+      newExercises[index] = newExercises[index + 1];
+      newExercises[index + 1] = temp;
+      setSelectedExercises(newExercises);
     }
   };
 
@@ -178,11 +204,27 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       }
       data={selectedExercises}
       keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item }) => (
+      renderItem={({ item, index }) => (
         <View style={styles.selectedExercise}>
-          <Text>
-            {item.name} - Sets: {item.sets} - Reps: {item.reps}
-          </Text>
+          {/* Información del ejercicio */}
+          <View style={styles.exerciseInfoContainer}>
+            <Text style={styles.exerciseName}>{item.name}</Text>
+            <Text>Sets: {item.sets}</Text>
+            <Text>Reps: {item.reps}</Text>
+          </View>
+
+          {/* Flechas de reordenar y eliminar */}
+          <View style={styles.actionsContainer}>
+            <Pressable onPress={() => handleMoveUp(index)} style={styles.reorderButton}>
+              <Text style={styles.reorderButtonText}>{"↑"}</Text>
+            </Pressable>
+            <Pressable onPress={() => handleMoveDown(index)} style={styles.reorderButton}>
+              <Text style={styles.reorderButtonText}>{"↓"}</Text>
+            </Pressable>
+            <Pressable onPress={() => handleRemoveExercise(index)} style={styles.removeButton}>
+              <Text style={styles.removeButtonText}>Eliminar</Text>
+            </Pressable>
+          </View>
         </View>
       )}
       ListFooterComponent={
@@ -252,10 +294,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   arrowButton: {
-    padding: 10,
+    padding: 15, // Aumenté el padding
   },
   arrowText: {
-    fontSize: 24,
+    fontSize: 36, // Aumenté el tamaño de las flechas
+    fontWeight: "bold",
   },
   exerciseContainer: {
     alignItems: "center",
@@ -265,7 +308,7 @@ const styles = StyleSheet.create({
   },
   exerciseImage: {
     width: 150,
-    height: 100, // Cambié la altura para hacerla rectangular
+    height: 100,
     borderRadius: 10,
     marginBottom: 10,
   },
@@ -279,6 +322,42 @@ const styles = StyleSheet.create({
     backgroundColor: "#e0e0e0",
     marginBottom: 5,
     borderRadius: 5,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  exerciseInfoContainer: {
+    flex: 1,
+    alignItems: "flex-start", // Alineado a la izquierda
+    paddingLeft: 10,
+  },
+  actionsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 20, // Espaciado más grande entre las flechas y el botón eliminar
+  },
+  reorderButton: {
+    backgroundColor: '#f0f0f0',
+    padding: 10, // Aumenté el tamaño de los botones
+    borderRadius: 5,
+    marginLeft: 10, // Separación entre flechas
+  },
+  reorderButtonText: {
+    fontSize: 24, // Flechas más grandes
+    fontWeight: 'bold',
+  },
+  removeButton: {
+    backgroundColor: '#e74c3c',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  removeButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
   },
   saveButton: {
     marginTop: 20,
@@ -312,8 +391,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 200, // Aumenté el ancho para que sea rectangular
-    height: 120, // La altura sigue siendo más pequeña para un formato rectangular
+    width: 200,
+    height: 120,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "#ccc",
@@ -326,17 +405,6 @@ const styles = StyleSheet.create({
 });
 
 export default CustomRoutineScreen;
-
-
-
-
-
-
-
-
-
-
-
 
 
 
