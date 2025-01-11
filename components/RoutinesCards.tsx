@@ -6,11 +6,10 @@ import { backendURL } from '@/config';
 const Routines = ({ userId }) => {
   const navigation = useNavigation();
   const [routines, setRoutines] = useState([]);
-  const [loadingImages, setLoadingImages] = useState({}); // Estado de carga por imagen
+  const [loadingImages, setLoadingImages] = useState({});
 
   const fetchData = async () => {
     try {
-      // Agregar userId en la URL para filtrar las rutinas personalizadas y predefinidas
       const response = await fetch(`${backendURL}/routines?userId=${userId}`);
       const json = await response.json();
       setRoutines(json);
@@ -22,39 +21,32 @@ const Routines = ({ userId }) => {
   useFocusEffect(
     useCallback(() => {
       fetchData();
-    }, [userId]) // Asegúrate de que se refetch cuando el userId cambie
+    }, [userId])
   );
 
   const handleImageLoadStart = useCallback((id) => {
-    setLoadingImages(prev => {
-      if (prev[id] === true) return prev; // Si ya está en "cargando", no hacer nada
-      return {
-        ...prev,
-        [id]: true,
-      };
-    });
+    setLoadingImages(prev => ({ ...prev, [id]: true }));
   }, []);
 
   const handleImageLoad = useCallback((id) => {
-    setLoadingImages(prev => {
-      if (prev[id] === false) return prev; // Si ya está "cargado", no hacer nada
-      return {
-        ...prev,
-        [id]: false,
-      };
-    });
+    setLoadingImages(prev => ({ ...prev, [id]: false }));
   }, []);
+
+  // Filtrar rutinas personalizadas del usuario
+  const customRoutines = routines.filter(item => item.isCustom && item.userId === userId);
+  const predefinedRoutines = routines.filter(item => !item.isCustom);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {routines.map((item) => (
+      {/* Mostrar rutinas predefinidas */}
+      {predefinedRoutines.map((item) => (
         <Pressable
           key={item.id}
           onPress={() =>
             navigation.navigate("Routine", {
               image: item.image,
               id: item.id,
-              userId: userId,
+              userId,
             })
           }
           style={styles.pressable}
@@ -78,6 +70,44 @@ const Routines = ({ userId }) => {
         </Pressable>
       ))}
 
+      {/* Mostrar rutinas personalizadas si existen */}
+      {customRoutines.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Tus Rutinas Personalizadas</Text>
+          {customRoutines.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() =>
+                navigation.navigate("Routine", {
+                  image: item.image,
+                  id: item.id,
+                  userId,
+                })
+              }
+              style={styles.pressable}
+            >
+              <View style={styles.imageContainer}>
+                {loadingImages[item.id] && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0000ff"
+                    style={styles.loadingIndicator}
+                  />
+                )}
+                <Image
+                  style={styles.image}
+                  source={{ uri: item.image }}
+                  onLoadStart={() => handleImageLoadStart(item.id)}
+                  onLoad={() => handleImageLoad(item.id)}
+                />
+              </View>
+              <Text style={styles.text}>{item.name}</Text>
+            </Pressable>
+          ))}
+        </>
+      )}
+
+      {/* Botón para crear una rutina personalizada */}
       <Pressable
         onPress={() => navigation.navigate("CustomRoutine", { userId })}
         style={styles.createRoutineButton}
@@ -128,6 +158,14 @@ const styles = StyleSheet.create({
     left: 20,
     top: 20,
   },
+  sectionTitle: {
+    marginTop: 20,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    alignSelf: "flex-start",
+    marginLeft: 10,
+  },
   createRoutineButton: {
     marginTop: 20,
     backgroundColor: "#4CAF50",
@@ -142,3 +180,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
