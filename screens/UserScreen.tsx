@@ -80,7 +80,7 @@ const UserStatsScreen = ({ route }) => {
         {userStats.length > 0 ? (
           userStats.map((stat, index) => (
             <View key={index} style={styles.statCard}>
-              <Text style={styles.statNumber}>{`Fecha: ${new Date(stat.fecha).toLocaleDateString()}`}</Text>
+              <Text style={styles.statNumber}>{`Fecha: ${stat.fecha}`}</Text>
               <Text style={styles.statLabel}>Entrenamientos: {stat.entrenamientos}</Text>
               <Text style={styles.statLabel}>Calorías Quemadas: {stat.calorias}</Text>
               <Text style={styles.statLabel}>Tiempo: {formatTime(stat.tiempo)}</Text>
@@ -201,3 +201,4 @@ const styles = StyleSheet.create({
 });
 
 export default UserStatsScreen;
+
