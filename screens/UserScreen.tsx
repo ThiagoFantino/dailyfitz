@@ -70,7 +70,6 @@ const UserStatsScreen = ({ route }) => {
   };
   
   
-  
   const handleDateSelect = async (date) => {
     // Formatear la fecha seleccionada en formato 12/1/2025
     const formattedDate = formatDate(date.dateString);
@@ -119,7 +118,7 @@ const UserStatsScreen = ({ route }) => {
 
         {/* Mostrar estadísticas para la fecha seleccionada */}
         {selectedDate && (
-          <View style={styles.statsCard}>
+          <View style={styles.statCard}>
             <Text style={styles.selectedDateText}>Estadísticas para {selectedDate}</Text>
             {statsForSelectedDate ? (
               <>
@@ -131,21 +130,6 @@ const UserStatsScreen = ({ route }) => {
               <Text>No hay estadísticas para esta fecha.</Text>
             )}
           </View>
-        )}
-
-        {/* Estadísticas generales */}
-        <Text style={styles.statsTitle}>Estadísticas por Fecha</Text>
-        {userStats.length > 0 ? (
-          userStats.map((stat, index) => (
-            <View key={index} style={styles.statCard}>
-              <Text style={styles.statNumber}>{`Fecha: ${stat.fecha}`}</Text>
-              <Text style={styles.statLabel}>Entrenamientos: {stat.entrenamientos}</Text>
-              <Text style={styles.statLabel}>Calorías Quemadas: {stat.calorias}</Text>
-              <Text style={styles.statLabel}>Tiempo: {formatTime(stat.tiempo)}</Text>
-            </View>
-          ))
-        ) : (
-          <Text>No hay estadísticas disponibles</Text>
         )}
 
         {/* Botón de cerrar sesión */}
@@ -264,3 +248,4 @@ const styles = StyleSheet.create({
 });
 
 export default UserStatsScreen;
+
