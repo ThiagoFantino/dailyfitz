@@ -61,12 +61,15 @@ const UserStatsScreen = ({ route }) => {
   };
 
   const formatDate = (date) => {
-    const d = new Date(date);
-    const day = d.getDate();
-    const month = d.getMonth() + 1; // Los meses comienzan desde 0
-    const year = d.getFullYear();
-    return `${day}/${month}/${year}`;
+    const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/); // Coincide con el formato YYYY-MM-DD
+    if (match) {
+      const [, year, month, day] = match; // Extrae las partes de la fecha
+      return `${day}/${parseInt(month, 10)}/${year}`; // El mes se convierte a número, eliminando el 0 si es menor que 10
+    }
+    return date; // Si no coincide, retorna la fecha original
   };
+  
+  
   
   const handleDateSelect = async (date) => {
     // Formatear la fecha seleccionada en formato 12/1/2025
