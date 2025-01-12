@@ -7,7 +7,7 @@ import { backendURL } from '@/config';
 const CongratulationsScreen = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  
+
   const totalTimeInMinutes = route.params?.totalTime || 0;
   const completedExercises = route.params?.completedExercises || 0;
   const totalCalories = route.params?.totalCalories || 0;
@@ -23,33 +23,31 @@ const CongratulationsScreen = () => {
 
   const formattedTime = formatTime(totalTimeInMinutes);
 
-  const postTotalSecondsAndWorkouts = async (userId: string, totalMinutes: number, completedExercises: number, totalCalories: number) => {
+  const postTotalSecondsAndWorkouts = async (
+    userId: string,
+    totalMinutes: number,
+    completedExercises: number,
+    totalCalories: number
+  ) => {
     try {
       const totalSeconds = Math.round(totalMinutes * 60);
 
-      // Obtener datos del usuario actual
-      const response = await fetch(`${backendURL}/users/${userId}`);
-      const userData = await response.json();
-      
-      const updatedSeconds = userData.tiempo + totalSeconds;
-      const updatedWorkouts = userData.entrenamientos + completedExercises;
-      const updatedCalories = userData.calorias + totalCalories;
-
-      // Actualizar los datos del usuario
+      // Enviar solo los datos del ejercicio actual al backend
       await fetch(`${backendURL}/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          tiempo: updatedSeconds, 
-          entrenamientos: updatedWorkouts,
-          calorias: updatedCalories
+          tiempo: totalSeconds,
+          entrenamientos: completedExercises,
+          calorias: totalCalories,
         }),
       });
 
-      // Crear la entrada en la tabla UserStats
-      const currentDate = new Date().toISOString().split('T')[0]; // Solo la fecha sin la hora
+      // Crear la entrada en la tabla UserStats solo para el ejercicio actual
+      const currentDate = new Date().toISOString().split('T')[0]; // Fecha sin hora
+
       await fetch(`${backendURL}/userStats`, {
         method: 'POST',
         headers: {
@@ -60,13 +58,13 @@ const CongratulationsScreen = () => {
           fecha: currentDate,
           tiempo: totalSeconds,
           entrenamientos: completedExercises,
-          calorias: totalCalories
+          calorias: totalCalories,
         }),
       });
 
-      console.log('Minutos, entrenamientos y estadísticas actualizados correctamente.');
+      console.log('Estadísticas del ejercicio actual registradas correctamente.');
     } catch (error) {
-      console.error('Error actualizando los minutos, entrenamientos y estadísticas:', error);
+      console.error('Error registrando estadísticas del ejercicio:', error);
     }
   };
 
@@ -86,12 +84,9 @@ const CongratulationsScreen = () => {
       <Text style={styles.timeMessage}>Tiempo Total: {formattedTime}</Text>
       <Text style={styles.exerciseMessage}>Ejercicios Completados: {completedExercises}</Text>
 
-      <Text style={styles.exerciseMessage}>Calorias Quemadas: {totalCalories}</Text>
+      <Text style={styles.exerciseMessage}>Calorías Quemadas: {totalCalories}</Text>
 
-      <Pressable
-        onPress={handleGoBack}
-        style={styles.button}
-      >
+      <Pressable onPress={handleGoBack} style={styles.button}>
         <Text style={styles.buttonText}>VOLVER AL INICIO</Text>
       </Pressable>
     </SafeAreaView>
@@ -146,6 +141,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 });
+
 
 
 
