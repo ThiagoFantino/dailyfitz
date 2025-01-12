@@ -1,14 +1,18 @@
 import { StyleSheet, Text, View, SafeAreaView, Image, ScrollView, Pressable } from 'react-native';
 import React, { useState, useCallback } from 'react';
-import { MaterialIcons, FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { backendURL } from '@/config';
 
 const UserStatsScreen = ({ route }) => {
   const [user, setUser] = useState({});
-  var userId = route.params.id;
+  const [userStats, setUserStats] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  const userId = route.params.id;
   const navigation = useNavigation();
 
+  // UseEffect para llamar a fetchData cuando la pantalla se enfoca
   useFocusEffect(
     useCallback(() => {
       fetchData();
@@ -17,18 +21,24 @@ const UserStatsScreen = ({ route }) => {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${backendURL}/users/${userId}`);
+      const response = await fetch(`${backendURL}/users/${userId}/stats`);
       const json = await response.json();
-      setUser(json);
-      console.log(json);
+
+      if (json.error) {
+        setError(json.error);
+      } else {
+        setUser(json.user);
+        setUserStats(json.stats);
+      }
     } catch (error) {
       console.error('Error fetching data:', error);
+      setError('Error al obtener las estadísticas.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleLogout = () => {
-    userId = null; 
-    console.log(userId);
     navigation.navigate('Login'); 
   };
 
@@ -47,6 +57,14 @@ const UserStatsScreen = ({ route }) => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
+  if (loading) {
+    return <Text>Cargando...</Text>;
+  }
+
+  if (error) {
+    return <Text>{error}</Text>;
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -57,26 +75,20 @@ const UserStatsScreen = ({ route }) => {
         
         <Text style={styles.userName}>{`${user.nombre || ''} ${user.apellido || ''}`}</Text> 
 
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <MaterialIcons name="fitness-center" size={36} color="#4CAF50" />
-            <Text style={styles.statNumber}>{`${user.entrenamientos || 0}`}</Text>
-            <Text style={styles.statLabel}>Ejercicios Realizados</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <FontAwesome5 name="fire" size={36} color="#F44336" />
-            <Text style={styles.statNumber}>{`${user.calorias || 0}`}</Text>
-            <Text style={styles.statLabel}>Calorías Quemadas</Text>
-          </View>
-
-          <View style={styles.statCard}>
-            <Ionicons name="time" size={36} color="#2196F3" />
-            {/* Mostrar el tiempo formateado desde la base de datos (en segundos) */}
-            <Text style={styles.statNumber}>{formatTime(user.tiempo || 0)}</Text>
-            <Text style={styles.statLabel}>Tiempo De Entrenamiento</Text>
-          </View>
-        </View>
+        {/* Muestra las estadísticas por fecha */}
+        <Text style={styles.statsTitle}>Estadísticas por Fecha</Text>
+        {userStats.length > 0 ? (
+          userStats.map((stat, index) => (
+            <View key={index} style={styles.statCard}>
+              <Text style={styles.statNumber}>{`Fecha: ${new Date(stat.fecha).toLocaleDateString()}`}</Text>
+              <Text style={styles.statLabel}>Entrenamientos: {stat.entrenamientos}</Text>
+              <Text style={styles.statLabel}>Calorías Quemadas: {stat.calorias}</Text>
+              <Text style={styles.statLabel}>Tiempo: {formatTime(stat.tiempo)}</Text>
+            </View>
+          ))
+        ) : (
+          <Text>No hay estadísticas disponibles</Text>
+        )}
 
         {/* Botón de cerrar sesión */}
         <Pressable style={styles.logoutButton} onPress={handleLogout}>
@@ -120,18 +132,18 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#333',
   },
-  statsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '90%',
-    flexWrap: 'wrap',
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: '#333',
   },
   statCard: {
     alignItems: 'center',
     backgroundColor: '#fff',
     padding: 15,
     borderRadius: 10,
-    width: '40%',
+    width: '90%',
     marginVertical: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -140,9 +152,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   statNumber: {
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 10,
     color: '#333',
   },
   statLabel: {
@@ -190,6 +201,3 @@ const styles = StyleSheet.create({
 });
 
 export default UserStatsScreen;
-
-
-
