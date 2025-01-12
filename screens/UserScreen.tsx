@@ -11,6 +11,7 @@ const UserStatsScreen = ({ route }) => {
   const [error, setError] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null); // Estado para la fecha seleccionada
   const [statsForSelectedDate, setStatsForSelectedDate] = useState(null); // Estadísticas de la fecha seleccionada
+  const [showStats, setShowStats] = useState(true); // Control para mostrar/ocultar estadísticas
   
   const userId = route.params.id;
   const navigation = useNavigation();
@@ -69,13 +70,12 @@ const UserStatsScreen = ({ route }) => {
     return date; // Si no coincide, retorna la fecha original
   };
   
-  
   const handleDateSelect = async (date) => {
     // Formatear la fecha seleccionada en formato 12/1/2025
     const formattedDate = formatDate(date.dateString);
   
     setSelectedDate(formattedDate); // Establecer la fecha seleccionada
-    console.log(formattedDate);
+    setShowStats(true); // Restablecer la visibilidad de las estadísticas cada vez que se selecciona una fecha nueva
   
     // Realizar la llamada al backend para obtener las estadísticas de esa fecha
     const response = await fetch(`${backendURL}/users/${userId}/statsByDate?fecha=${formattedDate}`);
@@ -87,7 +87,10 @@ const UserStatsScreen = ({ route }) => {
       setStatsForSelectedDate(null); // Si no hay estadísticas para esa fecha
     }
   };
-  
+
+  const closeStats = () => {
+    setShowStats(false); // Oculta la vista de estadísticas cuando se cierra
+  };
 
   if (loading) {
     return <Text>Cargando...</Text>;
@@ -117,8 +120,11 @@ const UserStatsScreen = ({ route }) => {
         />
 
         {/* Mostrar estadísticas para la fecha seleccionada */}
-        {selectedDate && (
+        {selectedDate && showStats && (
           <View style={styles.statCard}>
+            <Pressable style={styles.closeButton} onPress={closeStats}>
+              <Text style={styles.closeButtonText}>✖</Text>
+            </Pressable>
             <Text style={styles.selectedDateText}>Estadísticas para {selectedDate}</Text>
             {statsForSelectedDate ? (
               <>
@@ -209,6 +215,16 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 10,
   },
+  closeButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    padding: 5,
+  },
+  closeButtonText: {
+    fontSize: 20,
+    color: '#FF6347',
+  },
   logoutButton: {
     backgroundColor: '#FF3B30',
     paddingVertical: 12,
@@ -248,4 +264,3 @@ const styles = StyleSheet.create({
 });
 
 export default UserStatsScreen;
-
