@@ -110,6 +110,8 @@ const UserStatsScreen = ({ route }) => {
         
         <Text style={styles.userName}>{`${user.nombre || ''} ${user.apellido || ''}`}</Text>
 
+        <Text style={styles.instructionText}>Selecciona para ver las estadísticas de un día</Text>
+
         {/* Calendario */}
         <Calendar
           onDayPress={handleDateSelect}
@@ -123,7 +125,7 @@ const UserStatsScreen = ({ route }) => {
         {selectedDate && showStats && (
           <View style={styles.statCard}>
             <Pressable style={styles.closeButton} onPress={closeStats}>
-              <Text style={styles.closeButtonText}>✖</Text>
+              <Text style={styles.closeButtonText}>✖</Text> 
             </Pressable>
             <Text style={styles.selectedDateText}>Estadísticas para {selectedDate}</Text>
             {statsForSelectedDate ? (
@@ -184,6 +186,12 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     color: '#333',
+  },
+  instructionText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   statCard: {
     alignItems: 'center',
@@ -264,3 +272,4 @@ const styles = StyleSheet.create({
 });
 
 export default UserStatsScreen;
+
