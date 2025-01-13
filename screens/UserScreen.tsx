@@ -7,6 +7,7 @@ import { Calendar } from 'react-native-calendars'; // Importa el calendario
 const UserStatsScreen = ({ route }) => {
   const [user, setUser] = useState({});
   const [userStats, setUserStats] = useState([]);
+  const [totalStats, setTotalStats] = useState({ entrenamientos: 0, calorias: 0, tiempo: 0 });
   const [statsByPeriods, setStatsByPeriods] = useState({
     today: {},
     week: {},
@@ -27,6 +28,7 @@ const UserStatsScreen = ({ route }) => {
     useCallback(() => {
       fetchData();
       fetchStatsByPeriod();
+      fetchTotalStats();
     }, [])
   );
 
@@ -76,6 +78,18 @@ const UserStatsScreen = ({ route }) => {
       setStatsByPeriods(fetchedStats);
     } catch (err) {
       console.error('Error fetching stats by period:', err);
+    }
+  };
+
+  const fetchTotalStats = async () => {
+    try {
+      const response = await fetch(`${backendURL}/users/${userId}/totalStats`);
+      if (!response.ok) throw new Error("Error al obtener las estadísticas totales.");
+  
+      const data = await response.json();
+      setTotalStats(data.totalStats);
+    } catch (err) {
+      console.error("Error al obtener las estadísticas totales:", err);
     }
   };
 
@@ -226,6 +240,17 @@ const UserStatsScreen = ({ route }) => {
             </View>
           </View>
         ))}
+
+        {/* Mostrar estadísticas totales */}
+<View style={styles.statPeriod}>
+  <Text style={styles.statPeriodTitle}>Estadísticas Totales</Text>
+  <View style={styles.statDetail}>
+  <Text>Entrenamientos: {totalStats.entrenamientos}</Text>
+  <Text>Calorías: {totalStats.calorias}</Text>
+  <Text>Tiempo: {formatTime(totalStats.tiempo)}</Text>
+  </View>
+</View>
+
 
         {/* Botones */}
         <Pressable style={styles.logoutButton} onPress={handleLogout}>
