@@ -301,18 +301,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginTop: 20,
     color: '#333',
+    borderBottomWidth: 2,
+    borderBottomColor: '#ddd',
+    paddingBottom: 5,
+    width: '90%',
+    textAlign: 'center',
   },
   statPeriod: {
-    marginBottom: 10,
+    backgroundColor: '#fff',
+    padding: 15,
+    marginVertical: 10,
+    borderRadius: 10,
+    width: '90%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
   },
   statPeriodTitle: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 10,
   },
   statDetail: {
     fontSize: 14,
     color: '#555',
+    marginBottom: 5,
   },
   logoutButton: {
     backgroundColor: '#FF3B30',
@@ -351,6 +367,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 
 export default UserStatsScreen;
 
