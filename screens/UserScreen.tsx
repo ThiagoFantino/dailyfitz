@@ -86,12 +86,47 @@ const UserStatsScreen = ({ route }) => {
   };
 
   const formatDate = (date) => {
+    // Asegúrate de que la fecha sea una cadena de tipo 'YYYY-MM-DD'
+    if (date instanceof Date) {
+      date = date.toISOString().split('T')[0]; // Convierte el objeto Date a formato 'YYYY-MM-DD'
+    }
+
     const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/); // Coincide con el formato YYYY-MM-DD
     if (match) {
       const [, year, month, day] = match; // Extrae las partes de la fecha
       return `${day}/${parseInt(month, 10)}/${year}`; // El mes se convierte a número, eliminando el 0 si es menor que 10
     }
     return date; // Si no coincide, retorna la fecha original
+  };
+
+  const getWeekRange = (date) => {
+    const selectedDate = new Date(date);
+
+    // Obtener el primer día de la semana (lunes)
+    const startOfWeek = selectedDate.getDate() - selectedDate.getDay() + 1; // El lunes
+    selectedDate.setDate(startOfWeek);
+    const startDate = selectedDate.toLocaleDateString();
+
+    // Obtener el último día de la semana (domingo)
+    const endOfWeek = startOfWeek + 6;
+    selectedDate.setDate(endOfWeek);
+    const endDate = selectedDate.toLocaleDateString();
+
+    return { startDate, endDate };
+  };
+
+  const formatMonth = (date) => {
+    const monthNames = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
+    const monthIndex = new Date(date).getMonth();
+    const year = new Date(date).getFullYear();
+    return `${monthNames[monthIndex]} ${year}`;
+  };
+
+  const formatYear = (date) => {
+    return new Date(date).getFullYear();
   };
 
   const handleDateSelect = async (date) => {
@@ -166,10 +201,14 @@ const UserStatsScreen = ({ route }) => {
         {['today', 'week', 'month', 'year'].map(period => (
           <View key={period} style={styles.statPeriod}>
             <Text style={styles.statPeriodTitle}>
-              {period === 'today' && 'Estadísticas del Día'}
-              {period === 'week' && 'Estadísticas de la Semana'}
-              {period === 'month' && 'Estadísticas del Mes'}
-              {period === 'year' && 'Estadísticas del Año'}
+              {period === 'today' && `Estadísticas del Día - ${formatDate(new Date())}`}
+              {period === 'week' && (() => {
+  const { startDate, endDate } = getWeekRange(new Date());
+  return `Estadísticas de la Semana - Del ${startDate} al ${endDate}`;
+})()}
+
+              {period === 'month' && `Estadísticas del Mes - ${formatMonth(new Date())}`}
+              {period === 'year' && `Estadísticas del Año - ${formatYear(new Date())}`}
             </Text>
             {statsByPeriods[period]?.map((stat, index) => (
               <Text key={index} style={styles.statDetail}>
@@ -285,33 +324,35 @@ const styles = StyleSheet.create({
   logoutButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
   settingsButton: {
     backgroundColor: '#4CAF50',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 10,
   },
   settingsButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
   changeProfilePictureButton: {
-    backgroundColor: '#FF9800',
+    backgroundColor: '#2196F3',
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 8,
-    marginTop: 20,
+    marginTop: 10,
   },
   changeProfilePictureButtonText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
 export default UserStatsScreen;
+
+
 
