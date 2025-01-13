@@ -8,10 +8,10 @@ const UserStatsScreen = ({ route }) => {
   const [user, setUser] = useState({});
   const [userStats, setUserStats] = useState([]);
   const [statsByPeriods, setStatsByPeriods] = useState({
-    today: [],
-    week: [],
-    month: [],
-    year: [],
+    today: {},
+    week: {},
+    month: {},
+    year: {},
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -58,7 +58,20 @@ const UserStatsScreen = ({ route }) => {
       for (const period of periods) {
         const response = await fetch(`${backendURL}/users/${userId}/statsByPeriod?period=${period}`);
         const json = await response.json();
-        fetchedStats[period] = json.stats || [];
+
+        // Sumar las estadísticas por periodo
+        if (json.stats && json.stats.length > 0) {
+          const totalStats = json.stats.reduce(
+            (acc, stat) => {
+              acc.entrenamientos += stat.entrenamientos || 0;
+              acc.calorias += stat.calorias || 0;
+              acc.tiempo += stat.tiempo || 0;
+              return acc;
+            },
+            { entrenamientos: 0, calorias: 0, tiempo: 0 }
+          );
+          fetchedStats[period] = totalStats;
+        }
       }
       setStatsByPeriods(fetchedStats);
     } catch (err) {
@@ -202,19 +215,15 @@ const UserStatsScreen = ({ route }) => {
           <View key={period} style={styles.statPeriod}>
             <Text style={styles.statPeriodTitle}>
               {period === 'today' && `Estadísticas del Día - ${formatDate(new Date())}`}
-              {period === 'week' && (() => {
-  const { startDate, endDate } = getWeekRange(new Date());
-  return `Estadísticas de la Semana - Del ${startDate} al ${endDate}`;
-})()}
-
+              {period === 'week' && `Estadísticas de la Semana - Del ${getWeekRange(new Date()).startDate} al ${getWeekRange(new Date()).endDate}`}
               {period === 'month' && `Estadísticas del Mes - ${formatMonth(new Date())}`}
               {period === 'year' && `Estadísticas del Año - ${formatYear(new Date())}`}
             </Text>
-            {statsByPeriods[period]?.map((stat, index) => (
-              <Text key={index} style={styles.statDetail}>
-                {`Fecha: ${stat.fecha}, Entrenamientos: ${stat.entrenamientos}, Calorías: ${stat.calorias}`}
-              </Text>
-            ))}
+            <View style={styles.statDetail}>
+              <Text>Entrenamientos: {statsByPeriods[period]?.entrenamientos || 0}</Text>
+              <Text>Calorías: {statsByPeriods[period]?.calorias || 0}</Text>
+              <Text>Tiempo: {formatTime(statsByPeriods[period]?.tiempo || 0)}</Text>
+            </View>
           </View>
         ))}
 
@@ -368,8 +377,8 @@ const styles = StyleSheet.create({
   },
 });
 
-
 export default UserStatsScreen;
+
 
 
 
