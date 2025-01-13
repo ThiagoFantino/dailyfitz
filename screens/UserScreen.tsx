@@ -7,19 +7,26 @@ import { Calendar } from 'react-native-calendars'; // Importa el calendario
 const UserStatsScreen = ({ route }) => {
   const [user, setUser] = useState({});
   const [userStats, setUserStats] = useState([]);
+  const [statsByPeriods, setStatsByPeriods] = useState({
+    today: [],
+    week: [],
+    month: [],
+    year: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [selectedDate, setSelectedDate] = useState(null); // Estado para la fecha seleccionada
-  const [statsForSelectedDate, setStatsForSelectedDate] = useState(null); // Estadísticas de la fecha seleccionada
-  const [showStats, setShowStats] = useState(true); // Control para mostrar/ocultar estadísticas
-  
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [statsForSelectedDate, setStatsForSelectedDate] = useState(null);
+  const [showStats, setShowStats] = useState(true);
+
   const userId = route.params.id;
   const navigation = useNavigation();
 
-  // UseEffect para llamar a fetchData cuando la pantalla se enfoca
+  // Llamamos a la función para obtener los datos del usuario y las estadísticas por periodo
   useFocusEffect(
     useCallback(() => {
       fetchData();
+      fetchStatsByPeriod();
     }, [])
   );
 
@@ -42,8 +49,25 @@ const UserStatsScreen = ({ route }) => {
     }
   };
 
+  // Función para obtener las estadísticas por periodos: hoy, semana, mes, año
+  const fetchStatsByPeriod = async () => {
+    const periods = ['today', 'week', 'month', 'year'];
+    const fetchedStats = {};
+
+    try {
+      for (const period of periods) {
+        const response = await fetch(`${backendURL}/users/${userId}/statsByPeriod?period=${period}`);
+        const json = await response.json();
+        fetchedStats[period] = json.stats || [];
+      }
+      setStatsByPeriods(fetchedStats);
+    } catch (err) {
+      console.error('Error fetching stats by period:', err);
+    }
+  };
+
   const handleLogout = () => {
-    navigation.navigate('Login'); 
+    navigation.navigate('Login');
   };
 
   const navigateToSettings = () => {
@@ -69,27 +93,25 @@ const UserStatsScreen = ({ route }) => {
     }
     return date; // Si no coincide, retorna la fecha original
   };
-  
+
   const handleDateSelect = async (date) => {
-    // Formatear la fecha seleccionada en formato 12/1/2025
     const formattedDate = formatDate(date.dateString);
-  
-    setSelectedDate(formattedDate); // Establecer la fecha seleccionada
-    setShowStats(true); // Restablecer la visibilidad de las estadísticas cada vez que se selecciona una fecha nueva
-  
-    // Realizar la llamada al backend para obtener las estadísticas de esa fecha
+
+    setSelectedDate(formattedDate);
+    setShowStats(true);
+
     const response = await fetch(`${backendURL}/users/${userId}/statsByDate?fecha=${formattedDate}`);
     const json = await response.json();
-  
+
     if (json.stats && json.stats.length > 0) {
-      setStatsForSelectedDate(json.stats[0]); // Suponemos que devuelve un solo objeto
+      setStatsForSelectedDate(json.stats[0]);
     } else {
-      setStatsForSelectedDate(null); // Si no hay estadísticas para esa fecha
+      setStatsForSelectedDate(null);
     }
   };
 
   const closeStats = () => {
-    setShowStats(false); // Oculta la vista de estadísticas cuando se cierra
+    setShowStats(false);
   };
 
   if (loading) {
@@ -103,16 +125,15 @@ const UserStatsScreen = ({ route }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Image 
-          style={styles.profilePicture} 
-          source={{ uri: user.profilePicture }} 
+        <Image
+          style={styles.profilePicture}
+          source={{ uri: user.profilePicture }}
         />
         
         <Text style={styles.userName}>{`${user.nombre || ''} ${user.apellido || ''}`}</Text>
 
         <Text style={styles.instructionText}>Selecciona para ver las estadísticas de un día</Text>
 
-        {/* Calendario */}
         <Calendar
           onDayPress={handleDateSelect}
           markedDates={{
@@ -121,11 +142,11 @@ const UserStatsScreen = ({ route }) => {
           markingType={'simple'}
         />
 
-        {/* Mostrar estadísticas para la fecha seleccionada */}
+        {/* Mostrar estadísticas de la fecha seleccionada */}
         {selectedDate && showStats && (
           <View style={styles.statCard}>
             <Pressable style={styles.closeButton} onPress={closeStats}>
-              <Text style={styles.closeButtonText}>✖</Text> 
+              <Text style={styles.closeButtonText}>✖</Text>
             </Pressable>
             <Text style={styles.selectedDateText}>Estadísticas para {selectedDate}</Text>
             {statsForSelectedDate ? (
@@ -140,17 +161,31 @@ const UserStatsScreen = ({ route }) => {
           </View>
         )}
 
-        {/* Botón de cerrar sesión */}
+        {/* Estadísticas por períodos */}
+        <Text style={styles.statsTitle}>Estadísticas Resumidas:</Text>
+        {['today', 'week', 'month', 'year'].map(period => (
+          <View key={period} style={styles.statPeriod}>
+            <Text style={styles.statPeriodTitle}>
+              {period === 'today' && 'Estadísticas del Día'}
+              {period === 'week' && 'Estadísticas de la Semana'}
+              {period === 'month' && 'Estadísticas del Mes'}
+              {period === 'year' && 'Estadísticas del Año'}
+            </Text>
+            {statsByPeriods[period]?.map((stat, index) => (
+              <Text key={index} style={styles.statDetail}>
+                {`Fecha: ${stat.fecha}, Entrenamientos: ${stat.entrenamientos}, Calorías: ${stat.calorias}`}
+              </Text>
+            ))}
+          </View>
+        ))}
+
+        {/* Botones */}
         <Pressable style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
         </Pressable>
-
-        {/* Botón para ir a la pantalla de configuración */}
         <Pressable style={styles.settingsButton} onPress={navigateToSettings}>
           <Text style={styles.settingsButtonText}>Ir a Configuración</Text>
         </Pressable>
-
-        {/* Nuevo botón para cambiar la foto de perfil */}
         <Pressable style={styles.changeProfilePictureButton} onPress={navigateToChangeProfilePicture}>
           <Text style={styles.changeProfilePictureButtonText}>Cambiar Foto de Perfil</Text>
         </Pressable>
@@ -181,12 +216,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#333',
   },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginTop: 20,
-    color: '#333',
-  },
   instructionText: {
     fontSize: 16,
     color: '#333',
@@ -206,22 +235,17 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
   },
-  statNumber: {
+  selectedDateText: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 10,
   },
   statLabel: {
     fontSize: 14,
     color: '#777',
     marginTop: 5,
     textAlign: 'center',
-  },
-  selectedDateText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 10,
   },
   closeButton: {
     position: 'absolute',
@@ -232,6 +256,24 @@ const styles = StyleSheet.create({
   closeButtonText: {
     fontSize: 20,
     color: '#FF6347',
+  },
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 20,
+    color: '#333',
+  },
+  statPeriod: {
+    marginBottom: 10,
+  },
+  statPeriodTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  statDetail: {
+    fontSize: 14,
+    color: '#555',
   },
   logoutButton: {
     backgroundColor: '#FF3B30',
