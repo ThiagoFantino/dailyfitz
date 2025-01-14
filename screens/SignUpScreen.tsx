@@ -28,65 +28,62 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   };
 
   function signUpRequest() {
-    
-    if (nombre.length <= 0) {
+    let hasError = false;
+  
+    if (nombre.trim().length <= 0) {
       setNameError("Debe ingresar un nombre.");
-    } else {
+      hasError = true;
+    } else if (testProfileText(nombre)) {
       setNameError(testProfileText(nombre));
+      hasError = true;
     }
-    
-    if (apellido.length <= 0) {
+  
+    if (apellido.trim().length <= 0) {
       setSurnameError("Debe ingresar un apellido.");
-    } else {
+      hasError = true;
+    } else if (testProfileText(apellido)) {
       setSurnameError(testProfileText(apellido));
+      hasError = true;
     }
   
-    if (email.length <= 0) {
+    if (email.trim().length <= 0) {
       setEmailError("Debe ingresar un email.");
-    } else {
+      hasError = true;
+    } else if (testEmail(email)) {
       setEmailError(testEmail(email));
+      hasError = true;
     }
   
-    if (password.length <= 0) {
+    if (password.trim().length <= 0) {
       setPasswordError("Debe ingresar una contraseña.");
-    } else {
+      hasError = true;
+    } else if (testPassword(password)) {
       setPasswordError(testPassword(password));
+      hasError = true;
     }
   
-    if (!nameError && !surnameError && !emailError && !passwordError) {
-      const userData = {
-        nombre,
-        apellido,
-        calorias: 0,
-        entrenamientos: 0,
-        tiempo: 0,
-        email,
-        password,
-      };
-  
+    if (!hasError) {
+      // Enviar datos al backend
+      const userData = { nombre, apellido, calorias: 0, entrenamientos: 0, tiempo: 0, email, password };
       fetch(`${backendURL}/users/signup`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
       })
         .then((response) => response.json())
         .then((data) => {
-          if (data.error && data.error === 'El email ya está registrado.') {
-            // Si el error es que el email ya está registrado
-            setEmailError(data.error); // Mostrar el mensaje de error
+          if (data.error === 'El email ya está registrado.') {
+            setEmailError(data.error);
           } else {
             console.log('Success:', data);
             setSuccessMessage('¡Cuenta creada con éxito!');
             loginAfterSignUp(email, password);
           }
         })
-        .catch((error) => {
-          console.error('Error:', error);
-        });
+        .catch((error) => console.error('Error:', error));
     }
   }
+  
 
   function loginAfterSignUp(email, password) {
     // Realiza la solicitud de login después de un registro exitoso
@@ -173,7 +170,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
 
   function testEmail(input_password: string) {
     const length_exp = regexWithAdvice(/^.{1,}$/, "El campo no puede estar vacío");
-    const format_exp = regexWithAdvice(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El email no es valido.");
+    const format_exp = regexWithAdvice(/^[A-Za-zÑñ0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El email no es valido.");
     const regex_set = [length_exp, format_exp];
     return (testRegexWithAdviceSet(regex_set, input_password));
   }
