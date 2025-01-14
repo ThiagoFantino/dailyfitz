@@ -20,48 +20,52 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
   };
 
   const loginRequest = async () => {
-    let first_advice_email = email.length > 0
-      ? testInput(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "Error en el email ingresado.", email)
-      : "Email no ingresado.";
-    first_advice_email !== "" ? setEmailError(first_advice_email) : setEmailError("");
+    // Limpiar errores previos
+    setEmailError('');
+    setPasswordError('');
   
-    let first_advice_password = password.length > 0
-      ? testInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/, "Error en la contraseña ingresada.", password)
-      : "Contraseña no ingresada.";
-    first_advice_password !== "" ? setPasswordError(first_advice_password) : setPasswordError("");
+    // Validación de campos vacíos
+    if (email.trim() === '') {
+      setEmailError('Debe ingresar un email.');
+      return;
+    }
+    if (password.trim() === '') {
+      setPasswordError('Debe ingresar una contraseña.');
+      return;
+    }
   
-    if (first_advice_email === "" && first_advice_password === "") {
-      try {
-        const response = await fetch(`${backendURL}/users/login`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password,
-          }),
-        });
-    
-        const data = await response.json();
-    
-        if (response.ok) {
-          console.log('Login exitoso');
-          const id = data.userId;
-
-          setEmail(''); 
-          setPassword('');
-          
-          navigation.navigate("Home",{ id:id });
-        } else {
-          Alert.alert('Error', data.error || 'Error al iniciar sesión');
-        }
-      } catch (error) {
-        console.error('Error al realizar el login:', error);
-        Alert.alert('Error', 'Hubo un problema con el login');
+    try {
+      const response = await fetch(`${backendURL}/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        // Login exitoso: Redirigir al Home
+        console.log('Login exitoso');
+        const userId = data.userId;
+  
+        // Limpiar campos y navegar
+        setEmail('');
+        setPassword('');
+        navigation.navigate('Home', { id: userId });
+      } else if (response.status === 401) {
+        // Mostrar mensaje de error en la interfaz
+        setEmailError('Email o contraseña incorrectos');
+      } else {
+        // Otros errores del servidor
+        Alert.alert('Error', data.error || 'Hubo un problema al iniciar sesión');
       }
+    } catch (error) {
+      console.error('Error al realizar el login:', error);
+      Alert.alert('Error', 'No se pudo conectar con el servidor');
     }
   };
+  
+  
   
   
   const changeEmail = (input: string) => {
