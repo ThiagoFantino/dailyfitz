@@ -115,7 +115,7 @@ const UserStatsScreen = ({ route }) => {
   const formatDate = (date) => {
     // Asegúrate de que la fecha sea una cadena de tipo 'YYYY-MM-DD'
     if (date instanceof Date) {
-      date = date.toISOString().split('T')[0]; // Convierte el objeto Date a formato 'YYYY-MM-DD'
+      date = formatDateToISO(date) // Convierte el objeto Date a formato 'YYYY-MM-DD'
     }
 
     const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/); // Coincide con el formato YYYY-MM-DD
@@ -125,6 +125,20 @@ const UserStatsScreen = ({ route }) => {
     }
     return date; // Si no coincide, retorna la fecha original
   };
+
+  const formatDateToISO = (date) => {
+    if (date instanceof Date) {
+        const year = date.getFullYear();               // Obtiene el año
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');  // Obtiene el mes (debe ser de 2 dígitos)
+        const day = date.getDate().toString().padStart(2, '0');  // Obtiene el día (debe ser de 2 dígitos)
+        
+        // Retorna la fecha en formato 'YYYY-MM-DD'
+        return `${year}-${month}-${day}`;
+    }
+
+    return date;  // Si no es un objeto Date, retorna la fecha original
+};
+
 
   const getWeekRange = (date) => {
     const selectedDate = new Date(date);
