@@ -299,17 +299,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f4f8',
   },
   scrollContent: {
-    padding: 20,
-    width: '90%',
-    minWidth: 350,
-    borderRadius: 15,
     backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-    margin:'auto',
   },
   headerContainer: {
     justifyContent: 'center',
@@ -361,12 +351,9 @@ const styles = StyleSheet.create({
   },
   inputError: {
     justifyContent: 'center',
-    marginHorizontal: '5%',
     alignItems: 'flex-start',
   },
   inputErrorMenssage: {
-    position:'absolute',
-    top:-13,
     color: 'red',
     fontSize: 13,
   },
