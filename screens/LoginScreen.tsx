@@ -52,9 +52,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
         setEmail('');
         setPassword('');
         navigation.navigate('Home', { id: userId });
+      } else if (response.status === 404) {
+        // Error si el email no existe
+        setEmailError('El email no está registrado');
       } else if (response.status === 401) {
-        // Mostrar mensaje de error en la interfaz
-        setEmailError('Email o contraseña incorrectos');
+        // Error si la contraseña es incorrecta
+        setPasswordError('Contraseña incorrecta');
       } else {
         // Otros errores del servidor
         Alert.alert('Error', data.error || 'Hubo un problema al iniciar sesión');
@@ -64,6 +67,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
       Alert.alert('Error', 'No se pudo conectar con el servidor');
     }
   };
+  
   
   
   
