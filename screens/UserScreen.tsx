@@ -43,6 +43,7 @@ const UserStatsScreen = ({ route }) => {
       fetchData();
       fetchStatsByPeriod();
       fetchTotalStats();
+      setShowStats(false);
     }, [])
   );
 
@@ -250,9 +251,9 @@ const getWeekRange = (date) => {
             <Text style={styles.selectedDateText}>Estadísticas para {selectedDate}</Text>
             {statsForSelectedDate ? (
               <>
-                <Text style={styles.statLabel}>Entrenamientos: {statsForSelectedDate.entrenamientos}</Text>
-                <Text style={styles.statLabel}>Calorías Quemadas: {statsForSelectedDate.calorias}</Text>
-                <Text style={styles.statLabel}>Tiempo: {formatTime(statsForSelectedDate.tiempo)}</Text>
+                <Text style={styles.statLabel}>Series de ejercicios: {statsForSelectedDate.entrenamientos}</Text>
+                <Text style={styles.statLabel}>Calorías quemadas: {statsForSelectedDate.calorias}</Text>
+                <Text style={styles.statLabel}>Tiempo de entrenamiento: {formatTime(statsForSelectedDate.tiempo)}</Text>
               </>
             ) : (
               <Text>No hay estadísticas para esta fecha.</Text>
