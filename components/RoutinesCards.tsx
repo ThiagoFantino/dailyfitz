@@ -1,44 +1,136 @@
-import { StyleSheet, Text, Pressable, Image, ScrollView } from "react-native";
-import React, { useState, useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
-import {backendURL} from '@/config'
+import { StyleSheet, Text, Pressable, Image, ScrollView, View, ActivityIndicator } from "react-native";
+import React, { useState, useCallback } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { backendURL } from "@/config";
 
 const Routines = ({ userId }) => {
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
   const [routines, setRoutines] = useState([]);
+  const [loadingImages, setLoadingImages] = useState({});
 
-  useEffect(() => {
-    fetchData();
+  // Definir la función asincrónica dentro del useCallback
+  const fetchData = useCallback(() => {
+    async function fetchRoutines() {
+      try {
+        const response = await fetch(`${backendURL}/routines?userId=${userId}`);
+        const json = await response.json();
+        setRoutines(json);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+
+    // Llamar la función asincrónica
+    fetchRoutines();
+  }, [userId]);
+
+  // Usar useFocusEffect sin retornar la promesa directamente
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [fetchData])
+  );
+
+  const handleImageLoadStart = useCallback((id) => {
+    setLoadingImages((prev) => {
+      if (prev[id]) return prev;
+      return { ...prev, [id]: true };
+    });
   }, []);
 
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${backendURL}/routines`); 
-      const json = await response.json();
-      setRoutines(json); 
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  };
+  const handleImageLoad = useCallback((id) => {
+    setLoadingImages((prev) => {
+      if (prev[id] === false) return prev;
+      return { ...prev, [id]: false };
+    });
+  }, []);
+
+  const customRoutines = routines.filter((item) => item.isCustom && item.userId === userId);
+  const predefinedRoutines = routines.filter((item) => !item.isCustom);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {routines.map((item) => (
-        <Pressable
-          key={item.id}
-          onPress={() =>
-            navigation.navigate("Routine", {
-              image: item.image,
-              id: item.id,
-              userId: userId,
-            })
-          }
-          style={styles.pressable}
-        >
-          <Image style={styles.image} source={{ uri: item.image }} />
-          <Text style={styles.text}>{item.name}</Text>
-        </Pressable>
-      ))}
+      {/* Botón para crear una rutina personalizada */}
+      <Pressable
+        onPress={() => navigation.navigate("CustomRoutine", { userId })}
+        style={styles.createRoutineButton}
+      >
+        <Text style={styles.createRoutineButtonText}>Crear Rutina Personalizada</Text>
+      </Pressable>
+
+      {/* Mostrar rutinas personalizadas */}
+      {customRoutines.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Tus Rutinas Personalizadas</Text>
+          {customRoutines.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() =>
+                navigation.navigate("Routine", {
+                  image: item.image,
+                  id: item.id,
+                  userId,
+                })
+              }
+              style={styles.pressable}
+            >
+              <View style={styles.imageContainer}>
+                {loadingImages[item.id] && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0000ff"
+                    style={styles.loadingIndicator}
+                  />
+                )}
+                <Image
+                  style={styles.image}
+                  source={{ uri: item.image }}
+                  onLoadStart={() => handleImageLoadStart(item.id)}
+                  onLoad={() => handleImageLoad(item.id)}
+                />
+              </View>
+              <Text style={styles.text}>{item.name}</Text>
+            </Pressable>
+          ))}
+        </>
+      )}
+
+      {/* Mostrar rutinas predefinidas */}
+      {predefinedRoutines.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Rutinas Predefinidas</Text>
+          {predefinedRoutines.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() =>
+                navigation.navigate("Routine", {
+                  image: item.image,
+                  id: item.id,
+                  userId,
+                })
+              }
+              style={styles.pressable}
+            >
+              <View style={styles.imageContainer}>
+                {loadingImages[item.id] && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0000ff"
+                    style={styles.loadingIndicator}
+                  />
+                )}
+                <Image
+                  style={styles.image}
+                  source={{ uri: item.image }}
+                  onLoadStart={() => handleImageLoadStart(item.id)}
+                  onLoad={() => handleImageLoad(item.id)}
+                />
+              </View>
+              <Text style={styles.text}>{item.name}</Text>
+            </Pressable>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -57,6 +149,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 10,
   },
+  imageContainer: {
+    position: "relative",
+    width: "100%",
+    height: 140,
+    borderRadius: 15,
+  },
+  loadingIndicator: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    marginLeft: -20,
+    marginTop: -20,
+  },
   image: {
     width: "100%",
     height: 140,
@@ -69,6 +174,27 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     left: 20,
     top: 20,
+  },
+  sectionTitle: {
+    marginTop: 20,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    alignSelf: "flex-start",
+    marginLeft: 10,
+  },
+  createRoutineButton: {
+    marginTop: 20,
+    backgroundColor: "#246EE9",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    width: "90%",
+  },
+  createRoutineButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
