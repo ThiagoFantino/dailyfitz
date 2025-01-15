@@ -8,17 +8,28 @@ const Routines = ({ userId }) => {
   const [routines, setRoutines] = useState([]);
   const [loadingImages, setLoadingImages] = useState({});
 
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await fetch(`${backendURL}/routines?userId=${userId}`);
-      const json = await response.json();
-      setRoutines(json);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  // Definir la función asincrónica dentro del useCallback
+  const fetchData = useCallback(() => {
+    async function fetchRoutines() {
+      try {
+        const response = await fetch(`${backendURL}/routines?userId=${userId}`);
+        const json = await response.json();
+        setRoutines(json);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
+
+    // Llamar la función asincrónica
+    fetchRoutines();
   }, [userId]);
 
-  useFocusEffect(fetchData);
+  // Usar useFocusEffect sin retornar la promesa directamente
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [fetchData])
+  );
 
   const handleImageLoadStart = useCallback((id) => {
     setLoadingImages((prev) => {
@@ -186,7 +197,4 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
-
-
-
 
