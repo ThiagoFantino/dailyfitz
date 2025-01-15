@@ -1,80 +1,136 @@
 import { StyleSheet, Text, Pressable, Image, ScrollView, View, ActivityIndicator } from "react-native";
-import React, { useState, useEffect, useCallback } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { backendURL } from '@/config';
+import React, { useState, useCallback } from "react";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { backendURL } from "@/config";
 
 const Routines = ({ userId }) => {
   const navigation = useNavigation();
-  const [routines, setRoutines] = useState<any[]>([]);
-  const [loadingImages, setLoadingImages] = useState<any>({}); // Estado de carga por imagen
+  const [routines, setRoutines] = useState([]);
+  const [loadingImages, setLoadingImages] = useState({});
 
-  // Función para obtener los datos de las rutinas
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch(`${backendURL}/routines`);
-      const json = await response.json();
-      setRoutines(json);
-    } catch (error) {
-      console.error('Error fetching data:', error);
+  // Definir la función asincrónica dentro del useCallback
+  const fetchData = useCallback(() => {
+    async function fetchRoutines() {
+      try {
+        const response = await fetch(`${backendURL}/routines?userId=${userId}`);
+        const json = await response.json();
+        setRoutines(json);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     }
-  };
 
-  // Función de manejo de inicio de carga de imagen
-  const handleImageLoadStart = useCallback((id: string) => {
-    setLoadingImages(prev => {
-      if (prev[id] !== true) {
-        return { ...prev, [id]: true }; // Solo actualiza si no está en el estado correcto
-      }
-      return prev;
+    // Llamar la función asincrónica
+    fetchRoutines();
+  }, [userId]);
+
+  // Usar useFocusEffect sin retornar la promesa directamente
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [fetchData])
+  );
+
+  const handleImageLoadStart = useCallback((id) => {
+    setLoadingImages((prev) => {
+      if (prev[id]) return prev;
+      return { ...prev, [id]: true };
     });
   }, []);
 
-  // Función de manejo de fin de carga de imagen
-  const handleImageLoad = useCallback((id: string) => {
-    setLoadingImages(prev => {
-      if (prev[id] !== false) {
-        return { ...prev, [id]: false }; // Solo actualiza si no está en el estado correcto
-      }
-      return prev;
+  const handleImageLoad = useCallback((id) => {
+    setLoadingImages((prev) => {
+      if (prev[id] === false) return prev;
+      return { ...prev, [id]: false };
     });
   }, []);
+
+  const customRoutines = routines.filter((item) => item.isCustom && item.userId === userId);
+  const predefinedRoutines = routines.filter((item) => !item.isCustom);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {routines.map((item) => (
-        <Pressable
-          key={item.id}
-          onPress={() =>
-            navigation.navigate("Routine", {
-              image: item.image,
-              id: item.id,
-              userId: userId,
-            })
-          }
-          style={styles.pressable}
-        >
-          <View style={styles.imageContainer}>
-            {loadingImages[item.id] && (
-              <ActivityIndicator
-                size="large"
-                color="#0000ff"
-                style={styles.loadingIndicator}
-              />
-            )}
-            <Image
-              style={styles.image}
-              source={{ uri: item.image }}
-              onLoadStart={() => handleImageLoadStart(item.id)} // Cuando empieza la carga
-              onLoad={() => handleImageLoad(item.id)} // Cuando termina la carga
-            />
-          </View>
-          <Text style={styles.text}>{item.name}</Text>
-        </Pressable>
-      ))}
+      {/* Botón para crear una rutina personalizada */}
+      <Pressable
+        onPress={() => navigation.navigate("CustomRoutine", { userId })}
+        style={styles.createRoutineButton}
+      >
+        <Text style={styles.createRoutineButtonText}>Crear Rutina Personalizada</Text>
+      </Pressable>
+
+      {/* Mostrar rutinas personalizadas */}
+      {customRoutines.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Tus Rutinas Personalizadas</Text>
+          {customRoutines.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() =>
+                navigation.navigate("Routine", {
+                  image: item.image,
+                  id: item.id,
+                  userId,
+                })
+              }
+              style={styles.pressable}
+            >
+              <View style={styles.imageContainer}>
+                {loadingImages[item.id] && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0000ff"
+                    style={styles.loadingIndicator}
+                  />
+                )}
+                <Image
+                  style={styles.image}
+                  source={{ uri: item.image }}
+                  onLoadStart={() => handleImageLoadStart(item.id)}
+                  onLoad={() => handleImageLoad(item.id)}
+                />
+              </View>
+              <Text style={styles.text}>{item.name}</Text>
+            </Pressable>
+          ))}
+        </>
+      )}
+
+      {/* Mostrar rutinas predefinidas */}
+      {predefinedRoutines.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Rutinas Predefinidas</Text>
+          {predefinedRoutines.map((item) => (
+            <Pressable
+              key={item.id}
+              onPress={() =>
+                navigation.navigate("Routine", {
+                  image: item.image,
+                  id: item.id,
+                  userId,
+                })
+              }
+              style={styles.pressable}
+            >
+              <View style={styles.imageContainer}>
+                {loadingImages[item.id] && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0000ff"
+                    style={styles.loadingIndicator}
+                  />
+                )}
+                <Image
+                  style={styles.image}
+                  source={{ uri: item.image }}
+                  onLoadStart={() => handleImageLoadStart(item.id)}
+                  onLoad={() => handleImageLoad(item.id)}
+                />
+              </View>
+              <Text style={styles.text}>{item.name}</Text>
+            </Pressable>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -119,4 +175,26 @@ const styles = StyleSheet.create({
     left: 20,
     top: 20,
   },
+  sectionTitle: {
+    marginTop: 20,
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    alignSelf: "flex-start",
+    marginLeft: 10,
+  },
+  createRoutineButton: {
+    marginTop: 20,
+    backgroundColor: "#246EE9",
+    padding: 15,
+    borderRadius: 10,
+    alignItems: "center",
+    width: "90%",
+  },
+  createRoutineButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
 });
+

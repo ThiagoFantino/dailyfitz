@@ -10,6 +10,7 @@ import LoginScreen from "@/screens/LoginScreen";
 import SignUpScreen from "@/screens/SignUpScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
 import ProfilePictureScreen from "@/screens/ProfilePictureScreen";
+import CustomRoutineScreen from "@/screens/CustomRoutineScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -60,6 +61,11 @@ const StackNavigator = () => {
         <Stack.Screen
           name="ProfilePicture"
           component={ProfilePictureScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CustomRoutine"
+          component={CustomRoutineScreen}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

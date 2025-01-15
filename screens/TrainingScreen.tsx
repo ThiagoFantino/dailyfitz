@@ -5,16 +5,18 @@ import { backendURL } from '@/config';
 
 const TrainingScreen = () => {
   const route = useRoute();
-  const navigation = useNavigation<any>();
+  const navigation = useNavigation();
 
   const [exercises, setExercises] = useState([]);
   const [index, setIndex] = useState(0);
-  const [startTime, setStartTime] = useState<Date | null>(null); 
-  const [completedExercises, setCompletedExercises] = useState(1);
-  const [totalCalories, setTotalCalories] = useState(0); 
-  const id = route.params?.id; 
-  const userId = route.params?.userId; 
-  const current = exercises[index];
+  const [currentSet, setCurrentSet] = useState(1);
+  const [totalSetsCompleted, setTotalSetsCompleted] = useState(0);
+  const [totalCalories, setTotalCalories] = useState(0);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+
+  const id = route.params?.id;
+  const userId = route.params?.userId;
+  const currentExercise = exercises[index];
 
   useEffect(() => {
     fetchExercises();
@@ -31,10 +33,47 @@ const TrainingScreen = () => {
     }
   };
 
+  const handleSetComplete = () => {
+    setTotalCalories(prev => prev + currentExercise.calories);
+    setTotalSetsCompleted(prev => prev + 1);
+
+    console.log(
+      `Set completado: ${currentSet} de ${currentExercise.sets} para el ejercicio ${currentExercise.name}. 
+      Total sets completados: ${totalSetsCompleted + 1}. 
+      Calorías acumuladas: ${totalCalories + currentExercise.calories}`
+    );
+
+    if (currentSet < currentExercise.sets) {
+      setCurrentSet(prev => prev + 1);
+      navigation.navigate("Rest");
+    } else {
+      handleNextExercise();
+    }
+  };
+
+  const handleNextExercise = () => {
+    if (index + 1 < exercises.length) {
+      setIndex(prev => prev + 1);
+      setCurrentSet(1);
+      navigation.navigate("Rest");
+    } else {
+      handleFinish();
+    }
+  };
+
   const handleFinish = () => {
     const endTime = new Date();
-    const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60); 
-    navigation.navigate("Congratulations", { totalTime: totalTimeInMinutes, completedExercises, totalCalories: totalCalories + current.calorias, userId: userId });
+    const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60);
+
+    const finalSetsCompleted = totalSetsCompleted + (currentSet <= currentExercise.sets ? 1 : 0);
+    const finalCalories = totalCalories + (currentSet <= currentExercise.sets ? currentExercise.calories : 0);
+
+    navigation.navigate("Congratulations", {
+      totalTime: totalTimeInMinutes,
+      completedExercises: finalSetsCompleted,
+      totalCalories: finalCalories,
+      userId,
+    });
   };
 
   const handleExit = () => {
@@ -48,15 +87,8 @@ const TrainingScreen = () => {
         'Advertencia',
         'Se perderá todo el progreso. ¿Está seguro de que desea salir?',
         [
-          {
-            text: 'Cancelar',
-            style: 'cancel',
-          },
-          {
-            text: 'Salir',
-            onPress: () => navigation.navigate("Home", { id: id }),
-            style: 'destructive',
-          },
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Salir', onPress: () => navigation.navigate("Home", { id: id }), style: 'destructive' },
         ],
         { cancelable: true }
       );
@@ -65,47 +97,21 @@ const TrainingScreen = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {current && (
+      {currentExercise && (
         <>
-          <Image
-            style={styles.image}
-            source={{ uri: current.image }}
-            resizeMode="contain"
-          />
-          <Text style={styles.exerciseName}>{current.name}</Text>
-          <Text style={styles.exerciseSets}>x{current.sets}</Text>
-          <Text style={styles.exerciseSets}>Quema {current.calorias} calorias</Text>
+          <Image style={styles.image} source={{ uri: currentExercise.image }} resizeMode="contain" />
+          <Text style={styles.exerciseName}>{currentExercise.name}</Text>
+          <Text style={styles.exerciseSets}>Set {currentSet} de {currentExercise.sets}</Text>
+          <Text style={styles.exerciseSets}>Quema {currentExercise.calories} calorías por set</Text>
 
-          {index + 1 >= exercises.length ? (
-            <Pressable
-              onPress={() => {
-                setCompletedExercises(completedExercises + 1); 
-                setTotalCalories(totalCalories + current.calorias); 
-                handleFinish();
-              }}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>FINALIZADO</Text>
-            </Pressable>
-          ) : (
-            <Pressable
-              onPress={() => {
-                setCompletedExercises(completedExercises + 1); 
-                setTotalCalories(totalCalories + current.calorias);
-                navigation.navigate("Rest");
-                setTimeout(() => setIndex(index + 1), 2000);
-              }}
-              style={styles.button}
-            >
-              <Text style={styles.buttonText}>FINALIZADO</Text>
-            </Pressable>
-          )}
+          <Pressable onPress={handleSetComplete} style={styles.button}>
+            <Text style={styles.buttonText}>
+              {currentSet < currentExercise.sets ? "FINALIZAR SET" : "FINALIZAR EJERCICIO"}
+            </Text>
+          </Pressable>
 
           <View style={styles.buttonContainer}>
-            <Pressable 
-              onPress={handleExit} 
-              style={styles.actionButton}
-            >
+            <Pressable onPress={handleExit} style={styles.actionButton}>
               <Text style={styles.actionButtonText}>SALIR</Text>
             </Pressable>
           </View>
@@ -174,4 +180,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
+
+
 
