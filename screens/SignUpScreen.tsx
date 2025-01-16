@@ -168,12 +168,17 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
     setEmail(input);
   }
 
-  function testEmail(input_password: string) {
+  function testEmail(input_email: string) {
     const length_exp = regexWithAdvice(/^.{1,}$/, "El campo no puede estar vacío");
-    const format_exp = regexWithAdvice(/^[A-Za-zÑñ0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El email no es valido.");
+    const format_exp = regexWithAdvice(
+        /^[A-Za-zÑñ0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-zÑñ0-9-]+(\.[A-Za-zÑñ0-9-]+)+$/,
+        "El email no es válido."
+    );
     const regex_set = [length_exp, format_exp];
-    return (testRegexWithAdviceSet(regex_set, input_password));
-  }
+    return testRegexWithAdviceSet(regex_set, input_email);
+}
+
+
 
   function changePassword(input: string) {
     let advice = testPassword(input);
