@@ -295,7 +295,7 @@ const getWeekRange = (date) => {
           <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
         </Pressable>
         <Pressable style={styles.settingsButton} onPress={navigateToSettings}>
-          <Text style={styles.settingsButtonText}>Ir a Configuración</Text>
+          <Text style={styles.settingsButtonText}>Modificar Datos Personales</Text>
         </Pressable>
         <Pressable style={styles.changeProfilePictureButton} onPress={navigateToChangeProfilePicture}>
           <Text style={styles.changeProfilePictureButtonText}>Cambiar Foto de Perfil</Text>

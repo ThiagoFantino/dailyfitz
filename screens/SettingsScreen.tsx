@@ -8,6 +8,10 @@ const SettingsScreen = ({ route, navigation }) => {
   const [email, setEmail] = useState('');
   const [userId, setUserId] = useState(route.params.id);
 
+  const [nombreError, setNombreError] = useState('');
+  const [apellidoError, setApellidoError] = useState('');
+  const [emailError, setEmailError] = useState('');
+
   // Función para obtener los datos del usuario al cargar la pantalla
   useEffect(() => {
     const fetchUserData = async () => {
@@ -25,10 +29,53 @@ const SettingsScreen = ({ route, navigation }) => {
     fetchUserData();
   }, [userId]);
 
+  // Función de validación de los campos
+  const validateFields = () => {
+    let isValid = true;
+
+    // Validación de nombre
+    const nameRegex = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
+    if (!nombre.trim()) {
+      setNombreError('El nombre no puede estar vacío.');
+      isValid = false;
+    } else if (!nameRegex.test(nombre)) {
+      setNombreError('El nombre solo puede contener letras, espacios, apóstrofes y guiones.');
+      isValid = false;
+    } else {
+      setNombreError('');
+    }
+
+    // Validación de apellido
+    const surnameRegex = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
+    if (!apellido.trim()) {
+      setApellidoError('El apellido no puede estar vacío.');
+      isValid = false;
+    } else if (!surnameRegex.test(apellido)) {
+      setApellidoError('El apellido solo puede contener letras, espacios, apóstrofes y guiones.');
+      isValid = false;
+    } else {
+      setApellidoError('');
+    }
+
+    // Validación de email
+    const emailRegex = /^[A-Za-zÑñ0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-zÑñ0-9-]+(\.[A-Za-zÑñ0-9-]+)+$/;
+    if (!email.trim()) {
+      setEmailError('El correo electrónico no puede estar vacío.');
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      setEmailError('El formato del correo electrónico es incorrecto.');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }
+
+    return isValid;
+  };
+
   // Función para actualizar los datos
   const handleSave = async () => {
-    if (!nombre || !apellido || !email) {
-      Alert.alert('Error', 'Por favor, complete todos los campos');
+    // Validar campos antes de enviar
+    if (!validateFields()) {
       return;
     }
 
@@ -67,7 +114,7 @@ const SettingsScreen = ({ route, navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Configuración de Usuario</Text>
+        <Text style={styles.title}>Modificar Datos Personales</Text>
 
         <TextInput
           style={styles.input}
@@ -75,6 +122,7 @@ const SettingsScreen = ({ route, navigation }) => {
           value={nombre}
           onChangeText={setNombre}
         />
+        {nombreError ? <Text style={styles.errorText}>{nombreError}</Text> : null}
 
         <TextInput
           style={styles.input}
@@ -82,6 +130,7 @@ const SettingsScreen = ({ route, navigation }) => {
           value={apellido}
           onChangeText={setApellido}
         />
+        {apellidoError ? <Text style={styles.errorText}>{apellidoError}</Text> : null}
 
         <TextInput
           style={styles.input}
@@ -90,9 +139,9 @@ const SettingsScreen = ({ route, navigation }) => {
           onChangeText={setEmail}
           keyboardType="email-address"
         />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
         <Button title="Guardar Cambios" onPress={handleSave} />
-
       </ScrollView>
     </SafeAreaView>
   );
@@ -120,6 +169,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingHorizontal: 10,
     borderRadius: 5,
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
   },
 });
 
