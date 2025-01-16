@@ -78,7 +78,7 @@ const SettingsScreen = ({ route, navigation }) => {
     if (!validateFields()) {
       return;
     }
-
+  
     try {
       const response = await fetch(`${backendURL}/users/${userId}`, {
         method: 'PUT',
@@ -91,15 +91,16 @@ const SettingsScreen = ({ route, navigation }) => {
           email,
         }),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         Alert.alert('Éxito', 'Los datos se han actualizado correctamente');
         navigation.goBack(); // Volver a la pantalla anterior
       } else {
         // Manejar errores del servidor, como el email ya registrado
         if (data.error === 'El email ya está registrado.') {
+          setEmailError(data.error); // Mostrar el error en el campo del email
           Alert.alert('Error', data.error); // Mostrar el error del email ya registrado
         } else {
           Alert.alert('Error', 'Hubo un problema al actualizar los datos');
@@ -110,6 +111,7 @@ const SettingsScreen = ({ route, navigation }) => {
       Alert.alert('Error', 'Hubo un error al guardar los datos');
     }
   };
+  
 
   return (
     <SafeAreaView style={styles.container}>
