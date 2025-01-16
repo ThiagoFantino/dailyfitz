@@ -191,7 +191,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
     const uppercase_exp = regexWithAdvice(/(?=.*[A-Z])/, "Debe incluir al menos una letra mayúscula.");
     const lowercase_exp = regexWithAdvice(/(?=.*[a-z])/, "Debe incluir al menos una letra minúscula.");
     const number_exp = regexWithAdvice(/(?=.*\d)/, "Debe incluir al menos un número.");
-    const special_char_exp = regexWithAdvice(/(?=.*[@$!%*?&])/, "Debe incluir al menos un carácter especial (@$!%*?&).");
+    const special_char_exp = regexWithAdvice(/(?=.*[@$!%*?&#+^()_={}\[\]<>\|~])/, "Debe incluir al menos un carácter especial. Caracteres permitidos: @$!%*?&#+^()_={}[].<>|~");
     const no_whitespace_exp = regexWithAdvice(/^\S*$/, "No se permiten espacios en blanco.");
     const regex_set = [length_exp, uppercase_exp, lowercase_exp, number_exp, special_char_exp, no_whitespace_exp];
     return testRegexWithAdviceSet(regex_set, input_password);
@@ -272,7 +272,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
             onPress={passwordViewFlip}>
             <Image style={styles.passwordDisplayIcon} source={{ uri: 'https://storage.needpix.com/rsynced_images/eye-2387853_1280.png' }}/>
           </Pressable>
-          <Text style={styles.inputHint}>Debe incluir al menos 8 caracteres, una mayúscula, un número y un carácter especial (@$!%*?&).</Text>
+          <Text style={styles.inputHint}>Debe incluir al menos 8 caracteres, una mayúscula, un número y un carácter especial.</Text>
         </View>
         <View style={styles.inputError}>
           <Text style={styles.inputErrorMenssage}>{passwordError}</Text>
