@@ -22,6 +22,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const [routineName, setRoutineName] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadingImages, setLoadingImages] = useState({}); // Estado para la carga de imágenes
+  const [restTime, setRestTime] = useState("");
 
   const handleSetsChange = (text) => {
     if (text === "") {
@@ -50,6 +51,21 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       }
     }
   };
+
+  const handleRestTimeChange = (text) => {
+    if (text === "") {
+      setRestTime("");
+    } else {
+      const number = parseInt(text, 10);
+      if (number < 0 || isNaN(number)) {
+        alert("Por favor, ingresa un tiempo de descanso válido (en segundos).");
+        setRestTime("");
+      } else {
+        setRestTime(number.toString());
+      }
+    }
+  };
+  
   
   
 // Manejador para marcar una imagen como cargada
@@ -110,6 +126,12 @@ useEffect(() => {
       alert("Por favor, selecciona al menos un ejercicio para la rutina.");
       return;
     }
+
+    if (!restTime.trim()) {
+      alert("Por favor, ingresa un tiempo de descanso para la rutina.");
+      return;
+    }
+    
   
     if (!selectedImage) {
       alert("Por favor, selecciona una imagen para la rutina.");
@@ -123,6 +145,7 @@ useEffect(() => {
       userId: userId,
       exercises: reversedExercises,
       image: selectedImage,
+      restTime: parseInt(restTime, 10),
     };
   
     fetch(`${backendURL}/routines/create-custom-routine`, {
@@ -294,6 +317,14 @@ useEffect(() => {
         horizontal
         contentContainerStyle={styles.imageList}
       />
+            <Text style={styles.instruction}>Ingrese el tiempo de descanso entre series (en segundos):</Text>
+<TextInput
+  style={styles.input}
+  placeholder="Tiempo de descanso (segundos)"
+  keyboardType="numeric"
+  value={restTime}
+  onChangeText={handleRestTimeChange}
+/>
       <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
         <Text style={styles.saveButtonText}>Guardar Rutina</Text>
       </Pressable>
