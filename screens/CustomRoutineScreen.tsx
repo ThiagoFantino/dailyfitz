@@ -37,7 +37,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
 
   const handleSelectExercise = (exercise) => {
     if (!sets || !reps) {
-      alert("Por favor, ingresa sets y reps para el ejercicio.");
+      alert("Por favor, ingresa series y repeticiones para el ejercicio.");
       return;
     }
 
@@ -165,11 +165,29 @@ const CustomRoutineScreen = ({ route, navigation }) => {
             onChangeText={setRoutineName}
           />
 
-          {/* Instrucción para ejercicios */}
+          {/* Sets y reps */}
           <Text style={styles.instruction}>
-            Ingrese la cantidad de series y repeticiones y seleccione el ejercicio:
+            Ingrese la cantidad de series y repeticiones:
           </Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Series"
+            keyboardType="numeric"
+            value={sets}
+            onChangeText={setSets}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Repeticiones"
+            keyboardType="numeric"
+            value={reps}
+            onChangeText={setReps}
+          />
 
+          {/* Carrusel de ejercicios */}
+          <Text style={styles.instruction}>
+            Seleccione el ejercicio:
+          </Text>
           <View style={styles.carouselContainer}>
             <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
               <Text style={styles.arrowText}> {"<"} </Text>
@@ -195,24 +213,10 @@ const CustomRoutineScreen = ({ route, navigation }) => {
             </Pressable>
           </View>
 
-          {/* Sets y reps */}
-          <TextInput
-            style={styles.input}
-            placeholder="Sets"
-            keyboardType="numeric"
-            value={sets}
-            onChangeText={setSets}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Reps"
-            keyboardType="numeric"
-            value={reps}
-            onChangeText={setReps}
-          />
           <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
         </>
       }
+
       data={selectedExercises}
       keyExtractor={(item, index) => index.toString()}
       renderItem={({ item, index }) => (
@@ -220,8 +224,8 @@ const CustomRoutineScreen = ({ route, navigation }) => {
           {/* Información del ejercicio */}
           <View style={styles.exerciseInfoContainer}>
             <Text style={styles.exerciseName}>{item.name}</Text>
-            <Text>Sets: {item.sets}</Text>
-            <Text>Reps: {item.reps}</Text>
+            <Text>Series: {item.sets}</Text>
+            <Text>Repeticiones: {item.reps}</Text>
           </View>
 
           {/* Flechas de reordenar y eliminar */}
