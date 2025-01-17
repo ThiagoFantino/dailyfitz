@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, Alert, Platform } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, Image, Pressable, Alert, Platform, BackHandler } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { backendURL } from '@/config';
@@ -22,7 +22,27 @@ const TrainingScreen = () => {
   useEffect(() => {
     fetchExercises();
     setStartTime(new Date());
-  }, []);
+
+    // Agregar el listener para el retroceso del dispositivo
+    const backAction = () => {
+      Alert.alert(
+        'Advertencia',
+        'Se perderá todo el progreso. ¿Está seguro de que desea salir?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Salir', onPress: () => navigation.navigate("Home", { id: id }), style: 'destructive' },
+        ],
+        { cancelable: true }
+      );
+      return true; // Impide el comportamiento por defecto (salir)
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => {
+      backHandler.remove(); // Limpiar el listener al desmontar el componente
+    };
+  }, [navigation, id]);
 
   const fetchExercises = async () => {
     try {
@@ -35,17 +55,10 @@ const TrainingScreen = () => {
   };
 
   const handleSetComplete = () => {
-    // Sumar las calorías multiplicadas por las repeticiones al total acumulado
     const caloriesBurned = currentExercise.calories * currentExercise.reps;
     setTotalCalories(prev => prev + caloriesBurned);
     setTotalSetsCompleted(prev => prev + 1);
-  
-    console.log(
-      `Serie completada: ${currentSet} de ${currentExercise.sets} para el ejercicio ${currentExercise.name}. 
-      Total series completadas: ${totalSetsCompleted + 1}. 
-      Calorías acumuladas: ${totalCalories + caloriesBurned}`
-    );
-  
+
     if (currentSet < currentExercise.sets) {
       setCurrentSet(prev => prev + 1);
       navigation.navigate("Rest", { restTime: restTime });
@@ -53,13 +66,12 @@ const TrainingScreen = () => {
       handleNextExercise();
     }
   };
-  
 
   const handleNextExercise = () => {
     if (index + 1 < exercises.length) {
       setIndex(prev => prev + 1);
       setCurrentSet(1);
-      navigation.navigate("Rest", { restTime:restTime });
+      navigation.navigate("Rest", { restTime: restTime });
     } else {
       handleFinish();
     }
@@ -70,7 +82,7 @@ const TrainingScreen = () => {
     const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60);
 
     const finalSetsCompleted = totalSetsCompleted + (currentSet <= currentExercise.sets ? 1 : 0);
-    const finalCalories = totalCalories + (currentSet <= currentExercise.sets ? (currentExercise.calories*currentExercise.reps) : 0);
+    const finalCalories = totalCalories + (currentSet <= currentExercise.sets ? (currentExercise.calories * currentExercise.reps) : 0);
 
     navigation.navigate("Congratulations", {
       totalTime: totalTimeInMinutes,
@@ -160,10 +172,10 @@ const styles = StyleSheet.create({
   button: {
     backgroundColor: 'blue',
     borderRadius: 20,
-    paddingVertical: 10,  // Menos padding vertical
-    paddingHorizontal: 25,  // Menos padding horizontal
-    width: 250,  // Aumentamos el ancho ligeramente
-    marginTop: '1%',  // Mantener el espacio superior
+    paddingVertical: 10,
+    paddingHorizontal: 25,
+    width: 250,
+    marginTop: '1%',
     alignItems: 'center',
   },
   buttonText: {
@@ -192,6 +204,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
 });
+
 
 
 
