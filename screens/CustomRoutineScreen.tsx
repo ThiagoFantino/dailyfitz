@@ -54,16 +54,26 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       alert("Por favor, ingresa un nombre para la rutina.");
       return;
     }
-
+  
+    if (selectedExercises.length === 0) {
+      alert("Por favor, selecciona al menos un ejercicio para la rutina.");
+      return;
+    }
+  
+    if (!selectedImage) {
+      alert("Por favor, selecciona una imagen para la rutina.");
+      return;
+    }
+  
     const reversedExercises = selectedExercises.reverse();
-
+  
     const routineData = {
       name: routineName,
       userId: userId,
       exercises: reversedExercises,
-      image: selectedImage || "",
+      image: selectedImage,
     };
-
+  
     fetch(`${backendURL}/routines/create-custom-routine`, {
       method: "POST",
       headers: {
@@ -78,6 +88,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       })
       .catch((error) => console.error("Error saving routine:", error));
   };
+  
 
   const routineImages = [
     "https://img.freepik.com/fotos-premium/atleta-esta-parado-sobre-sus-rodillas-cerca-barra-gimnasio-esta-preparando-hacer-peso-muerto_392761-1698.jpg?w=1060",
