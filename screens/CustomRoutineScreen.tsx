@@ -306,18 +306,28 @@ const styles = StyleSheet.create({
   carouselContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between", // Espaciado entre las flechas y el contenido
+    marginVertical: 10, // Separación vertical para más claridad
   },
   arrowButton: {
-    padding: 15, // Aumenté el padding
+    width: 50, // Ancho fijo para las flechas
+    height: 50, // Altura fija para las flechas
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0", // Fondo para distinguirlas
+    borderRadius: 25, // Hacerlas circulares
+    marginHorizontal: 10, // Espaciado entre flechas y contenido
   },
   arrowText: {
-    fontSize: 36, // Aumenté el tamaño de las flechas
+    fontSize: 24, // Tamaño de las flechas
     fontWeight: "bold",
+    color: "#333",
   },
   exerciseContainer: {
+    flex: 1, // Tomar el espacio restante
     alignItems: "center",
-  },
+    justifyContent: "center",
+  },  
   exercisePressable: {
     alignItems: "center",
   },
