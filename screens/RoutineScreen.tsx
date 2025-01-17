@@ -10,13 +10,16 @@ const RoutineScreen = () => {
   const navigation = useNavigation<any>();
 
   const [routineExercises, setRoutineExercises] = useState<any[]>([]);
+  const [restTime, setRestTime] = useState<number>(0); // Estado para almacenar el tiempo de descanso
   const [loadingImages, setLoadingImages] = useState<any>({});
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchRoutineExercises();
+    fetchRestTime(); // Cargar el tiempo de descanso
   }, []);
 
+  // Función para obtener los ejercicios de la rutina
   const fetchRoutineExercises = async () => {
     try {
       const routineId = route.params.id;
@@ -41,10 +44,20 @@ const RoutineScreen = () => {
       setLoading(false);
     }
   };
-  
+
+  // Función para obtener el tiempo de descanso de la rutina
+  const fetchRestTime = async () => {
+    try {
+      const routineId = route.params.id;
+      const response = await fetch(`${backendURL}/routines/${routineId}/rest-time`);
+      const data = await response.json();
+      setRestTime(data.restTime); // Actualizar el estado con el tiempo de descanso
+    } catch (error) {
+      console.error('Error fetching rest time:', error);
+    }
+  };
 
   const handleImageLoadStart = useCallback((id: string) => {
-    // Solo actualiza si el valor no está ya en `true`
     setLoadingImages((prev) => {
       if (!prev[id]) {
         return { ...prev, [id]: true };
@@ -54,7 +67,6 @@ const RoutineScreen = () => {
   }, []);
   
   const handleImageLoad = useCallback((id: string) => {
-    // Solo actualiza si el valor no está ya en `false`
     setLoadingImages((prev) => {
       if (prev[id]) {
         return { ...prev, [id]: false };
@@ -62,7 +74,6 @@ const RoutineScreen = () => {
       return prev;
     });
   }, []);
-  
 
   if (loading) {
     return (
@@ -84,31 +95,48 @@ const RoutineScreen = () => {
           color="white"
         />
 
-        {routineExercises.map((item) => (
-          <Pressable style={styles.exerciseItem} key={item.id}>
-            <View style={styles.imageContainer}>
-              {loadingImages[item.id] && (
-                <ActivityIndicator
-                  size="large"
-                  color="#0000ff"
-                  style={styles.loadingIndicator}
+        {/* Mostrar el tiempo de descanso antes de los ejercicios */}
+        <View style={styles.restTimeContainer}>
+          <Text style={styles.restTimeTitle}>Tiempo de descanso entre series:</Text>
+          <Text style={styles.restTimeValue}>{restTime} segundos</Text>
+        </View>
+
+        {/* Iterar sobre los ejercicios y mostrar los detalles */}
+        {routineExercises.map((item) => {
+          // Calcular calorías totales quemadas
+          const totalCalories = item.calories * item.sets * item.reps;
+
+          return (
+            <Pressable style={styles.exerciseItem} key={item.id}>
+              <View style={styles.imageContainer}>
+                {loadingImages[item.id] && (
+                  <ActivityIndicator
+                    size="large"
+                    color="#0000ff"
+                    style={styles.loadingIndicator}
+                  />
+                )}
+                <Image
+                  style={styles.exerciseImage}
+                  source={{ uri: item.image }}
+                  onLoad={() => handleImageLoad(item.id)}
+                  onLoadStart={() => handleImageLoadStart(item.id)}
                 />
-              )}
-              <Image
-                style={styles.exerciseImage}
-                source={{ uri: item.image }}
-                onLoad={() => handleImageLoad(item.id)}
-                onLoadStart={() => handleImageLoadStart(item.id)}
-              />
-            </View>
-            <View style={styles.exerciseInfo}>
-              <Text style={styles.exerciseName}>{item.name}</Text>
-              <Text style={styles.exerciseSets}>
-                {item.sets} sets x {item.reps} reps
-              </Text>
-            </View>
-          </Pressable>
-        ))}
+              </View>
+              <View style={styles.exerciseInfo}>
+                <Text style={styles.exerciseName}>{item.name}</Text>
+                <Text style={styles.exerciseSets}>
+                  {item.sets} series de {item.reps} repeticiones
+                </Text>
+
+                {/* Mostrar calorías totales quemadas */}
+                <Text style={styles.totalCalories}>
+                  Calorías totales quemadas: {totalCalories.toFixed(2)} cal
+                </Text>
+              </View>
+            </Pressable>
+          );
+        })}
       </ScrollView>
 
       <Pressable
@@ -197,7 +225,29 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '600',
   },
+  restTimeContainer: {
+    padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  restTimeTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  restTimeValue: {
+    fontSize: 16,
+    color: '#666',
+  },
+  totalCalories: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#333',
+  },
 });
+
 
 
 
