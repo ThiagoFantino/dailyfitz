@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, Button, Alert, SafeAreaView, ScrollView, BackHandler, Pressable } from 'react-native';
+import { 
+  StyleSheet, 
+  Text, 
+  TextInput, 
+  View, 
+  Button, 
+  Alert, 
+  SafeAreaView, 
+  ScrollView, 
+  BackHandler, 
+  Pressable, 
+  Platform 
+} from 'react-native';
 import { backendURL } from '@/config'; // Asegúrate de tener la URL correcta de tu backend
 
 const SettingsScreen = ({ route, navigation }) => {
@@ -30,22 +42,7 @@ const SettingsScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const backAction = () => {
-      Alert.alert(
-        'Salir sin guardar',
-        'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
-        [
-          {
-            text: 'Cancelar',
-            onPress: () => null,
-            style: 'cancel',
-          },
-          {
-            text: 'Salir',
-            onPress: () => navigation.goBack(),
-          },
-        ],
-        { cancelable: false }
-      );
+      handleExit();
       return true;
     };
 
@@ -54,7 +51,7 @@ const SettingsScreen = ({ route, navigation }) => {
     return () => {
       BackHandler.removeEventListener('hardwareBackPress', backAction);
     };
-  }, [nombre, apellido, email, navigation]);
+  }, [nombre, apellido, email]);
 
   const validateFields = () => {
     let isValid = true;
@@ -132,23 +129,23 @@ const SettingsScreen = ({ route, navigation }) => {
     }
   };
 
-  const handleBackToProfile = () => {
-    Alert.alert(
-      'Salir sin guardar',
-      'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
-      [
-        {
-          text: 'Cancelar',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {
-          text: 'Salir',
-          onPress: () => navigation.goBack(),
-        },
-      ],
-      { cancelable: false }
-    );
+  const handleExit = () => {
+    if (Platform.OS === 'web') {
+      const confirmExit = window.confirm('Tienes cambios sin guardar. ¿Estás seguro que quieres salir?');
+      if (confirmExit) {
+        navigation.navigate('Home', { id: userId });
+      }
+    } else {
+      Alert.alert(
+        'Salir sin guardar',
+        'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Salir', onPress: () => navigation.navigate('Home', { id: userId }), style: 'destructive' },
+        ],
+        { cancelable: true }
+      );
+    }
   };
 
   return (
@@ -183,7 +180,7 @@ const SettingsScreen = ({ route, navigation }) => {
 
         <Button title="Guardar Cambios" onPress={handleSave} />
 
-        <Pressable style={styles.backButton} onPress={handleBackToProfile}>
+        <Pressable style={styles.backButton} onPress={handleExit}>
           <Text style={styles.backButtonText}>VOLVER AL PERFIL</Text>
         </Pressable>
       </ScrollView>
@@ -233,3 +230,4 @@ const styles = StyleSheet.create({
 });
 
 export default SettingsScreen;
+
