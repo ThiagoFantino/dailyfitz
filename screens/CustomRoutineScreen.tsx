@@ -106,7 +106,7 @@ useEffect(() => {
       return;
     }
 
-    const totalCalories = exercise.calorias * parseInt(sets, 10) * parseInt(reps, 10); // Cálculo de calorías
+    const totalCalories = (exercise.calorias * parseInt(sets, 10) * parseInt(reps, 10)).toFixed(2); // Cálculo de calorías
 
     setSelectedExercises((prevState) => [
       ...prevState,
