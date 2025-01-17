@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, Pressable, TextInput, View, ActivityIndicator, FlatList, Image, Alert, BackHandler } from "react-native";
+import { StyleSheet, Text, Pressable, TextInput, View, ActivityIndicator, FlatList, Image, Alert, BackHandler, Platform } from "react-native";
 import { backendURL } from "@/config";
 
 const CustomRoutineScreen = ({ route, navigation }) => {
@@ -36,16 +36,33 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   }, [navigation]);
 
   const handleGoHome = () => {
-    Alert.alert("Salir sin guardar", "Tienes cambios sin guardar. ¿Estás seguro que quieres salir?", [
-      {
-        text: "Cancelar",
-        onPress: () => null,
-        style: "cancel",
-      },
-      { text: "Salir", onPress: () => navigation.navigate("Home") },
-    ]);
+    const alertMessage = "Tienes cambios sin guardar. ¿Estás seguro que quieres salir?";
+  
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(alertMessage);
+      if (confirmed) {
+        navigation.navigate("Home");
+      }
+    } else {
+      Alert.alert(
+        "Salir sin guardar",
+        alertMessage,
+        [
+          {
+            text: "Cancelar",
+            onPress: () => null,
+            style: "cancel",
+          },
+          {
+            text: "Salir",
+            onPress: () => navigation.navigate("Home"),
+          },
+        ],
+        { cancelable: false }
+      );
+    }
   };
-
+  
   const handleSetsChange = (text) => {
     if (text === "") {
       setSets(""); // Permite dejar el campo vacío
