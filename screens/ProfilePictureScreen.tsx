@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Pressable, FlatList, Alert, Dimensions } from 'react-native';
+import { StyleSheet, Text, View, Image, Pressable, FlatList, Alert, Dimensions, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { backendURL } from '@/config';
@@ -6,6 +6,7 @@ import { backendURL } from '@/config';
 const ProfilePictureScreen = ({ route }) => {
   const [user, setUser] = useState({});
   const [selectedImage, setSelectedImage] = useState('');
+  const [loading, setLoading] = useState(true); // Estado para manejar el indicador de carga
   const userId = route.params.id;
   const navigation = useNavigation();
 
@@ -15,12 +16,15 @@ const ProfilePictureScreen = ({ route }) => {
 
   const fetchUserData = async () => {
     try {
+      setLoading(true);  // Activar el indicador de carga
       const response = await fetch(`${backendURL}/users/${userId}`);
       const json = await response.json();
       setUser(json);
       setSelectedImage(json.profilePicture || ''); // Usamos la foto de perfil del usuario si existe
     } catch (error) {
       console.error('Error fetching user data:', error);
+    } finally {
+      setLoading(false);  // Desactivar el indicador de carga cuando termine la solicitud
     }
   };
 
@@ -86,13 +90,17 @@ const ProfilePictureScreen = ({ route }) => {
     <View style={styles.container}>
       <Text style={styles.title}>Selecciona tu foto de perfil</Text>
 
-      <FlatList
-        data={profileImages}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => index.toString()}
-        numColumns={numColumns}  // Usamos el cálculo dinámico para las columnas
-        contentContainerStyle={styles.imageList}
-      />
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <FlatList
+          data={profileImages}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={numColumns}  // Usamos el cálculo dinámico para las columnas
+          contentContainerStyle={styles.imageList}
+        />
+      )}
 
       <Pressable style={styles.saveButton} onPress={saveProfileImage}>
         <Text style={styles.saveButtonText}>Guardar Foto de Perfil</Text>
@@ -149,6 +157,7 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePictureScreen;
+
 
 
 
