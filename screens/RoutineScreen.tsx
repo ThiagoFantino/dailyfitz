@@ -145,6 +145,7 @@ const RoutineScreen = () => {
             exercises: routineExercises,
             id: route.params.id,
             userId: route.params.userId,
+            restTime:restTime,
           })
         }
         style={styles.startButton}

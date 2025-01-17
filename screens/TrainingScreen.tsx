@@ -16,6 +16,7 @@ const TrainingScreen = () => {
 
   const id = route.params?.id;
   const userId = route.params?.userId;
+  const restTime = route.params?.restTime;
   const currentExercise = exercises[index];
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const TrainingScreen = () => {
 
     if (currentSet < currentExercise.sets) {
       setCurrentSet(prev => prev + 1);
-      navigation.navigate("Rest");
+      navigation.navigate("Rest", { restTime:restTime });
     } else {
       handleNextExercise();
     }
@@ -55,7 +56,7 @@ const TrainingScreen = () => {
     if (index + 1 < exercises.length) {
       setIndex(prev => prev + 1);
       setCurrentSet(1);
-      navigation.navigate("Rest");
+      navigation.navigate("Rest", { restTime:restTime });
     } else {
       handleFinish();
     }
