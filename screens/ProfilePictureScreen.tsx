@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, Image, Pressable, FlatList, Alert, Dimensions, 
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { backendURL } from '@/config';
+import { BackHandler } from 'react-native'; // Importar BackHandler
 
 const ProfilePictureScreen = ({ route }) => {
   const [user, setUser] = useState({});
@@ -9,6 +10,40 @@ const ProfilePictureScreen = ({ route }) => {
   const [loading, setLoading] = useState(true); // Estado para manejar el indicador de carga
   const userId = route.params.id;
   const navigation = useNavigation();
+
+  useEffect(() => {
+    fetchUserData();
+    
+    // Interceptar el botón de retroceso
+    const backAction = () => {
+      // Mostrar alerta aunque no haya cambios
+      Alert.alert(
+        'Salir sin guardar',
+        'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
+        [
+          {
+            text: 'Cancelar',
+            onPress: () => null, // No hacer nada si se cancela
+            style: 'cancel',
+          },
+          {
+            text: 'Salir',
+            onPress: () => navigation.goBack(), // Navegar hacia atrás sin guardar
+          },
+        ],
+        { cancelable: false } // Asegura que no se pueda salir sin decidir
+      );
+      return true; // Bloquea la acción por defecto
+    };
+
+    // Agregar listener para el botón de retroceso
+    BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    // Limpiar el listener cuando la pantalla se desenfoque
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backAction);
+    };
+  }, [navigation]);
 
   useEffect(() => {
     fetchUserData();
@@ -157,6 +192,7 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePictureScreen;
+
 
 
 
