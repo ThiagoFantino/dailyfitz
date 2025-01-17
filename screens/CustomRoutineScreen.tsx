@@ -61,9 +61,11 @@ useEffect(() => {
       return;
     }
 
+    const totalCalories = exercise.calorias * parseInt(sets, 10) * parseInt(reps, 10); // Cálculo de calorías
+
     setSelectedExercises((prevState) => [
       ...prevState,
-      { ...exercise, sets: parseInt(sets, 10), reps: parseInt(reps, 10) },
+      { ...exercise, sets: parseInt(sets, 10), reps: parseInt(reps, 10),totalCalories:totalCalories, },
     ]);
     setSets("");
     setReps("");
@@ -233,7 +235,7 @@ useEffect(() => {
         <Text>Series: {item.sets}</Text>
         <Text>Repeticiones: {item.reps}</Text>
         {/* Mostrar las calorías aquí también */}
-        <Text>Calorías quemadas por repetición: {item.calorias}</Text>
+        <Text>Calorías quemadas en el ejercicio: {item.totalCalories}</Text>
       </View>
       <View style={styles.actionsContainer}>
         <Pressable onPress={() => handleMoveUp(index)} style={styles.reorderButton}>
