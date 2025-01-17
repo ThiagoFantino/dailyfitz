@@ -38,8 +38,8 @@ const TrainingScreen = () => {
     setTotalSetsCompleted(prev => prev + 1);
 
     console.log(
-      `Set completado: ${currentSet} de ${currentExercise.sets} para el ejercicio ${currentExercise.name}. 
-      Total sets completados: ${totalSetsCompleted + 1}. 
+      `Serie completada: ${currentSet} de ${currentExercise.sets} para el ejercicio ${currentExercise.name}. 
+      Total series completadas: ${totalSetsCompleted + 1}. 
       Calorías acumuladas: ${totalCalories + currentExercise.calories}`
     );
 
@@ -101,12 +101,13 @@ const TrainingScreen = () => {
         <>
           <Image style={styles.image} source={{ uri: currentExercise.image }} resizeMode="contain" />
           <Text style={styles.exerciseName}>{currentExercise.name}</Text>
-          <Text style={styles.exerciseSets}>Set {currentSet} de {currentExercise.sets}</Text>
-          <Text style={styles.exerciseSets}>Quema {currentExercise.calories} calorías por set</Text>
+          <Text style={styles.exerciseSets}>Serie {currentSet} de {currentExercise.sets}</Text>
+          <Text style={styles.exerciseReps}>Repeticiones: {currentExercise.reps}</Text>
+          <Text style={styles.exerciseSets}>Quema {(currentExercise.calories * currentExercise.reps).toFixed(2)} calorías esta serie</Text>
 
           <Pressable onPress={handleSetComplete} style={styles.button}>
             <Text style={styles.buttonText}>
-              {currentSet < currentExercise.sets ? "FINALIZAR SET" : "FINALIZAR EJERCICIO"}
+              {currentSet < currentExercise.sets ? "FINALIZAR SERIE" : "FINALIZAR EJERCICIO"}
             </Text>
           </Pressable>
 
@@ -146,12 +147,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+  exerciseReps: {
+    marginTop: '2%',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
   button: {
     backgroundColor: 'blue',
     borderRadius: 20,
-    padding: 10,
-    width: 150,
-    marginTop: '2%',
+    paddingVertical: 10,  // Menos padding vertical
+    paddingHorizontal: 25,  // Menos padding horizontal
+    width: 250,  // Aumentamos el ancho ligeramente
+    marginTop: '1%',  // Mantener el espacio superior
     alignItems: 'center',
   },
   buttonText: {
@@ -164,7 +172,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginLeft: 'auto',
     marginRight: 'auto',
-    marginTop: '2%',
+    marginTop: '1%',
   },
   actionButton: {
     backgroundColor: 'red',
