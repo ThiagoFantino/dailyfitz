@@ -22,7 +22,7 @@ const TabNavigator = () => {
             iconName = "person-circle-outline";
           }
           else if (route.name === "Podometro") {
-            iconName = "map";
+            iconName = "footsteps";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
