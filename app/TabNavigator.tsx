@@ -3,6 +3,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from '@expo/vector-icons';
 import UserScreen from "@/screens/UserScreen";
 import HomeScreen from "@/screens/HomeScreen";
+import MapScreen from "@/screens/MapScreen";
 import { useRoute } from "@react-navigation/native";
 
 const Tab = createBottomTabNavigator();
@@ -20,6 +21,9 @@ const TabNavigator = () => {
           } else if (route.name === "Perfil") {
             iconName = "person-circle-outline";
           }
+          else if (route.name === "Mapa") {
+            iconName = "map";
+          }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -36,6 +40,12 @@ const TabNavigator = () => {
       <Tab.Screen
         name="Perfil"
         component={UserScreen}
+        options={{ headerShown: false }}
+        initialParams={{ id: id }}
+      />
+      <Tab.Screen
+        name="Mapa"
+        component={MapScreen}
         options={{ headerShown: false }}
         initialParams={{ id: id }}
       />
