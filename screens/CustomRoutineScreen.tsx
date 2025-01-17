@@ -23,6 +23,35 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadingImages, setLoadingImages] = useState({}); // Estado para la carga de imágenes
 
+  const handleSetsChange = (text) => {
+    if (text === "") {
+      setSets(""); // Permite dejar el campo vacío
+    } else {
+      const number = parseInt(text, 10);
+      if (number <= 0 || isNaN(number)) {
+        alert("Por favor, ingresa un valor positivo y entero para las series.");
+        setSets(""); // Limpiar el campo en caso de error
+      } else {
+        setSets(number.toString());
+      }
+    }
+  };
+  
+  const handleRepsChange = (text) => {
+    if (text === "") {
+      setReps(""); // Permite dejar el campo vacío
+    } else {
+      const number = parseInt(text, 10);
+      if (number <= 0 || isNaN(number)) {
+        alert("Por favor, ingresa un valor positivo y entero para las repeticiones.");
+        setReps(""); // Limpiar el campo en caso de error
+      } else {
+        setReps(number.toString());
+      }
+    }
+  };
+  
+  
 // Manejador para marcar una imagen como cargada
 
 const handleImageLoad = (index) => {
@@ -190,14 +219,14 @@ useEffect(() => {
         placeholder="Series"
         keyboardType="numeric"
         value={sets}
-        onChangeText={setSets}
+        onChangeText={handleSetsChange}
       />
       <TextInput
         style={styles.input}
         placeholder="Repeticiones"
         keyboardType="numeric"
         value={reps}
-        onChangeText={setReps}
+        onChangeText={handleRepsChange}
       />
       <Text style={styles.instruction}>Seleccione el ejercicio:</Text>
       <View style={styles.carouselContainer}>
