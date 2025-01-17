@@ -13,7 +13,7 @@ const ProfilePictureScreen = ({ route }) => {
 
   useEffect(() => {
     fetchUserData();
-    
+
     // Interceptar el botón de retroceso
     const backAction = () => {
       // Mostrar alerta aunque no haya cambios
@@ -51,7 +51,7 @@ const ProfilePictureScreen = ({ route }) => {
 
   const fetchUserData = async () => {
     try {
-      setLoading(true);  // Activar el indicador de carga
+      setLoading(true); // Activar el indicador de carga
       const response = await fetch(`${backendURL}/users/${userId}`);
       const json = await response.json();
       setUser(json);
@@ -59,7 +59,7 @@ const ProfilePictureScreen = ({ route }) => {
     } catch (error) {
       console.error('Error fetching user data:', error);
     } finally {
-      setLoading(false);  // Desactivar el indicador de carga cuando termine la solicitud
+      setLoading(false); // Desactivar el indicador de carga cuando termine la solicitud
     }
   };
 
@@ -108,11 +108,10 @@ const ProfilePictureScreen = ({ route }) => {
     'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc4dmLL4tmUO9WJsCg7DWXPMBTakr27xtxIQ&s',
   ];
 
-  // Calcular número de columnas según el ancho de la pantalla
   const screenWidth = Dimensions.get('window').width;
-  const imageWidth = 100;  // Ancho de cada imagen
+  const imageWidth = 100; // Ancho de cada imagen
   const margin = 10; // Margen entre imágenes
-  const numColumns = Math.floor(screenWidth / (imageWidth + margin * 2));  // Ajustamos el número de columnas
+  const numColumns = Math.floor(screenWidth / (imageWidth + margin * 2));
 
   const renderItem = ({ item }) => (
     <Pressable onPress={() => handleImageSelect(item)} style={styles.imageContainer}>
@@ -132,13 +131,34 @@ const ProfilePictureScreen = ({ route }) => {
           data={profileImages}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
-          numColumns={numColumns}  // Usamos el cálculo dinámico para las columnas
+          numColumns={numColumns}
           contentContainerStyle={styles.imageList}
         />
       )}
 
       <Pressable style={styles.saveButton} onPress={saveProfileImage}>
         <Text style={styles.saveButtonText}>Guardar Foto de Perfil</Text>
+      </Pressable>
+
+      <Pressable style={styles.backButton} onPress={() => {
+        Alert.alert(
+          'Salir sin guardar',
+          'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
+          [
+            {
+              text: 'Cancelar',
+              onPress: () => null,
+              style: 'cancel',
+            },
+            {
+              text: 'Salir',
+              onPress: () => navigation.goBack(),
+            },
+          ],
+          { cancelable: false }
+        );
+      }}>
+        <Text style={styles.backButtonText}>Volver al Perfil</Text>
       </Pressable>
     </View>
   );
@@ -158,12 +178,12 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   imageList: {
-    width: '100%',  // Asegura que el contenedor ocupe todo el ancho disponible
-    justifyContent: 'flex-start',  // Alinea las imágenes a la izquierda
-    marginLeft: -10,  // Ajusta el margen izquierdo para desplazar todo a la izquierda
+    width: '100%',
+    justifyContent: 'flex-start',
+    marginLeft: -10,
   },
   imageContainer: {
-    margin: 10,  // Añadido margen entre las imágenes
+    margin: 10,
     alignItems: 'center',
   },
   image: {
@@ -183,18 +203,27 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 8,
+    marginVertical: 10,
   },
   saveButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  backButton: {
+    backgroundColor: '#FF5722',
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 8,
+    marginVertical: 10,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
 export default ProfilePictureScreen;
-
-
-
-
-
-
