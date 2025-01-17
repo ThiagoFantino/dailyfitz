@@ -1,14 +1,5 @@
-import {
-  StyleSheet,
-  Text,
-  Pressable,
-  TextInput,
-  View,
-  ActivityIndicator,
-  FlatList,
-  Image,
-} from "react-native";
 import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, Pressable, TextInput, View, ActivityIndicator, FlatList, Image, Alert, BackHandler } from "react-native";
 import { backendURL } from "@/config";
 
 const CustomRoutineScreen = ({ route, navigation }) => {
@@ -23,6 +14,37 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [loadingImages, setLoadingImages] = useState({}); // Estado para la carga de imágenes
   const [restTime, setRestTime] = useState("");
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Salir sin guardar", "Tienes cambios sin guardar. ¿Estás seguro que quieres salir?", [
+        {
+          text: "Cancelar",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "Salir", onPress: () => navigation.goBack() },
+      ]);
+      return true; // Impide el comportamiento por defecto
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => {
+      backHandler.remove(); // Limpia el listener al desmontar el componente
+    };
+  }, [navigation]);
+
+  const handleGoHome = () => {
+    Alert.alert("Salir sin guardar", "Tienes cambios sin guardar. ¿Estás seguro que quieres salir?", [
+      {
+        text: "Cancelar",
+        onPress: () => null,
+        style: "cancel",
+      },
+      { text: "Salir", onPress: () => navigation.navigate("Home") },
+    ]);
+  };
 
   const handleSetsChange = (text) => {
     if (text === "") {
@@ -328,7 +350,7 @@ useEffect(() => {
       <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
         <Text style={styles.saveButtonText}>Guardar Rutina</Text>
       </Pressable>
-      <Pressable style={styles.homeButton} onPress={() => navigation.navigate("Home")}>
+      <Pressable style={styles.homeButton} onPress={handleGoHome}>
         <Text style={styles.homeButtonText}>Volver a Inicio</Text>
       </Pressable>
     </>
