@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Pressable, FlatList, Alert, Dimensions, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Image, Pressable, FlatList, Alert, Dimensions, ActivityIndicator, Platform } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { backendURL } from '@/config';
@@ -16,23 +16,34 @@ const ProfilePictureScreen = ({ route }) => {
 
     // Interceptar el botón de retroceso
     const backAction = () => {
-      // Mostrar alerta aunque no haya cambios
-      Alert.alert(
-        'Salir sin guardar',
-        'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
-        [
-          {
-            text: 'Cancelar',
-            onPress: () => null, // No hacer nada si se cancela
-            style: 'cancel',
-          },
-          {
-            text: 'Salir',
-            onPress: () => navigation.goBack(), // Navegar hacia atrás sin guardar
-          },
-        ],
-        { cancelable: false } // Asegura que no se pueda salir sin decidir
-      );
+      const alertMessage = 'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?';
+
+      if (Platform.OS === 'web') {
+        // En la web, usar window.confirm
+        const confirmed = window.confirm(alertMessage);
+        if (confirmed) {
+          navigation.goBack();
+        }
+      } else {
+        // En dispositivos móviles, usar Alert.alert
+        Alert.alert(
+          'Salir sin guardar',
+          alertMessage,
+          [
+            {
+              text: 'Cancelar',
+              onPress: () => null, // No hacer nada si se cancela
+              style: 'cancel',
+            },
+            {
+              text: 'Salir',
+              onPress: () => navigation.goBack(), // Navegar hacia atrás sin guardar
+            },
+          ],
+          { cancelable: false } // Asegura que no se pueda salir sin decidir
+        );
+      }
+
       return true; // Bloquea la acción por defecto
     };
 
@@ -141,22 +152,31 @@ const ProfilePictureScreen = ({ route }) => {
       </Pressable>
 
       <Pressable style={styles.backButton} onPress={() => {
-        Alert.alert(
-          'Salir sin guardar',
-          'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
-          [
-            {
-              text: 'Cancelar',
-              onPress: () => null,
-              style: 'cancel',
-            },
-            {
-              text: 'Salir',
-              onPress: () => navigation.goBack(),
-            },
-          ],
-          { cancelable: false }
-        );
+        const alertMessage = 'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?';
+
+        if (Platform.OS === 'web') {
+          const confirmed = window.confirm(alertMessage);
+          if (confirmed) {
+            navigation.goBack();
+          }
+        } else {
+          Alert.alert(
+            'Salir sin guardar',
+            alertMessage,
+            [
+              {
+                text: 'Cancelar',
+                onPress: () => null,
+                style: 'cancel',
+              },
+              {
+                text: 'Salir',
+                onPress: () => navigation.goBack(),
+              },
+            ],
+            { cancelable: false }
+          );
+        }
       }}>
         <Text style={styles.backButtonText}>Volver al Perfil</Text>
       </Pressable>
