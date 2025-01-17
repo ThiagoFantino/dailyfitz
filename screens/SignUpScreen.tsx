@@ -279,6 +279,13 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
         </View>
 
         <View>
+        <Pressable
+        style={styles.changeFormButton}
+        onPress={() => navigation.navigate('Login')} // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de login
+        >
+        <Text style={styles.changeFormButtonText}>¿Ya tienes una cuenta? Inicia sesión</Text>
+        </Pressable>
+
           <Pressable
             style={styles.submitButton}
             onPress={signUpRequest}
