@@ -35,22 +35,25 @@ const TrainingScreen = () => {
   };
 
   const handleSetComplete = () => {
-    setTotalCalories(prev => prev + currentExercise.calories);
+    // Sumar las calorías multiplicadas por las repeticiones al total acumulado
+    const caloriesBurned = currentExercise.calories * currentExercise.reps;
+    setTotalCalories(prev => prev + caloriesBurned);
     setTotalSetsCompleted(prev => prev + 1);
-
+  
     console.log(
       `Serie completada: ${currentSet} de ${currentExercise.sets} para el ejercicio ${currentExercise.name}. 
       Total series completadas: ${totalSetsCompleted + 1}. 
-      Calorías acumuladas: ${totalCalories + currentExercise.calories}`
+      Calorías acumuladas: ${totalCalories + caloriesBurned}`
     );
-
+  
     if (currentSet < currentExercise.sets) {
       setCurrentSet(prev => prev + 1);
-      navigation.navigate("Rest", { restTime:restTime });
+      navigation.navigate("Rest", { restTime: restTime });
     } else {
       handleNextExercise();
     }
   };
+  
 
   const handleNextExercise = () => {
     if (index + 1 < exercises.length) {
@@ -67,7 +70,7 @@ const TrainingScreen = () => {
     const totalTimeInMinutes = (endTime.getTime() - (startTime?.getTime() || 0)) / (1000 * 60);
 
     const finalSetsCompleted = totalSetsCompleted + (currentSet <= currentExercise.sets ? 1 : 0);
-    const finalCalories = totalCalories + (currentSet <= currentExercise.sets ? currentExercise.calories : 0);
+    const finalCalories = totalCalories + (currentSet <= currentExercise.sets ? (currentExercise.calories*currentExercise.reps) : 0);
 
     navigation.navigate("Congratulations", {
       totalTime: totalTimeInMinutes,
