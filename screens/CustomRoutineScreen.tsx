@@ -21,6 +21,26 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const [selectedImage, setSelectedImage] = useState("");
   const [routineName, setRoutineName] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadingImages, setLoadingImages] = useState({}); // Estado para la carga de imágenes
+
+// Manejador para marcar una imagen como cargada
+
+const handleImageLoad = (index) => {
+  setLoadingImages((prevState) => ({
+    ...prevState,
+    [index]: false, // Marca la imagen como cargada
+  }));
+};
+
+useEffect(() => {
+  if (exercises.length > 0) {
+    const initialLoadingState = exercises.reduce(
+      (acc, _, index) => ({ ...acc, [index]: true }),
+      {}
+    );
+    setLoadingImages(initialLoadingState);
+  }
+}, [exercises]);
 
   useEffect(() => {
     fetch(`${backendURL}/routines/exercises`)
@@ -194,19 +214,25 @@ const CustomRoutineScreen = ({ route, navigation }) => {
             </Pressable>
 
             <View style={styles.exerciseContainer}>
-              <Pressable
-                onPress={() => handleExercisePress(exercises[currentIndex])}
-                style={styles.exercisePressable}
-              >
-                <Image
-                  source={{ uri: exercises[currentIndex]?.image }}
-                  style={styles.exerciseImage}
-                />
-                <Text style={styles.exerciseName}>
-                  {exercises[currentIndex]?.name}
-                </Text>
-              </Pressable>
-            </View>
+  {loadingImages[currentIndex] && (
+    <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+  )}
+  <Pressable
+    onPress={() => handleExercisePress(exercises[currentIndex])}
+    style={styles.exercisePressable}
+  >
+    <Image
+      source={{ uri: exercises[currentIndex]?.image }}
+      style={styles.exerciseImage}
+      onLoad={() => handleImageLoad(currentIndex)} // Marca esta imagen como cargada
+    />
+    <Text style={styles.exerciseName}>
+      {exercises[currentIndex]?.name}
+    </Text>
+  </Pressable>
+</View>
+
+
 
             <Pressable onPress={moveToNext} style={styles.arrowButton}>
               <Text style={styles.arrowText}> {">"} </Text>
@@ -324,10 +350,11 @@ const styles = StyleSheet.create({
     color: "#333",
   },
   exerciseContainer: {
-    flex: 1, // Tomar el espacio restante
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },  
+    position: "relative", // Para permitir la superposición
+  },
   exercisePressable: {
     alignItems: "center",
   },
@@ -426,6 +453,10 @@ const styles = StyleSheet.create({
     marginTop: 5,
     color: "#4CAF50",
     fontWeight: "bold",
+  },
+  loadingIndicator: {
+    position: "absolute",
+    zIndex: 1, // Asegura que esté por encima de la imagen
   },
 });
 
