@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, Button, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { StyleSheet, Text, TextInput, View, Button, Alert, SafeAreaView, ScrollView, BackHandler } from 'react-native';
 import { backendURL } from '@/config'; // Asegúrate de tener la URL correcta de tu backend
 
 const SettingsScreen = ({ route, navigation }) => {
@@ -28,6 +28,38 @@ const SettingsScreen = ({ route, navigation }) => {
 
     fetchUserData();
   }, [userId]);
+
+  // Función para manejar la alerta al presionar el botón de retroceso
+  useEffect(() => {
+    const backAction = () => {
+      // Siempre mostrar alerta, incluso si los campos están vacíos
+      Alert.alert(
+        'Salir sin guardar',
+        'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
+        [
+          {
+            text: 'Cancelar',
+            onPress: () => null,
+            style: 'cancel',
+          },
+          {
+            text: 'Salir',
+            onPress: () => navigation.goBack(), // Navegar hacia atrás sin guardar
+          },
+        ],
+        { cancelable: false }
+      );
+      return true; // Bloquear la acción por defecto
+    };
+
+    // Agregar el listener para el botón de retroceso
+    BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    // Limpiar el listener cuando la pantalla se desenfoque
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backAction);
+    };
+  }, [nombre, apellido, email, navigation]);
 
   // Función de validación de los campos
   const validateFields = () => {
@@ -78,7 +110,7 @@ const SettingsScreen = ({ route, navigation }) => {
     if (!validateFields()) {
       return;
     }
-  
+
     try {
       const response = await fetch(`${backendURL}/users/${userId}`, {
         method: 'PUT',
@@ -91,9 +123,9 @@ const SettingsScreen = ({ route, navigation }) => {
           email,
         }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         Alert.alert('Éxito', 'Los datos se han actualizado correctamente');
         navigation.goBack(); // Volver a la pantalla anterior
@@ -111,7 +143,6 @@ const SettingsScreen = ({ route, navigation }) => {
       Alert.alert('Error', 'Hubo un error al guardar los datos');
     }
   };
-  
 
   return (
     <SafeAreaView style={styles.container}>
