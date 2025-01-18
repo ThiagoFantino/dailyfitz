@@ -252,7 +252,7 @@ const getWeekRange = (date) => {
             {statsForSelectedDate ? (
               <>
                 <Text style={styles.statLabel}>Series de ejercicios realizadas: {statsForSelectedDate.entrenamientos}</Text>
-                <Text style={styles.statLabel}>Calorías quemadas: {statsForSelectedDate.calorias.toFixed(2)} cal</Text>
+                <Text style={styles.statLabel}>Calorías quemadas: {statsForSelectedDate.calorias?.toFixed(2)} cal</Text>
                 <Text style={styles.statLabel}>Tiempo de entrenamiento: {formatTime(statsForSelectedDate.tiempo)}</Text>
               </>
             ) : (
@@ -273,7 +273,7 @@ const getWeekRange = (date) => {
             </Text>
             <View style={styles.statDetail}>
               <Text>Series de ejercicios realizadas: {statsByPeriods[period]?.entrenamientos || 0}</Text>
-              <Text>Calorías quemadas: {statsByPeriods[period]?.calorias.toFixed(2) || 0} cal</Text>
+              <Text>Calorías quemadas: {statsByPeriods[period]?.calorias?.toFixed(2) || "0.00"} cal</Text>
               <Text>Tiempo de entrenamiento: {formatTime(statsByPeriods[period]?.tiempo || 0)}</Text>
             </View>
           </View>
@@ -284,7 +284,7 @@ const getWeekRange = (date) => {
   <Text style={styles.statPeriodTitle}>Estadísticas Totales</Text>
   <View style={styles.statDetail}>
   <Text>Series de ejercicios realizadas: {totalStats.entrenamientos}</Text>
-  <Text>Calorías quemadas: {totalStats.calorias.toFixed(2)} cal</Text>
+  <Text>Calorías quemadas: {totalStats.calorias?.toFixed(2)} cal</Text>
   <Text>Tiempo de entrenamiento: {formatTime(totalStats.tiempo)}</Text>
   </View>
 </View>
