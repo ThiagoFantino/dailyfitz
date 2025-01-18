@@ -1,14 +1,5 @@
-import {
-  StyleSheet,
-  Text,
-  Pressable,
-  TextInput,
-  View,
-  ActivityIndicator,
-  FlatList,
-  Image,
-} from "react-native";
 import React, { useState, useEffect } from "react";
+import { StyleSheet, Text, Pressable, TextInput, View, ActivityIndicator, FlatList, Image, Alert, BackHandler, Platform } from "react-native";
 import { backendURL } from "@/config";
 
 const CustomRoutineScreen = ({ route, navigation }) => {
@@ -21,6 +12,119 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   const [selectedImage, setSelectedImage] = useState("");
   const [routineName, setRoutineName] = useState("");
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [loadingImages, setLoadingImages] = useState({}); // Estado para la carga de imágenes
+  const [restTime, setRestTime] = useState("");
+
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Salir sin guardar", "Tienes cambios sin guardar. ¿Estás seguro que quieres salir?", [
+        {
+          text: "Cancelar",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "Salir", onPress: () => navigation.goBack() },
+      ]);
+      return true; // Impide el comportamiento por defecto
+    };
+
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+
+    return () => {
+      backHandler.remove(); // Limpia el listener al desmontar el componente
+    };
+  }, [navigation]);
+
+  const handleGoHome = () => {
+    const alertMessage = "Tienes cambios sin guardar. ¿Estás seguro que quieres salir?";
+  
+    if (Platform.OS === "web") {
+      const confirmed = window.confirm(alertMessage);
+      if (confirmed) {
+        navigation.navigate("Home");
+      }
+    } else {
+      Alert.alert(
+        "Salir sin guardar",
+        alertMessage,
+        [
+          {
+            text: "Cancelar",
+            onPress: () => null,
+            style: "cancel",
+          },
+          {
+            text: "Salir",
+            onPress: () => navigation.navigate("Home"),
+          },
+        ],
+        { cancelable: false }
+      );
+    }
+  };
+  
+  const handleSetsChange = (text) => {
+    if (text === "") {
+      setSets(""); // Permite dejar el campo vacío
+    } else {
+      const number = parseInt(text, 10);
+      if (number <= 0 || isNaN(number)) {
+        alert("Por favor, ingresa un valor positivo y entero para las series.");
+        setSets(""); // Limpiar el campo en caso de error
+      } else {
+        setSets(number.toString());
+      }
+    }
+  };
+  
+  const handleRepsChange = (text) => {
+    if (text === "") {
+      setReps(""); // Permite dejar el campo vacío
+    } else {
+      const number = parseInt(text, 10);
+      if (number <= 0 || isNaN(number)) {
+        alert("Por favor, ingresa un valor positivo y entero para las repeticiones.");
+        setReps(""); // Limpiar el campo en caso de error
+      } else {
+        setReps(number.toString());
+      }
+    }
+  };
+
+  const handleRestTimeChange = (text) => {
+    if (text === "") {
+      setRestTime("");
+    } else {
+      const number = parseInt(text, 10);
+      if (number < 0 || isNaN(number)) {
+        alert("Por favor, ingresa un tiempo de descanso válido (en segundos).");
+        setRestTime("");
+      } else {
+        setRestTime(number.toString());
+      }
+    }
+  };
+  
+  
+  
+// Manejador para marcar una imagen como cargada
+
+const handleImageLoad = (index) => {
+  setLoadingImages((prevState) => ({
+    ...prevState,
+    [index]: false, // Marca la imagen como cargada
+  }));
+};
+
+useEffect(() => {
+  if (exercises.length > 0) {
+    const initialLoadingState = exercises.reduce(
+      (acc, _, index) => ({ ...acc, [index]: true }),
+      {}
+    );
+    setLoadingImages(initialLoadingState);
+  }
+}, [exercises]);
 
   useEffect(() => {
     fetch(`${backendURL}/routines/exercises`)
@@ -37,13 +141,15 @@ const CustomRoutineScreen = ({ route, navigation }) => {
 
   const handleSelectExercise = (exercise) => {
     if (!sets || !reps) {
-      alert("Por favor, ingresa sets y reps para el ejercicio.");
+      alert("Por favor, ingresa series y repeticiones para el ejercicio.");
       return;
     }
 
+    const totalCalories = (exercise.calorias * parseInt(sets, 10) * parseInt(reps, 10)).toFixed(2); // Cálculo de calorías
+
     setSelectedExercises((prevState) => [
       ...prevState,
-      { ...exercise, sets: parseInt(sets, 10), reps: parseInt(reps, 10) },
+      { ...exercise, sets: parseInt(sets, 10), reps: parseInt(reps, 10),totalCalories:totalCalories, },
     ]);
     setSets("");
     setReps("");
@@ -54,16 +160,33 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       alert("Por favor, ingresa un nombre para la rutina.");
       return;
     }
+  
+    if (selectedExercises.length === 0) {
+      alert("Por favor, selecciona al menos un ejercicio para la rutina.");
+      return;
+    }
 
+    if (!restTime.trim()) {
+      alert("Por favor, ingresa un tiempo de descanso para la rutina.");
+      return;
+    }
+    
+  
+    if (!selectedImage) {
+      alert("Por favor, selecciona una imagen para la rutina.");
+      return;
+    }
+  
     const reversedExercises = selectedExercises.reverse();
-
+  
     const routineData = {
       name: routineName,
       userId: userId,
       exercises: reversedExercises,
-      image: selectedImage || "",
+      image: selectedImage,
+      restTime: parseInt(restTime, 10),
     };
-
+  
     fetch(`${backendURL}/routines/create-custom-routine`, {
       method: "POST",
       headers: {
@@ -78,6 +201,7 @@ const CustomRoutineScreen = ({ route, navigation }) => {
       })
       .catch((error) => console.error("Error saving routine:", error));
   };
+  
 
   const routineImages = [
     "https://img.freepik.com/fotos-premium/atleta-esta-parado-sobre-sus-rodillas-cerca-barra-gimnasio-esta-preparando-hacer-peso-muerto_392761-1698.jpg?w=1060",
@@ -139,125 +263,117 @@ const CustomRoutineScreen = ({ route, navigation }) => {
   }
 
   return (
-    <FlatList
-      contentContainerStyle={styles.container}
-      ListHeaderComponent={
-        <>
-          <Text style={styles.title}>Crear Rutina Personalizada</Text>
-
-          {/* Nombre de la rutina */}
-          <Text style={styles.instruction}>Ingrese el nombre de la rutina:</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Nombre de la rutina"
-            value={routineName}
-            onChangeText={setRoutineName}
-          />
-
-          {/* Instrucción para ejercicios */}
-          <Text style={styles.instruction}>
-            Ingrese la cantidad de series y repeticiones y seleccione el ejercicio:
-          </Text>
-
-          <View style={styles.carouselContainer}>
-            <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
-              <Text style={styles.arrowText}> {"<"} </Text>
-            </Pressable>
-
-            <View style={styles.exerciseContainer}>
-              <Pressable
-                onPress={() => handleExercisePress(exercises[currentIndex])}
-                style={styles.exercisePressable}
-              >
-                <Image
-                  source={{ uri: exercises[currentIndex]?.image }}
-                  style={styles.exerciseImage}
-                />
-                <Text style={styles.exerciseName}>
-                  {exercises[currentIndex]?.name}
-                </Text>
-              </Pressable>
-            </View>
-
-            <Pressable onPress={moveToNext} style={styles.arrowButton}>
-              <Text style={styles.arrowText}> {">"} </Text>
-            </Pressable>
-          </View>
-
-          {/* Sets y reps */}
-          <TextInput
-            style={styles.input}
-            placeholder="Sets"
-            keyboardType="numeric"
-            value={sets}
-            onChangeText={setSets}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Reps"
-            keyboardType="numeric"
-            value={reps}
-            onChangeText={setReps}
-          />
-          <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
-        </>
-      }
-      data={selectedExercises}
-      keyExtractor={(item, index) => index.toString()}
-      renderItem={({ item, index }) => (
-        <View style={styles.selectedExercise}>
-          {/* Información del ejercicio */}
-          <View style={styles.exerciseInfoContainer}>
-            <Text style={styles.exerciseName}>{item.name}</Text>
-            <Text>Sets: {item.sets}</Text>
-            <Text>Reps: {item.reps}</Text>
-          </View>
-
-          {/* Flechas de reordenar y eliminar */}
-          <View style={styles.actionsContainer}>
-            <Pressable onPress={() => handleMoveUp(index)} style={styles.reorderButton}>
-              <Text style={styles.reorderButtonText}>{"↑"}</Text>
-            </Pressable>
-            <Pressable onPress={() => handleMoveDown(index)} style={styles.reorderButton}>
-              <Text style={styles.reorderButtonText}>{"↓"}</Text>
-            </Pressable>
-            <Pressable onPress={() => handleRemoveExercise(index)} style={styles.removeButton}>
-              <Text style={styles.removeButtonText}>Eliminar</Text>
-            </Pressable>
-          </View>
+<FlatList
+  contentContainerStyle={styles.container}
+  ListHeaderComponent={
+    <>
+      <Text style={styles.title}>Crear Rutina Personalizada</Text>
+      <Text style={styles.instruction}>Ingrese el nombre de la rutina:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Nombre de la rutina"
+        value={routineName}
+        onChangeText={setRoutineName}
+      />
+      <Text style={styles.instruction}>Ingrese la cantidad de series y repeticiones:</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Series"
+        keyboardType="numeric"
+        value={sets}
+        onChangeText={handleSetsChange}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Repeticiones"
+        keyboardType="numeric"
+        value={reps}
+        onChangeText={handleRepsChange}
+      />
+      <Text style={styles.instruction}>Seleccione el ejercicio:</Text>
+      <View style={styles.carouselContainer}>
+        <Pressable onPress={moveToPrevious} style={styles.arrowButton}>
+          <Text style={styles.arrowText}> {"<"} </Text>
+        </Pressable>
+        <View style={styles.exerciseContainer}>
+          {loadingImages[currentIndex] && (
+            <ActivityIndicator size="large" color="#0000ff" style={styles.loadingIndicator} />
+          )}
+          <Pressable onPress={() => handleExercisePress(exercises[currentIndex])} style={styles.exercisePressable}>
+            <Image
+              source={{ uri: exercises[currentIndex]?.image }}
+              style={styles.exerciseImage}
+              onLoad={() => handleImageLoad(currentIndex)}
+            />
+            <Text style={styles.exerciseName}>{exercises[currentIndex]?.name}</Text>
+            {/* Mostrar las calorías aquí */}
+            <Text style={styles.exerciseCalories}>Calorías quemadas por repetición: {exercises[currentIndex]?.calorias} cal</Text>
+          </Pressable>
         </View>
-      )}
-      ListFooterComponent={
-        <>
-          <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
-          <FlatList
-            data={routineImages}
-            keyExtractor={(item, index) => index.toString()}
-            renderItem={({ item }) => (
-              <Pressable
-                onPress={() => handleImageSelect(item)}
-                style={styles.imageContainer}
-              >
-                <Image source={{ uri: item }} style={styles.image} />
-                {selectedImage === item && (
-                  <Text style={styles.selectedText}>Seleccionado</Text>
-                )}
-              </Pressable>
-            )}
-            horizontal
-            contentContainerStyle={styles.imageList}
-          />
-
-          <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
-            <Text style={styles.saveButtonText}>Guardar Rutina</Text>
+        <Pressable onPress={moveToNext} style={styles.arrowButton}>
+          <Text style={styles.arrowText}> {">"} </Text>
+        </Pressable>
+      </View>
+      <Text style={styles.subtitle}>Ejercicios seleccionados</Text>
+    </>
+  }
+  data={selectedExercises}
+  keyExtractor={(item, index) => index.toString()}
+  renderItem={({ item, index }) => (
+    <View style={styles.selectedExercise}>
+      <View style={styles.exerciseInfoContainer}>
+        <Text style={styles.exerciseName}>{item.name}</Text>
+        <Text>Series: {item.sets}</Text>
+        <Text>Repeticiones: {item.reps}</Text>
+        {/* Mostrar las calorías aquí también */}
+        <Text>Calorías quemadas en el ejercicio: {item.totalCalories} cal</Text>
+      </View>
+      <View style={styles.actionsContainer}>
+        <Pressable onPress={() => handleMoveUp(index)} style={styles.reorderButton}>
+          <Text style={styles.reorderButtonText}>{"↑"}</Text>
+        </Pressable>
+        <Pressable onPress={() => handleMoveDown(index)} style={styles.reorderButton}>
+          <Text style={styles.reorderButtonText}>{"↓"}</Text>
+        </Pressable>
+        <Pressable onPress={() => handleRemoveExercise(index)} style={styles.removeButton}>
+          <Text style={styles.removeButtonText}>Eliminar</Text>
+        </Pressable>
+      </View>
+    </View>
+  )}
+  ListFooterComponent={
+    <>
+      <Text style={styles.subtitle}>Selecciona una imagen para la rutina</Text>
+      <FlatList
+        data={routineImages}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <Pressable onPress={() => handleImageSelect(item)} style={styles.imageContainer}>
+            <Image source={{ uri: item }} style={styles.image} />
+            {selectedImage === item && <Text style={styles.selectedText}>Seleccionado</Text>}
           </Pressable>
+        )}
+        horizontal
+        contentContainerStyle={styles.imageList}
+      />
+            <Text style={styles.instruction}>Ingrese el tiempo de descanso entre series (en segundos):</Text>
+<TextInput
+  style={styles.input}
+  placeholder="Tiempo de descanso (segundos)"
+  keyboardType="numeric"
+  value={restTime}
+  onChangeText={handleRestTimeChange}
+/>
+      <Pressable style={styles.saveButton} onPress={handleSaveRoutine}>
+        <Text style={styles.saveButtonText}>Guardar Rutina</Text>
+      </Pressable>
+      <Pressable style={styles.homeButton} onPress={handleGoHome}>
+        <Text style={styles.homeButtonText}>Volver a Inicio</Text>
+      </Pressable>
+    </>
+  }
+/>
 
-          <Pressable style={styles.homeButton} onPress={() => navigation.navigate("Home")}>
-            <Text style={styles.homeButtonText}>Volver a Inicio</Text>
-          </Pressable>
-        </>
-      }
-    />
   );
 };
 
@@ -291,17 +407,28 @@ const styles = StyleSheet.create({
   carouselContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "space-between", // Espaciado entre las flechas y el contenido
+    marginVertical: 10, // Separación vertical para más claridad
   },
   arrowButton: {
-    padding: 15, // Aumenté el padding
+    width: 50, // Ancho fijo para las flechas
+    height: 50, // Altura fija para las flechas
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f0f0f0", // Fondo para distinguirlas
+    borderRadius: 25, // Hacerlas circulares
+    marginHorizontal: 10, // Espaciado entre flechas y contenido
   },
   arrowText: {
-    fontSize: 36, // Aumenté el tamaño de las flechas
+    fontSize: 24, // Tamaño de las flechas
     fontWeight: "bold",
+    color: "#333",
   },
   exerciseContainer: {
+    flex: 1,
     alignItems: "center",
+    justifyContent: "center",
+    position: "relative", // Para permitir la superposición
   },
   exercisePressable: {
     alignItems: "center",
@@ -402,6 +529,15 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
     fontWeight: "bold",
   },
+  loadingIndicator: {
+    position: "absolute",
+    zIndex: 1, // Asegura que esté por encima de la imagen
+  },
+  exerciseCalories: {
+    fontSize: 14,
+    color: '#888',
+    textAlign: 'center',
+  },  
 });
 
 export default CustomRoutineScreen;
