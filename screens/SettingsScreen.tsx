@@ -1,5 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, View, Button, Alert, SafeAreaView, ScrollView } from 'react-native';
+import { 
+  StyleSheet, 
+  Text, 
+  TextInput, 
+  View, 
+  Button, 
+  Alert, 
+  SafeAreaView, 
+  ScrollView, 
+  BackHandler, 
+  Pressable, 
+  Platform 
+} from 'react-native';
 import { backendURL } from '@/config'; // Asegúrate de tener la URL correcta de tu backend
 
 const SettingsScreen = ({ route, navigation }) => {
@@ -8,7 +20,10 @@ const SettingsScreen = ({ route, navigation }) => {
   const [email, setEmail] = useState('');
   const [userId, setUserId] = useState(route.params.id);
 
-  // Función para obtener los datos del usuario al cargar la pantalla
+  const [nombreError, setNombreError] = useState('');
+  const [apellidoError, setApellidoError] = useState('');
+  const [emailError, setEmailError] = useState('');
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -25,10 +40,60 @@ const SettingsScreen = ({ route, navigation }) => {
     fetchUserData();
   }, [userId]);
 
-  // Función para actualizar los datos
+  useEffect(() => {
+    const backAction = () => {
+      handleExit();
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', backAction);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', backAction);
+    };
+  }, [nombre, apellido, email]);
+
+  const validateFields = () => {
+    let isValid = true;
+
+    const nameRegex = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
+    if (!nombre.trim()) {
+      setNombreError('El nombre no puede estar vacío.');
+      isValid = false;
+    } else if (!nameRegex.test(nombre)) {
+      setNombreError('El nombre solo puede contener letras, espacios, apóstrofes y guiones.');
+      isValid = false;
+    } else {
+      setNombreError('');
+    }
+
+    const surnameRegex = /^[a-zA-ZÁÉÍÓÚÜÑáéíóúüñ' -]+$/;
+    if (!apellido.trim()) {
+      setApellidoError('El apellido no puede estar vacío.');
+      isValid = false;
+    } else if (!surnameRegex.test(apellido)) {
+      setApellidoError('El apellido solo puede contener letras, espacios, apóstrofes y guiones.');
+      isValid = false;
+    } else {
+      setApellidoError('');
+    }
+
+    const emailRegex = /^[A-Za-zÑñ0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-zÑñ0-9-]+(\.[A-Za-zÑñ0-9-]+)+$/;
+    if (!email.trim()) {
+      setEmailError('El correo electrónico no puede estar vacío.');
+      isValid = false;
+    } else if (!emailRegex.test(email)) {
+      setEmailError('El formato del correo electrónico es incorrecto.');
+      isValid = false;
+    } else {
+      setEmailError('');
+    }
+
+    return isValid;
+  };
+
   const handleSave = async () => {
-    if (!nombre || !apellido || !email) {
-      Alert.alert('Error', 'Por favor, complete todos los campos');
+    if (!validateFields()) {
       return;
     }
 
@@ -49,11 +114,11 @@ const SettingsScreen = ({ route, navigation }) => {
 
       if (response.ok) {
         Alert.alert('Éxito', 'Los datos se han actualizado correctamente');
-        navigation.goBack(); // Volver a la pantalla anterior
+        navigation.goBack();
       } else {
-        // Manejar errores del servidor, como el email ya registrado
         if (data.error === 'El email ya está registrado.') {
-          Alert.alert('Error', data.error); // Mostrar el error del email ya registrado
+          setEmailError(data.error);
+          Alert.alert('Error', data.error);
         } else {
           Alert.alert('Error', 'Hubo un problema al actualizar los datos');
         }
@@ -64,10 +129,29 @@ const SettingsScreen = ({ route, navigation }) => {
     }
   };
 
+  const handleExit = () => {
+    if (Platform.OS === 'web') {
+      const confirmExit = window.confirm('Tienes cambios sin guardar. ¿Estás seguro que quieres salir?');
+      if (confirmExit) {
+        navigation.navigate('Home', { id: userId });
+      }
+    } else {
+      Alert.alert(
+        'Salir sin guardar',
+        'Tienes cambios sin guardar. ¿Estás seguro que quieres salir?',
+        [
+          { text: 'Cancelar', style: 'cancel' },
+          { text: 'Salir', onPress: () => navigation.navigate('Home', { id: userId }), style: 'destructive' },
+        ],
+        { cancelable: true }
+      );
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.title}>Configuración de Usuario</Text>
+        <Text style={styles.title}>Modificar Datos Personales</Text>
 
         <TextInput
           style={styles.input}
@@ -75,6 +159,7 @@ const SettingsScreen = ({ route, navigation }) => {
           value={nombre}
           onChangeText={setNombre}
         />
+        {nombreError ? <Text style={styles.errorText}>{nombreError}</Text> : null}
 
         <TextInput
           style={styles.input}
@@ -82,6 +167,7 @@ const SettingsScreen = ({ route, navigation }) => {
           value={apellido}
           onChangeText={setApellido}
         />
+        {apellidoError ? <Text style={styles.errorText}>{apellidoError}</Text> : null}
 
         <TextInput
           style={styles.input}
@@ -90,9 +176,13 @@ const SettingsScreen = ({ route, navigation }) => {
           onChangeText={setEmail}
           keyboardType="email-address"
         />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
         <Button title="Guardar Cambios" onPress={handleSave} />
 
+        <Pressable style={styles.backButton} onPress={handleExit}>
+          <Text style={styles.backButtonText}>VOLVER AL PERFIL</Text>
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
@@ -121,6 +211,23 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 5,
   },
+  errorText: {
+    color: 'red',
+    fontSize: 12,
+    marginBottom: 10,
+  },
+  backButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: 'red',
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  backButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
 });
 
 export default SettingsScreen;
+

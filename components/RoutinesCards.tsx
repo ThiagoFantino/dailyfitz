@@ -8,7 +8,6 @@ const Routines = ({ userId }) => {
   const [routines, setRoutines] = useState([]);
   const [loadingImages, setLoadingImages] = useState({});
 
-  // Definir la función asincrónica dentro del useCallback
   const fetchData = useCallback(() => {
     async function fetchRoutines() {
       try {
@@ -19,12 +18,9 @@ const Routines = ({ userId }) => {
         console.error("Error fetching data:", error);
       }
     }
-
-    // Llamar la función asincrónica
     fetchRoutines();
   }, [userId]);
 
-  // Usar useFocusEffect sin retornar la promesa directamente
   useFocusEffect(
     React.useCallback(() => {
       fetchData();
@@ -48,9 +44,23 @@ const Routines = ({ userId }) => {
   const customRoutines = routines.filter((item) => item.isCustom && item.userId === userId);
   const predefinedRoutines = routines.filter((item) => !item.isCustom);
 
+  const deleteRoutine = async (id) => {
+    try {
+      const response = await fetch(`${backendURL}/routines/${id}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setRoutines(routines.filter((routine) => routine.id !== id));
+      } else {
+        console.error("Error deleting routine");
+      }
+    } catch (error) {
+      console.error("Error deleting routine:", error);
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* Botón para crear una rutina personalizada */}
       <Pressable
         onPress={() => navigation.navigate("CustomRoutine", { userId })}
         style={styles.createRoutineButton}
@@ -58,23 +68,21 @@ const Routines = ({ userId }) => {
         <Text style={styles.createRoutineButtonText}>Crear Rutina Personalizada</Text>
       </Pressable>
 
-      {/* Mostrar rutinas personalizadas */}
       {customRoutines.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>Tus Rutinas Personalizadas</Text>
           {customRoutines.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() =>
-                navigation.navigate("Routine", {
-                  image: item.image,
-                  id: item.id,
-                  userId,
-                })
-              }
-              style={styles.pressable}
-            >
-              <View style={styles.imageContainer}>
+            <View key={item.id} style={styles.pressable}>
+              <Pressable
+                onPress={() =>
+                  navigation.navigate("Routine", {
+                    image: item.image,
+                    id: item.id,
+                    userId,
+                  })
+                }
+                style={styles.imageContainer}
+              >
                 {loadingImages[item.id] && (
                   <ActivityIndicator
                     size="large"
@@ -88,14 +96,18 @@ const Routines = ({ userId }) => {
                   onLoadStart={() => handleImageLoadStart(item.id)}
                   onLoad={() => handleImageLoad(item.id)}
                 />
-              </View>
-              <Text style={styles.text}>{item.name}</Text>
-            </Pressable>
+                <Text style={styles.text}>{item.name}</Text>
+              </Pressable>
+
+              {/* Botón de eliminar, solo en rutinas personalizadas */}
+              <Pressable onPress={() => deleteRoutine(item.id)} style={styles.deleteButton}>
+                <Text style={styles.deleteButtonText}>Eliminar</Text>
+              </Pressable>
+            </View>
           ))}
         </>
       )}
 
-      {/* Mostrar rutinas predefinidas */}
       {predefinedRoutines.length > 0 && (
         <>
           <Text style={styles.sectionTitle}>Rutinas Predefinidas</Text>
@@ -196,5 +208,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  deleteButton: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    backgroundColor: "red",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+  },
+  deleteButtonText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
 });
+
 

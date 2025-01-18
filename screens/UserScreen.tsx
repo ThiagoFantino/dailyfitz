@@ -251,8 +251,8 @@ const getWeekRange = (date) => {
             <Text style={styles.selectedDateText}>Estadísticas para {selectedDate}</Text>
             {statsForSelectedDate ? (
               <>
-                <Text style={styles.statLabel}>Series de ejercicios: {statsForSelectedDate.entrenamientos}</Text>
-                <Text style={styles.statLabel}>Calorías quemadas: {statsForSelectedDate.calorias}</Text>
+                <Text style={styles.statLabel}>Series de ejercicios realizadas: {statsForSelectedDate.entrenamientos}</Text>
+                <Text style={styles.statLabel}>Calorías quemadas: {statsForSelectedDate.calorias?.toFixed(2)} cal</Text>
                 <Text style={styles.statLabel}>Tiempo de entrenamiento: {formatTime(statsForSelectedDate.tiempo)}</Text>
               </>
             ) : (
@@ -272,9 +272,9 @@ const getWeekRange = (date) => {
               {period === 'year' && `Estadísticas del Año - ${formatYear(new Date())}`}
             </Text>
             <View style={styles.statDetail}>
-              <Text>Entrenamientos: {statsByPeriods[period]?.entrenamientos || 0}</Text>
-              <Text>Calorías: {statsByPeriods[period]?.calorias || 0}</Text>
-              <Text>Tiempo: {formatTime(statsByPeriods[period]?.tiempo || 0)}</Text>
+              <Text>Series de ejercicios realizadas: {statsByPeriods[period]?.entrenamientos || 0}</Text>
+              <Text>Calorías quemadas: {statsByPeriods[period]?.calorias?.toFixed(2) || "0.00"} cal</Text>
+              <Text>Tiempo de entrenamiento: {formatTime(statsByPeriods[period]?.tiempo || 0)}</Text>
             </View>
           </View>
         ))}
@@ -283,9 +283,9 @@ const getWeekRange = (date) => {
 <View style={styles.statPeriod}>
   <Text style={styles.statPeriodTitle}>Estadísticas Totales</Text>
   <View style={styles.statDetail}>
-  <Text>Entrenamientos: {totalStats.entrenamientos}</Text>
-  <Text>Calorías: {totalStats.calorias}</Text>
-  <Text>Tiempo: {formatTime(totalStats.tiempo)}</Text>
+  <Text>Series de ejercicios realizadas: {totalStats.entrenamientos}</Text>
+  <Text>Calorías quemadas: {totalStats.calorias?.toFixed(2)} cal</Text>
+  <Text>Tiempo de entrenamiento: {formatTime(totalStats.tiempo)}</Text>
   </View>
 </View>
 
@@ -295,7 +295,7 @@ const getWeekRange = (date) => {
           <Text style={styles.logoutButtonText}>Cerrar Sesión</Text>
         </Pressable>
         <Pressable style={styles.settingsButton} onPress={navigateToSettings}>
-          <Text style={styles.settingsButtonText}>Ir a Configuración</Text>
+          <Text style={styles.settingsButtonText}>Modificar Datos Personales</Text>
         </Pressable>
         <Pressable style={styles.changeProfilePictureButton} onPress={navigateToChangeProfilePicture}>
           <Text style={styles.changeProfilePictureButtonText}>Cambiar Foto de Perfil</Text>

@@ -64,7 +64,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   
     if (!hasError) {
       // Enviar datos al backend
-      const userData = { nombre, apellido, calorias: 0, entrenamientos: 0, tiempo: 0, email, password };
+      const userData = { nombre, apellido, email, password };
       fetch(`${backendURL}/users/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -168,12 +168,17 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
     setEmail(input);
   }
 
-  function testEmail(input_password: string) {
+  function testEmail(input_email: string) {
     const length_exp = regexWithAdvice(/^.{1,}$/, "El campo no puede estar vacío");
-    const format_exp = regexWithAdvice(/^[A-Za-zÑñ0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/, "El email no es valido.");
+    const format_exp = regexWithAdvice(
+        /^[A-Za-zÑñ0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-zÑñ0-9-]+(\.[A-Za-zÑñ0-9-]+)+$/,
+        "El email no es válido."
+    );
     const regex_set = [length_exp, format_exp];
-    return (testRegexWithAdviceSet(regex_set, input_password));
-  }
+    return testRegexWithAdviceSet(regex_set, input_email);
+}
+
+
 
   function changePassword(input: string) {
     let advice = testPassword(input);
@@ -186,7 +191,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
     const uppercase_exp = regexWithAdvice(/(?=.*[A-Z])/, "Debe incluir al menos una letra mayúscula.");
     const lowercase_exp = regexWithAdvice(/(?=.*[a-z])/, "Debe incluir al menos una letra minúscula.");
     const number_exp = regexWithAdvice(/(?=.*\d)/, "Debe incluir al menos un número.");
-    const special_char_exp = regexWithAdvice(/(?=.*[@$!%*?&])/, "Debe incluir al menos un carácter especial (@$!%*?&).");
+    const special_char_exp = regexWithAdvice(/(?=.*[@$!%*?&#+^()_={}\[\]<>\|~])/, "Debe incluir al menos un carácter especial. Caracteres permitidos: @$!%*?&#+^()_={}[].<>|~");
     const no_whitespace_exp = regexWithAdvice(/^\S*$/, "No se permiten espacios en blanco.");
     const regex_set = [length_exp, uppercase_exp, lowercase_exp, number_exp, special_char_exp, no_whitespace_exp];
     return testRegexWithAdviceSet(regex_set, input_password);
@@ -267,13 +272,20 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
             onPress={passwordViewFlip}>
             <Image style={styles.passwordDisplayIcon} source={{ uri: 'https://storage.needpix.com/rsynced_images/eye-2387853_1280.png' }}/>
           </Pressable>
-          <Text style={styles.inputHint}>Debe incluir al menos 8 caracteres, una mayúscula, un número y un carácter especial (@$!%*?&).</Text>
+          <Text style={styles.inputHint}>Debe incluir al menos 8 caracteres, una mayúscula, un número y un carácter especial.</Text>
         </View>
         <View style={styles.inputError}>
           <Text style={styles.inputErrorMenssage}>{passwordError}</Text>
         </View>
 
         <View>
+        <Pressable
+        style={styles.changeFormButton}
+        onPress={() => navigation.navigate('Login')} // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de login
+        >
+        <Text style={styles.changeFormButtonText}>¿Ya tienes una cuenta? Inicia sesión</Text>
+        </Pressable>
+
           <Pressable
             style={styles.submitButton}
             onPress={signUpRequest}
