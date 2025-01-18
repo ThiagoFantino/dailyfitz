@@ -307,7 +307,7 @@ useEffect(() => {
             />
             <Text style={styles.exerciseName}>{exercises[currentIndex]?.name}</Text>
             {/* Mostrar las calorías aquí */}
-            <Text style={styles.exerciseCalories}>Calorías quemadas por repetición: {exercises[currentIndex]?.calorias}</Text>
+            <Text style={styles.exerciseCalories}>Calorías quemadas por repetición: {exercises[currentIndex]?.calorias} cal</Text>
           </Pressable>
         </View>
         <Pressable onPress={moveToNext} style={styles.arrowButton}>
@@ -326,7 +326,7 @@ useEffect(() => {
         <Text>Series: {item.sets}</Text>
         <Text>Repeticiones: {item.reps}</Text>
         {/* Mostrar las calorías aquí también */}
-        <Text>Calorías quemadas en el ejercicio: {item.totalCalories}</Text>
+        <Text>Calorías quemadas en el ejercicio: {item.totalCalories} cal</Text>
       </View>
       <View style={styles.actionsContainer}>
         <Pressable onPress={() => handleMoveUp(index)} style={styles.reorderButton}>

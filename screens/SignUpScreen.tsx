@@ -64,7 +64,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   
     if (!hasError) {
       // Enviar datos al backend
-      const userData = { nombre, apellido, calorias: 0, entrenamientos: 0, tiempo: 0, email, password };
+      const userData = { nombre, apellido, email, password };
       fetch(`${backendURL}/users/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

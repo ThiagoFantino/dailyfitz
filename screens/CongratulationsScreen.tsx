@@ -84,7 +84,7 @@ const CongratulationsScreen = () => {
       <Text style={styles.timeMessage}>Tiempo De Entrenamiento: {formattedTime}</Text>
       <Text style={styles.exerciseMessage}>Series De Ejercicios Realizadas: {completedExercises}</Text>
 
-      <Text style={styles.exerciseMessage}>Calorías Quemadas: {totalCalories} cal</Text>
+      <Text style={styles.exerciseMessage}>Calorías Quemadas: {totalCalories.toFixed(2)} cal</Text>
 
       <Pressable onPress={handleGoBack} style={styles.button}>
         <Text style={styles.buttonText}>VOLVER AL INICIO</Text>
