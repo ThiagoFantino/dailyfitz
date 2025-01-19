@@ -108,11 +108,11 @@ const ProfilePictureScreen = ({ route }) => {
   };
 
   const profileImages = [
+    'https://static.vecteezy.com/system/resources/thumbnails/009/292/244/small/default-avatar-icon-of-social-media-user-vector.jpg',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Lionel_Messi_WC2022.jpg/640px-Lionel_Messi_WC2022.jpg',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Cristiano_Ronaldo_2018.jpg/400px-Cristiano_Ronaldo_2018.jpg',
     'https://images.ctfassets.net/3mv54pzvptwz/55YLwKPDnRXkqMBITRpWbC/0c2aefc04afa455c20e9ca0d209698e0/53174188191_42d4c831ae_o.jpg',
     'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Federer_WM16_%2837%29_%2828136155830%29.jpg/245px-Federer_WM16_%2837%29_%2828136155830%29.jpg',
-    'https://a.espncdn.com/combiner/i?img=/i/headshots/nba/players/full/272.png',
     'https://cdn.sanity.io/images/oyf3dba6/production/9fca0bc620a2cfebe91bcb30faab277e4776f1dd-580x580.jpg',
     'https://upload.wikimedia.org/wikipedia/commons/0/06/Brann_-_Bar%C3%A7a_Femen%C3%AD_CG3A5851_%28cropped%29.jpg',
     'https://imageio.forbes.com/specials-images/imageserve/6059ea4e5a0beaf622a42a20/Megan-Rapinoe---United-States-v-Ireland---International-Friendly/960x0.jpg?height=549&width=711&fit=bounds',
