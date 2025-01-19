@@ -158,18 +158,18 @@ const UserStatsScreen = ({ route }) => {
 const getWeekRange = (date) => {
   const selectedDate = new Date(date);
 
-  // Asegúrate de que el primer día de la semana es lunes.
-  const firstDayOfWeek = selectedDate.getDate() - selectedDate.getDay() + 1; // Lunes
-  const startOfWeek = new Date(selectedDate.setDate(firstDayOfWeek)); // Establece la fecha al lunes
+  // Calcula el inicio de la semana (lunes)
+  const firstDayOfWeek = selectedDate.getDate() - selectedDate.getDay() + (selectedDate.getDay() === 0 ? -6 : 1); // Lunes
+  const startOfWeek = new Date(selectedDate.setDate(firstDayOfWeek));
 
-  // El último día de la semana es 6 días después del lunes
+  // Calcula el fin de la semana (domingo)
   const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 6); // Domingo de la semana
+  endOfWeek.setDate(startOfWeek.getDate() + 6); // Suma 6 días desde el lunes
 
   // Formatea las fechas
   const formatDate = (date) => {
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1); // Mes empieza desde 0
+    const month = String(date.getMonth() + 1); // Meses van de 0 a 11
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
@@ -179,6 +179,7 @@ const getWeekRange = (date) => {
     endDate: formatDate(endOfWeek),
   };
 };
+
 
   const formatMonth = (date) => {
     const monthNames = [
