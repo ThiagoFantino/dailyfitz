@@ -127,8 +127,8 @@ const TrainingScreen = () => {
           </Pressable>
 
           {/* Nuevo botón para terminar la rutina */}
-          <Pressable onPress={handleFinish} style={[styles.button, { backgroundColor: 'green', marginTop: 10 }]}>
-            <Text style={styles.buttonText}>TERMINAR RUTINA</Text>
+          <Pressable onPress={handleFinish} style={[styles.button, { backgroundColor: 'green', marginTop: 10, marginBottom:10 }]}>
+            <Text style={styles.buttonText}>TERMINAR RUTINA ACA</Text>
           </Pressable>
 
           <View style={styles.buttonContainer}>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 25,
-    width: 250,
+    width: 275,
     marginTop: '1%',
     alignItems: 'center',
   },
@@ -196,10 +196,11 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     backgroundColor: 'red',
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 25,
     borderRadius: 20,
     marginHorizontal: 20,
-    width: 100,
+    width: 150,
   },
   actionButtonText: {
     color: 'white',
