@@ -5,7 +5,7 @@ import { Pedometer } from 'expo-sensors';
 
 const PedometerScreen = ({ navigation }) => {
   const route = useRoute();
-  const userId = route.params?.userId || 0;
+  const userId = route.params.id;
   const [stepCount, setStepCount] = useState(0);
   const [isPedometerAvailable, setIsPedometerAvailable] = useState(null);
   const [startTime, setStartTime] = useState<Date | null>(null);
