@@ -23,7 +23,6 @@ const TrainingScreen = () => {
     fetchExercises();
     setStartTime(new Date());
 
-    // Agregar el listener para el retroceso del dispositivo
     const backAction = () => {
       Alert.alert(
         'Advertencia',
@@ -34,13 +33,13 @@ const TrainingScreen = () => {
         ],
         { cancelable: true }
       );
-      return true; // Impide el comportamiento por defecto (salir)
+      return true;
     };
 
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
     return () => {
-      backHandler.remove(); // Limpiar el listener al desmontar el componente
+      backHandler.remove();
     };
   }, [navigation, id]);
 
@@ -125,6 +124,11 @@ const TrainingScreen = () => {
             <Text style={styles.buttonText}>
               {currentSet < currentExercise.sets ? "FINALIZAR SERIE" : "FINALIZAR EJERCICIO"}
             </Text>
+          </Pressable>
+
+          {/* Nuevo botón para terminar la rutina */}
+          <Pressable onPress={handleFinish} style={[styles.button, { backgroundColor: 'green', marginTop: 10 }]}>
+            <Text style={styles.buttonText}>TERMINAR RUTINA</Text>
           </Pressable>
 
           <View style={styles.buttonContainer}>
