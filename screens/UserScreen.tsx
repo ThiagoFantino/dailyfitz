@@ -281,15 +281,14 @@ const getWeekRange = (date) => {
         ))}
 
         {/* Mostrar estadísticas totales */}
-<View style={styles.statPeriod}>
-  <Text style={styles.statPeriodTitle}>Estadísticas Totales</Text>
-  <View style={styles.statDetail}>
-  <Text>Series de ejercicios realizadas: {totalStats.entrenamientos}</Text>
-  <Text>Calorías quemadas: {totalStats.calorias?.toFixed(2)} cal</Text>
-  <Text>Tiempo de entrenamiento: {formatTime(totalStats.tiempo)}</Text>
-  </View>
-</View>
-
+        <View style={styles.statPeriod}>
+          <Text style={styles.statPeriodTitle}>Estadísticas Totales</Text>
+          <View style={styles.statDetail}>
+            <Text>Series de ejercicios realizadas: {totalStats.entrenamientos}</Text>
+            <Text>Calorías quemadas: {totalStats.calorias?.toFixed(2)} cal</Text>
+            <Text>Tiempo de entrenamiento: {formatTime(totalStats.tiempo)}</Text>
+          </View>
+        </View>
 
         {/* Botones */}
         <Pressable style={styles.logoutButton} onPress={handleLogout}>
