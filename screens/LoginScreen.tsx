@@ -37,18 +37,14 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
     
     // Consulta para poder loguear con un usuario existente
     setIsLoading(true);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
 
     try { 
       const response = await fetch(`${backendURL}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
-        signal: controller.signal
       });
 
-      clearTimeout(timeoutId);
       const data = await response.json();
   
       if (response.ok) {
