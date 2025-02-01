@@ -131,14 +131,13 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
           <Text style={styles.inputErrorMenssage}>{passwordError}</Text>
         </View>
         <View>
-  <Pressable
-    style={styles.changeFormButton}
-    onPress={() => navigation.navigate('Register')} 
-  >
-    <Text style={styles.changeFormButtonText}>Crear una cuenta</Text>
-  </Pressable>
-</View>
-
+          <Pressable
+            style={styles.changeFormButton}
+            onPress={() => navigation.navigate('Register')} 
+          >
+            <Text style={styles.changeFormButtonText}>Crear una cuenta</Text>
+          </Pressable>
+        </View>
         <View>
           <Pressable
             style={({ pressed }) => pressed ? styles.submitButtonPressed : styles.submitButton}
