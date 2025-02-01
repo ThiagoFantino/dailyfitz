@@ -13,6 +13,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [passwordView, setPasswordView] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
 
   const passwordViewFlip = () => {
@@ -33,14 +34,21 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
       setPasswordError('Debe ingresar una contraseña.');
       return;
     }
-  
-    try {
+    
+    // Consulta para poder loguear con un usuario existente
+    setIsLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+    try { 
       const response = await fetch(`${backendURL}/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        signal: controller.signal
       });
-  
+
+      clearTimeout(timeoutId);
       const data = await response.json();
   
       if (response.ok) {
@@ -65,12 +73,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
     } catch (error) {
       console.error('Error al realizar el login:', error);
       Alert.alert('Error', 'No se pudo conectar con el servidor');
+    } finally {
+      setIsLoading(false);
     }
   };
-  
-  
-  
-  
   
   const changeEmail = (input: string) => {
     setEmail(input);
@@ -82,13 +88,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
     setPasswordError("");
   };
 
-  const testInput = (regex: RegExp, advice: string, input_password: string) => {
-    if (!regex.test(input_password)) {
-      return advice;
-    } else {
-      return "";
-    }
-  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -106,6 +105,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
             onChangeText={changeEmail}
             placeholder='Email'
             placeholderTextColor={"#808080"}
+            editable={!isLoading}
           />
         </View>
         <View style={styles.inputError}>
@@ -119,6 +119,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
             secureTextEntry={passwordView}
             placeholder='Contraseña'
             placeholderTextColor={"#808080"}
+            editable={!isLoading}
           />
           <Pressable
             style={({ pressed }) => pressed ? styles.passwordDisplayButtonPressed : styles.passwordDisplayButton}
@@ -133,17 +134,19 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onFormToggle }) => {
         <View>
           <Pressable
             style={styles.changeFormButton}
-            onPress={() => navigation.navigate('Register')} 
+            onPress={() => navigation.navigate('Register')}
+            disabled={isLoading}
           >
             <Text style={styles.changeFormButtonText}>Crear una cuenta</Text>
           </Pressable>
         </View>
         <View>
           <Pressable
-            style={({ pressed }) => pressed ? styles.submitButtonPressed : styles.submitButton}
+            style={({ pressed }) => pressed ? styles.submitButtonPressed : styles.submitButton}            
             onPress={loginRequest}
+            disabled={isLoading}
           >
-            <Text style={styles.submitButtonText}>Enviar</Text>
+            <Text style={styles.submitButtonText}>{isLoading ? 'Cargando...' : 'Enviar'}</Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -288,9 +291,9 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   passwordDisplayIcon: {
-      width: '100%',
-      height: '100%',
-      position:'absolute',
-      alignSelf: 'center',
-    },
+    width: '100%',
+    height: '100%',
+    position:'absolute',
+    alignSelf: 'center',
+  },
 });
