@@ -1,6 +1,6 @@
 # Dailyfitz
 Esta aplicación está diseñada para trabajar con la base de datos Prisma disponible en: https://github.com/ThiagoFantino/server. Se utilizó Expo, una herramienta poderosa para desarrollar aplicaciones móviles de manera rápida y eficiente, aprovechando un entorno basado en React Native que permite probar y desplegar aplicaciones en múltiples plataformas.  
-Dailifitz es una aplicación que busca brindar a los usuarios una experiencia completa de ejercitación, ofreciendo funciones útiles como:
+Dailyfitz es una aplicación que busca brindar a los usuarios una experiencia completa de ejercitación, ofreciendo funciones útiles como:
 + Seguimiento de calorías quemadas al realizar rutinas de ejercicios.
 + Creación de rutinas personalizadas, adaptadas a las necesidades individuales.
 + Seguimiento de estadísticas a lo largo del tiempo, permitiendo monitorear el progreso.
@@ -52,6 +52,6 @@ Realiza tus cambios y haz commits.
 Envía un pull request para revisión.
 
 
-Esperamos que disfrutes usando Dailifitz tanto como nosotros disfrutamos desarrollándolo.
+Esperamos que disfrutes usando Dailyfitz tanto como nosotros disfrutamos desarrollándolo.
 
 
