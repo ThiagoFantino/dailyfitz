@@ -22,14 +22,15 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
 
   const [passwordView, setPasswordView] = useState(true);
   const [successMessage, setSuccessMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const passwordViewFlip = () => {
     setPasswordView(!passwordView);
   };
 
   function signUpRequest() {
+    // Última revisión de los datos antes de ser enviados
     let hasError = false;
-  
     if (nombre.trim().length <= 0) {
       setNameError("Debe ingresar un nombre.");
       hasError = true;
@@ -64,6 +65,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
   
     if (!hasError) {
       // Enviar datos al backend
+      // Primero se realiza la promesa del signup
+      // Si se tiene exito, se prosigue con la promesa del login
+      setIsLoading(true);
       const userData = { nombre, apellido, email, password };
       fetch(`${backendURL}/users/signup`, {
         method: 'POST',
@@ -80,13 +84,18 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
             loginAfterSignUp(email, password);
           }
         })
-        .catch((error) => console.error('Error:', error));
+        .catch((error) => {
+          console.error('Error al realizar el signup:', error);
+          Alert.alert('Error', 'Hubo un problema con el signup');
+        })
+        .finally(() => setIsLoading(false));
     }
   }
   
 
   function loginAfterSignUp(email, password) {
     // Realiza la solicitud de login después de un registro exitoso
+    setIsLoading(true);
     fetch(`${backendURL}/users/login`, {
       method: 'POST',
       headers: {
@@ -116,9 +125,11 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
       .catch((error) => {
         console.error('Error al realizar el login:', error);
         Alert.alert('Error', 'Hubo un problema con el login');
-      });
+      })
+      .finally(() => setIsLoading(false));
   }
   
+  // Evaluadores de input mediante expresiones regulares con mensaje de aviso
 
   function testRegexWithAdvice(regex: RegExp, error_message: string, input_value: string) {
     return (!regex.test(input_value)) ? error_message : "";
@@ -142,6 +153,9 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
       advice: advice
     };
   }
+
+  // Funciones para modificar y evaluar cada input
+  // Se avisará cuando los datos ingresados son incorrectos
 
   function changeName(input: string) {
     let advice = testProfileText(input);
@@ -177,8 +191,6 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
     const regex_set = [length_exp, format_exp];
     return testRegexWithAdviceSet(regex_set, input_email);
 }
-
-
 
   function changePassword(input: string) {
     let advice = testPassword(input);
@@ -221,6 +233,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
             onChangeText={changeName}
             placeholder='Ingrese su nombre'
             placeholderTextColor={"#808080"}
+            editable={!isLoading}
           />
           <Text style={styles.inputHint}>Debe ser un nombre válido (letras, espacios, apóstrofes o guiones).</Text>
         </View>
@@ -236,6 +249,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
             onChangeText={changeSurname}
             placeholder='Ingrese su apellido'
             placeholderTextColor={"#808080"}
+            editable={!isLoading}
           />
           <Text style={styles.inputHint}>Debe ser un apellido válido (letras, espacios, apóstrofes o guiones).</Text>
         </View>
@@ -251,6 +265,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
             onChangeText={changeEmail}
             placeholder='Ingrese un email'
             placeholderTextColor={"#808080"}
+            editable={!isLoading}
           />
           <Text style={styles.inputHint}>Debe tener el formato: ejemplo@dominio.com</Text>
         </View>
@@ -267,6 +282,7 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
             secureTextEntry={passwordView}
             placeholder='Ingrese una contraseña'
             placeholderTextColor={"#808080"}
+            editable={!isLoading}
           />
           <Pressable style={({ pressed }) => pressed ? styles.passwordDisplayButtonPressed : styles.passwordDisplayButton} 
             onPress={passwordViewFlip}>
@@ -280,17 +296,18 @@ const SignUpScreen: React.FC<SignUpScreenProps> = ({ onFormToggle }) => {
 
         <View>
         <Pressable
-        style={styles.changeFormButton}
-        onPress={() => navigation.navigate('Login')} // Asegúrate de que 'Login' sea el nombre correcto de tu pantalla de login
+          style={styles.changeFormButton}
+          onPress={() => navigation.navigate('Login')}
+          disabled={isLoading}
         >
         <Text style={styles.changeFormButtonText}>¿Ya tienes una cuenta? Inicia sesión</Text>
         </Pressable>
-
           <Pressable
             style={styles.submitButton}
             onPress={signUpRequest}
+            disabled={isLoading}
           >
-            <Text style={styles.submitButtonText}>Enviar</Text>
+            <Text style={styles.submitButtonText}>{isLoading ? 'Cargando...' : 'Enviar'}</Text>
           </Pressable>
         </View>
       </ScrollView>
