@@ -26,7 +26,7 @@ export default function Response(props) {
 			<View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
 				<View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
 					<Image source={require("@/assets/images/robot.png")} style={styles.icon} />
-					<Text style={{ fontWeight: 600 }}>Gemini</Text>
+					<Text style={{ fontWeight: 600 }}>Fitzy</Text>
 				</View>
 				<Text style={{ fontSize: 10, fontWeight: "600" }}>
 					{date.getHours()}:{date.getMinutes()}

@@ -19,7 +19,7 @@ export default function App() {
 			{/* Header */}
 			<View style={styles.header}>
 				<Image source={require("@/assets/images/robot.png")} style={styles.icon} />
-				<Text style={{ fontSize: 24, fontWeight: "800", color: "#323232" }}>Gemini AI</Text>
+				<Text style={{ fontSize: 24, fontWeight: "800", color: "#323232" }}>Fitzy</Text>
 			</View>
 
 			{/* Content */}
@@ -37,7 +37,7 @@ export default function App() {
 
 			{/* Search-Bar */}
 			<View style={styles.searchBar}>
-				<TextInput placeholder="Ask to Gemini AI" style={styles.input} value={inputText} onChangeText={(text) => setInputText(text)} selectionColor={"#323232"}></TextInput>
+				<TextInput placeholder="Preguntale a Fitzy" style={styles.input} value={inputText} onChangeText={(text) => setInputText(text)} selectionColor={"#323232"}></TextInput>
 				<TouchableOpacity onPress={SearchInput}>
 					<Image source={require("@/assets/images/right-arrow.png")} style={styles.icon} />
 				</TouchableOpacity>
