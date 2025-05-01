@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
+import { GoogleAPIKey } from "@/config";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Markdown from "react-native-markdown-display";
 
 const date = new Date();
-const API_KEY = "AIzaSyA6FcqHvv0WFLKFp7UaWBfccuEla9LXo9c";
-const genAI = new GoogleGenerativeAI(API_KEY);
+const genAI = new GoogleGenerativeAI(GoogleAPIKey);
 
 export default function Response(props) {
 	const [generatedText, setGeneratedText] = useState("");
@@ -25,7 +25,7 @@ export default function Response(props) {
 		<View style={styles.response}>
 			<View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
 				<View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-					<Image source={require("@/assets/images/robot.png")} style={styles.icon} />
+					<Image source={require("@/assets/images/Fitzy.jpg")} style={styles.icon} />
 					<Text style={{ fontWeight: 600 }}>Fitzy</Text>
 				</View>
 				<Text style={{ fontSize: 10, fontWeight: "600" }}>

@@ -18,8 +18,8 @@ export default function App() {
 
 			{/* Header */}
 			<View style={styles.header}>
-				<Image source={require("@/assets/images/robot.png")} style={styles.icon} />
-				<Text style={{ fontSize: 24, fontWeight: "800", color: "#323232" }}>Fitzy</Text>
+				<Image source={require("@/assets/images/Fitzy.jpg")} style={[styles.icon, { width: 64, height: 64 }]} />
+				<Text style={{ fontSize: 30, fontWeight: "800", color: "#323232" }}>Fitzy</Text>
 			</View>
 
 			{/* Content */}
