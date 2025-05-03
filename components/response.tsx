@@ -21,11 +21,25 @@ export default function Response(props) {
         const ejercicios = await ejerciciosRes.json();
         const listaEjercicios = ejercicios.map((e) => `• ${e.name}`).join("\n");
 
-        // 2. Crear prompt para Gemini
-        const promptIA = `
-Mensaje del usuario: "${promptUsuario}".
+        // 2. Obtener rutinas predefinidas
+        const rutinasRes = await fetch(`${backendURL}/routines`);
+        const rutinas = await rutinasRes.json();
+        const listaRutinas = rutinas.map((r) => `• ${r.name}: ${r.description || "Sin descripción"}`).join("\n");
 
-Si corresponde crear una rutina, devolvé un JSON así:
+        // 3. Crear prompt para Gemini
+        const promptIA = `
+Sos Fitzy, el asistente de fitness personal del usuario. Podés hacer dos cosas:
+
+1. Si el usuario pide una rutina personalizada, creá una rutina desde cero usando los ejercicios disponibles.
+2. Solo recomendá una rutina predefinida si el usuario **pide una recomendación** o **no dice que quiere algo personalizado**.
+
+📌 Si el usuario usa frases como “creame una rutina”, “quiero una rutina para mí”, “una rutina personalizada” o similares, asumí que quiere una rutina personalizada, aunque exista una predefinida parecida.
+
+El mensaje del usuario fue: "${promptUsuario}"
+
+⚠️ Muy importante: devolvé estrictamente uno de estos formatos:
+
+🆕 Si vas a CREAR una rutina personalizada:
 {
   "tipo": "rutina",
   "nombre": "Nombre de la rutina",
@@ -36,27 +50,36 @@ Si corresponde crear una rutina, devolvé un JSON así:
   ]
 }
 
-Solo usá ejercicios de esta lista:
-${listaEjercicios}
+📦 Si vas a RECOMENDAR una rutina predefinida:
+{
+  "tipo": "recomendacion",
+  "rutina": "Nombre exacto de la rutina predefinida",
+  "razon": "Explicación de por qué la recomendás"
+}
 
-Si es solo una pregunta u otro tipo de mensaje, devolvé:
+💬 Si solo es una pregunta o comentario general:
 {
   "tipo": "respuesta",
   "respuesta": "Texto con la respuesta del asistente"
 }
 
-No devuelvas explicaciones fuera del JSON.
+📋 Lista de ejercicios disponibles:
+${listaEjercicios}
+
+📚 Lista de rutinas predefinidas:
+${listaRutinas}
+
+No devuelvas nada fuera del JSON.
 `;
+
 
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(promptIA);
         const rawText = await result.response.text();
-
         const cleanText = rawText.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(cleanText);
 
         if (parsed.tipo === "rutina") {
-          // Buscar IDs de ejercicios por nombre
           const ejerciciosFinales = parsed.ejercicios.map((ej) => {
             const match = ejercicios.find((e) => e.name.toLowerCase() === ej.name.toLowerCase());
             if (!match) throw new Error(`Ejercicio no encontrado: ${ej.name}`);
@@ -65,7 +88,7 @@ No devuelvas explicaciones fuera del JSON.
 
           const rutinaData = {
             name: parsed.nombre,
-            userId: 6, // si tenés auth, reemplazalo
+            userId: 6, // Reemplazar por ID real si hay auth
             restTime: parsed.descanso,
             image: "https://img.freepik.com/fotos-premium/atleta-esta-parado-sobre-sus-rodillas-cerca-barra-gimnasio-esta-preparando-hacer-peso-muerto_392761-1698.jpg?w=1060",
             exercises: ejerciciosFinales,
@@ -81,7 +104,9 @@ No devuelvas explicaciones fuera del JSON.
 
           const rutinaCreada = await resRutina.json();
           setCreatedRoutine(rutinaCreada);
-          setGeneratedText(`✅ Rutina creada con éxito:\n\n${parsed.ejercicios.map((e) => `• ${e.sets}x${e.reps} ${e.name}`).join("\n")}`);
+          setGeneratedText(`✅ Rutina personalizada creada con éxito:\n\n${parsed.ejercicios.map((e) => `• ${e.sets}x${e.reps} ${e.name}`).join("\n")}`);
+        } else if (parsed.tipo === "recomendacion") {
+          setGeneratedText(`📦 Recomendación: Te sugiero la rutina **${parsed.rutina}**.\n\n${parsed.razon}`);
         } else if (parsed.tipo === "respuesta") {
           setGeneratedText(parsed.respuesta);
         } else {
@@ -127,5 +152,3 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
 });
-
-
