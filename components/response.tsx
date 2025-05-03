@@ -16,68 +16,80 @@ export default function Response(props) {
       try {
         const promptUsuario = props.prompt;
 
-        // 1. Obtener los ejercicios disponibles en tu base de datos
+        // 1. Obtener ejercicios disponibles
         const ejerciciosRes = await fetch(`${backendURL}/routines/exercises`);
         const ejercicios = await ejerciciosRes.json();
         const listaEjercicios = ejercicios.map((e) => `• ${e.name}`).join("\n");
-        console.log("Lista de ejercicios:", listaEjercicios);
 
-        // 2. Crear el prompt para Gemini
+        // 2. Crear prompt para Gemini
         const promptIA = `
-El usuario pidió: "${promptUsuario}".
+Mensaje del usuario: "${promptUsuario}".
 
-Elegí ejercicios solamente de la siguiente lista:
+Si corresponde crear una rutina, devolvé un JSON así:
+{
+  "tipo": "rutina",
+  "nombre": "Nombre de la rutina",
+  "descanso": 60,
+  "ejercicios": [
+    { "name": "Nombre del ejercicio", "sets": 3, "reps": 12 },
+    ...
+  ]
+}
+
+Solo usá ejercicios de esta lista:
 ${listaEjercicios}
 
-Para cada ejercicio elegido, asigná un número razonable de series y repeticiones según el tipo de entrenamiento. Respondé solo en JSON con este formato:
-[
-  { "name": "Nombre del ejercicio", "sets": 3, "reps": 12 },
-  { "name": "Otro ejercicio", "sets": 2, "reps": 20 }
-]`;
+Si es solo una pregunta u otro tipo de mensaje, devolvé:
+{
+  "tipo": "respuesta",
+  "respuesta": "Texto con la respuesta del asistente"
+}
 
-        // 3. Generar contenido con Gemini
+No devuelvas explicaciones fuera del JSON.
+`;
+
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(promptIA);
-        const textRaw = await result.response.text();
+        const rawText = await result.response.text();
 
-        // 4. Limpiar y parsear JSON
-        const cleanText = textRaw.replace(/```json|```/g, "").trim();
-        const parsedJSON = JSON.parse(cleanText);
+        const cleanText = rawText.replace(/```json|```/g, "").trim();
+        const parsed = JSON.parse(cleanText);
 
-        // 5. Buscar los IDs en base a los nombres
-        const ejerciciosFinales = parsedJSON.map((ej) => {
-          const match = ejercicios.find((e) => e.name.toLowerCase() === ej.name.toLowerCase());
-          if (!match) throw new Error(`Ejercicio no encontrado: ${ej.name}`);
-          return {
-            id: match.id,
-            sets: ej.sets,
-            reps: ej.reps,
+        if (parsed.tipo === "rutina") {
+          // Buscar IDs de ejercicios por nombre
+          const ejerciciosFinales = parsed.ejercicios.map((ej) => {
+            const match = ejercicios.find((e) => e.name.toLowerCase() === ej.name.toLowerCase());
+            if (!match) throw new Error(`Ejercicio no encontrado: ${ej.name}`);
+            return { id: match.id, sets: ej.sets, reps: ej.reps };
+          });
+
+          const rutinaData = {
+            name: parsed.nombre,
+            userId: 6, // si tenés auth, reemplazalo
+            restTime: parsed.descanso,
+            image: "https://img.freepik.com/fotos-premium/atleta-esta-parado-sobre-sus-rodillas-cerca-barra-gimnasio-esta-preparando-hacer-peso-muerto_392761-1698.jpg?w=1060",
+            exercises: ejerciciosFinales,
           };
-        });
 
-        // 6. Crear rutina en el backend
-        const rutinaData = {
-          name: `Rutina generada - ${new Date().toLocaleDateString()}`,
-          userId: 6, // o el ID real si tenés auth
-          restTime: 60,
-          image: "https://img.freepik.com/fotos-premium/atleta-esta-parado-sobre-sus-rodillas-cerca-barra-gimnasio-esta-preparando-hacer-peso-muerto_392761-1698.jpg?w=1060",
-          exercises: ejerciciosFinales,
-        };
+          const resRutina = await fetch(`${backendURL}/routines/create-custom-routineAI`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(rutinaData),
+          });
 
-        const resRutina = await fetch(`${backendURL}/routines/create-custom-routineAI`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(rutinaData),
-        });
+          if (!resRutina.ok) throw new Error("Error al guardar la rutina");
 
-        if (!resRutina.ok) throw new Error("Error al guardar la rutina");
-
-        const rutinaCreada = await resRutina.json();
-        setCreatedRoutine(rutinaCreada);
-        setGeneratedText(`✅ Rutina creada con éxito:\n\n${parsedJSON.map((e) => `• ${e.sets}x${e.reps} ${e.name}`).join("\n")}`);
+          const rutinaCreada = await resRutina.json();
+          setCreatedRoutine(rutinaCreada);
+          setGeneratedText(`✅ Rutina creada con éxito:\n\n${parsed.ejercicios.map((e) => `• ${e.sets}x${e.reps} ${e.name}`).join("\n")}`);
+        } else if (parsed.tipo === "respuesta") {
+          setGeneratedText(parsed.respuesta);
+        } else {
+          setGeneratedText("❌ No entendí la respuesta de la IA.");
+        }
       } catch (err) {
-        console.error("Error al generar la rutina:", err);
-        setGeneratedText("❌ Ocurrió un error generando la rutina.");
+        console.error("Error al generar respuesta:", err);
+        setGeneratedText("❌ Ocurrió un error generando la respuesta.");
       }
     };
 
@@ -115,4 +127,5 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
 });
+
 
