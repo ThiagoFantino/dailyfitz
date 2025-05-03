@@ -4,7 +4,8 @@ import { StyleSheet, Text, View, Image, FlatList, TextInput, TouchableOpacity } 
 import Response from "@/components/response";
 import Message from "@/components/message";
 
-export default function App() {
+export default function App({route}) {
+	const userId = route.params?.id;
 	const [inputText, setInputText] = useState("");
 	const [listData, setListData] = useState([]);
 	const SearchInput = () => {
@@ -28,7 +29,7 @@ export default function App() {
 				data={listData}
 				renderItem={({ item }) => (
 					<View>
-						<Message message={item} />
+						<Message message={item} userId={userId}/>
 						<Response prompt={item} />
 					</View>
 				)}
