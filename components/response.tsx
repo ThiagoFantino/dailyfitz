@@ -104,7 +104,7 @@ No devuelvas nada fuera del JSON.
 
           const rutinaCreada = await resRutina.json();
           setCreatedRoutine(rutinaCreada);
-          setGeneratedText(`✅ Rutina personalizada creada: **${parsed.nombre}**\n⏱️ Descanso entre series: ${parsed.descanso} segundos\n\n${parsed.ejercicios.map((e) => `• ${e.sets} series de ${e.reps} repeticiones de ${e.name}`).join("\n")}`);
+          setGeneratedText(`✅ Rutina personalizada creada: **${parsed.nombre}**\n⏱️ Descanso entre series: ${parsed.descanso} segundos\n\n${[...parsed.ejercicios].reverse().map((e) => `• ${e.sets} series de ${e.reps} repeticiones de ${e.name}`).join("\n")}`);
         } else if (parsed.tipo === "recomendacion") {
           setGeneratedText(`📦 Recomendación: Te sugiero la rutina **${parsed.rutina}**.\n\n${parsed.razon}`);
         } else if (parsed.tipo === "respuesta") {
