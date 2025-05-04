@@ -7,7 +7,7 @@ import Markdown from "react-native-markdown-display";
 const date = new Date();
 const genAI = new GoogleGenerativeAI(GoogleAPIKey);
 
-export default function Response(props) {
+export default function Response({ prompt, userId }) {
   const [generatedText, setGeneratedText] = useState("");
   const [createdRoutine, setCreatedRoutine] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,8 +17,6 @@ export default function Response(props) {
     const fetchAndGenerate = async () => {
       setLoading(true);
       try {
-        const promptUsuario = props.prompt;
-
         // 1. Obtener ejercicios disponibles
         const ejerciciosRes = await fetch(`${backendURL}/routines/exercises`);
         const ejercicios = await ejerciciosRes.json();
@@ -38,7 +36,7 @@ Sos Fitzy, el asistente de fitness personal del usuario. Podés hacer dos cosas:
 
 📌 Si el usuario usa frases como “creame una rutina”, “quiero una rutina para mí”, “una rutina personalizada” o similares, asumí que quiere una rutina personalizada, aunque exista una predefinida parecida.
 
-El mensaje del usuario fue: "${promptUsuario}"
+El mensaje del usuario fue: "${prompt}"
 
 ⚠️ Muy importante: devolvé estrictamente uno de estos formatos:
 
@@ -90,7 +88,7 @@ No devuelvas nada fuera del JSON.
 
           const rutinaData = {
             name: parsed.nombre,
-            userId: 6, // Reemplazar por ID real si hay auth
+            userId: userId,
             restTime: parsed.descanso,
             image: "https://img.freepik.com/fotos-premium/atleta-esta-parado-sobre-sus-rodillas-cerca-barra-gimnasio-esta-preparando-hacer-peso-muerto_392761-1698.jpg?w=1060",
             exercises: ejerciciosFinales,
@@ -123,7 +121,7 @@ No devuelvas nada fuera del JSON.
     };
 
     fetchAndGenerate();
-  }, [props.prompt]);
+  }, [prompt, userId]);
 
   useEffect(() => {
     if (!loading) return;
@@ -164,4 +162,5 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
 });
+
 

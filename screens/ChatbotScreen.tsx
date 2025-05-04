@@ -30,7 +30,7 @@ export default function App({route}) {
 				renderItem={({ item }) => (
 					<View>
 						<Message message={item} userId={userId}/>
-						<Response prompt={item} />
+						<Response prompt={item} userId={userId}/>
 					</View>
 				)}
 				keyExtractor={(item, index) => index.toString()}
