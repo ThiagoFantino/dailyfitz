@@ -10,9 +10,12 @@ const genAI = new GoogleGenerativeAI(GoogleAPIKey);
 export default function Response(props) {
   const [generatedText, setGeneratedText] = useState("");
   const [createdRoutine, setCreatedRoutine] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [dots, setDots] = useState(".");
 
   useEffect(() => {
     const fetchAndGenerate = async () => {
+      setLoading(true);
       try {
         const promptUsuario = props.prompt;
 
@@ -72,7 +75,6 @@ ${listaRutinas}
 No devuelvas nada fuera del JSON.
 `;
 
-
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent(promptIA);
         const rawText = await result.response.text();
@@ -115,11 +117,21 @@ No devuelvas nada fuera del JSON.
       } catch (err) {
         console.error("Error al generar respuesta:", err);
         setGeneratedText("❌ Ocurrió un error generando la respuesta.");
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchAndGenerate();
   }, [props.prompt]);
+
+  useEffect(() => {
+    if (!loading) return;
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length < 3 ? prev + "." : "."));
+    }, 500);
+    return () => clearInterval(interval);
+  }, [loading]);
 
   return (
     <View style={styles.response}>
@@ -132,7 +144,7 @@ No devuelvas nada fuera del JSON.
           {date.getHours()}:{String(date.getMinutes()).padStart(2, "0")}
         </Text>
       </View>
-      <Markdown>{generatedText}</Markdown>
+      <Markdown>{loading ? `Pensando${dots}` : generatedText}</Markdown>
     </View>
   );
 }
@@ -152,3 +164,4 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
 });
+
