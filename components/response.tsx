@@ -74,7 +74,12 @@ No devuelvas nada fuera del JSON.
 `;
 
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent(promptIA);
+        const result = await model.generateContent({
+  contents: [{ role: "user", parts: [{ text: promptIA }] }],
+  generationConfig: {
+    maxOutputTokens: 300, 
+  }
+});
         const rawText = await result.response.text();
         const cleanText = rawText.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(cleanText);
