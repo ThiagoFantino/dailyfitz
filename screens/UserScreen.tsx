@@ -34,6 +34,8 @@ const UserStatsScreen = ({ route }) => {
   const [statsForSelectedDate, setStatsForSelectedDate] = useState(null);
   const [showStats, setShowStats] = useState(true);
 
+  const [routinesForSelectedDate, setRoutinesForSelectedDate] = useState([]);
+
   const userId = route.params.id;
   const navigation = useNavigation();
 
@@ -196,20 +198,36 @@ const getWeekRange = (date) => {
   };
 
   const handleDateSelect = async (date) => {
-    const formattedDate = formatDate(date.dateString);
+  const formattedDate = formatDate(date.dateString);
 
-    setSelectedDate(formattedDate);
-    setShowStats(true);
+  setSelectedDate(formattedDate);
+  setShowStats(true);
 
-    const response = await fetch(`${backendURL}/users/${userId}/statsByDate?fecha=${formattedDate}`);
-    const json = await response.json();
-
-    if (json.stats && json.stats.length > 0) {
-      setStatsForSelectedDate(json.stats[0]);
+  try {
+    // Fetch stats
+    const statsResponse = await fetch(`${backendURL}/users/${userId}/statsByDate?fecha=${formattedDate}`);
+    const statsJson = await statsResponse.json();
+    if (statsJson.stats && statsJson.stats.length > 0) {
+      setStatsForSelectedDate(statsJson.stats[0]);
     } else {
       setStatsForSelectedDate(null);
     }
-  };
+
+    // Fetch routines
+    const routinesResponse = await fetch(`${backendURL}/users/${userId}/routinesByDate?fecha=${formattedDate}`);
+    const routinesJson = await routinesResponse.json();
+
+    if (routinesJson && routinesJson[formattedDate]) {
+      setRoutinesForSelectedDate(routinesJson[formattedDate]);
+    } else {
+      setRoutinesForSelectedDate([]);
+    }
+  } catch (err) {
+    console.error("Error al obtener datos para la fecha seleccionada:", err);
+    setStatsForSelectedDate(null);
+    setRoutinesForSelectedDate([]);
+  }
+};
 
   const closeStats = () => {
     setShowStats(false);
@@ -259,7 +277,17 @@ const getWeekRange = (date) => {
             ) : (
               <Text>No hay estadísticas para esta fecha.</Text>
             )}
+            {routinesForSelectedDate.length > 0 && (
+  <>
+    <Text style={styles.statLabel}>Rutinas realizadas:</Text>
+    {routinesForSelectedDate.map((routineName, index) => (
+      <Text key={index} style={styles.statLabel}>• {routineName}</Text>
+    ))}
+  </>
+)}
+
           </View>
+          
         )}
 
         {/* Estadísticas por períodos */}

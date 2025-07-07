@@ -88,6 +88,7 @@ const TrainingScreen = () => {
       completedExercises: finalSetsCompleted,
       totalCalories: finalCalories,
       userId,
+      routineId: id,
     });
   };
 

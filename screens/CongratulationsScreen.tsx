@@ -12,6 +12,7 @@ const CongratulationsScreen = () => {
   const completedExercises = route.params?.completedExercises || 0;
   const totalCalories = route.params?.totalCalories || 0;
   const userId = route.params?.userId || 0;
+  const routineId = route.params?.routineId || 0;
 
   const formatTime = (totalMinutes: number) => {
     const hours = Math.floor(totalMinutes / 60);
@@ -34,16 +35,18 @@ const CongratulationsScreen = () => {
 
       // Enviar solo los datos del ejercicio actual al backend
       await fetch(`${backendURL}/users/${userId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          tiempo: totalSeconds,
-          entrenamientos: completedExercises,
-          calorias: totalCalories,
-        }),
-      });
+  method: 'PUT',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    tiempo: totalSeconds,
+    entrenamientos: completedExercises,
+    calorias: totalCalories,
+    routineId: routineId,  // <-- agregá esto, que debe venir del contexto
+  }),
+});
+
 
       // Crear la entrada en la tabla UserStats solo para el ejercicio actual
       const currentDate = new Date().toISOString().split('T')[0]; // Fecha sin hora
