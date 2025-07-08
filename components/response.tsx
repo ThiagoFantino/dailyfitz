@@ -22,17 +22,33 @@ export default function Response({ prompt, userId }) {
         const ejercicios = await ejerciciosRes.json();
         const listaEjercicios = ejercicios.map((e) => `• ${e.name}`).join("\n");
 
-        // 2. Obtener rutinas predefinidas
-        const rutinasRes = await fetch(`${backendURL}/routines`);
-        const rutinas = await rutinasRes.json();
-        const listaRutinas = rutinas.map((r) => `• ${r.name}: ${r.description || "Sin descripción"}`).join("\n");
+        // Rutinas por fecha
+        const routinesResponse = await fetch(`${backendURL}/users/${userId}/routinesByDate`);
+        const routinesJson = await routinesResponse.json();
+        const historialDeRutinas = Object.entries(routinesJson).map(
+  ([fecha, rutinas]) => ` ${fecha}:\n${rutinas.map(r => `   🔹 ${r}`).join("\n")}`
+).join("\n\n");
+        console.log("Historial de rutinas:", historialDeRutinas);
 
-        // 3. Crear prompt para Gemini
-        const promptIA = `
-Sos Fitzy, el asistente de fitness personal del usuario. Podés hacer dos cosas:
+        // 2. Obtener rutinas predefinidas
+        const rutinasRes = await fetch(`${backendURL}/routines?userId=${userId}`);
+        const rutinas = await rutinasRes.json();
+ const listaRutinas = rutinas.map((r) => {
+  const ejercicios = r.exercises.map((e) => {
+    return `${e.exercise.name}`;
+  }).join(" , ");
+
+  return ` La rutina ${r.name} tiene ${ejercicios}`;
+}).join("\n\n---------------------------\n\n");
+
+console.log(listaRutinas);
+
+       const promptIA = `
+Sos Fitzy, el asistente de fitness personal del usuario. Podés hacer tres cosas:
 
 1. Si el usuario pide una rutina personalizada, creá una rutina desde cero usando los ejercicios disponibles.
 2. Solo recomendá una rutina predefinida si el usuario **pide una recomendación** o **no dice que quiere algo personalizado**.
+3. Si el usuario pregunta **qué rutinas hizo en una fecha o período**, buscá en el historial de rutinas realizadas (historialDeRutinas) y devolvé el detalle completo: nombre de la rutina y lista de ejercicios. Si no hay registro en la fecha consultada, decilo claramente.
 
 📌 Si el usuario usa frases como “creame una rutina”, “quiero una rutina para mí”, “una rutina personalizada” o similares, asumí que quiere una rutina personalizada, aunque exista una predefinida parecida.
 
@@ -58,10 +74,10 @@ El mensaje del usuario fue: "${prompt}"
   "razon": "Explicación de por qué la recomendás"
 }
 
-💬 Si solo es una pregunta o comentario general:
+💬 Si es una pregunta o comentario general (por ejemplo, sobre rutinas hechas en una fecha específica):
 {
   "tipo": "respuesta",
-  "respuesta": "Texto con la respuesta del asistente"
+  "respuesta": "Texto explicando las rutinas realizadas ese día, incluyendo sus ejercicios. Si no hay registro, indicarlo."
 }
 
 📋 Lista de ejercicios disponibles:
@@ -70,8 +86,12 @@ ${listaEjercicios}
 📚 Lista de rutinas predefinidas:
 ${listaRutinas}
 
+🗓️ Historial de rutinas realizadas por el usuario:
+${historialDeRutinas}
+
 No devuelvas nada fuera del JSON.
 `;
+
 
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const result = await model.generateContent({
