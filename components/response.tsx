@@ -43,6 +43,9 @@ export default function Response({ prompt, userId }) {
 
 console.log(listaRutinas);
 
+const fechaDeHoy = new Date().toISOString().slice(0, 10); // Ej: "2025-07-08"
+
+
        const promptIA = `
 Sos Fitzy, el asistente de fitness personal del usuario. Podés hacer tres cosas:
 
@@ -74,11 +77,18 @@ El mensaje del usuario fue: "${prompt}"
   "razon": "Explicación de por qué la recomendás"
 }
 
-💬 Si es una pregunta o comentario general (por ejemplo, sobre rutinas hechas en una fecha específica):
+💬 Si el usuario pregunta sobre rutinas realizadas en una fecha (por ejemplo: “¿qué rutina hice ayer?” o “¿qué entrené el 4 de julio?”):
+{
+  "tipo": "rutinas_por_fecha",
+  "respuesta": "Texto explicando las rutinas realizadas ese día, incluyendo sus ejercicios. Si no hay registro, indicarlo claramente."
+}
+
+💬 Si el usuario hace una pregunta o comentario general:
 {
   "tipo": "respuesta",
-  "respuesta": "Texto explicando las rutinas realizadas ese día, incluyendo sus ejercicios. Si no hay registro, indicarlo."
+  "respuesta": "Texto con la respuesta del asistente"
 }
+
 
 📋 Lista de ejercicios disponibles:
 ${listaEjercicios}
@@ -88,6 +98,8 @@ ${listaRutinas}
 
 🗓️ Historial de rutinas realizadas por el usuario:
 ${historialDeRutinas}
+
+📅 Fecha actual (hoy): ${fechaDeHoy}
 
 No devuelvas nada fuera del JSON.
 `;
@@ -133,6 +145,8 @@ No devuelvas nada fuera del JSON.
         } else if (parsed.tipo === "recomendacion") {
           setGeneratedText(`📦 Recomendación: Te sugiero la rutina **${parsed.rutina}**.\n\n${parsed.razon}`);
         } else if (parsed.tipo === "respuesta") {
+          setGeneratedText(parsed.respuesta);
+        } else if (parsed.tipo === "rutinas_por_fecha") {
           setGeneratedText(parsed.respuesta);
         } else {
           setGeneratedText("❌ No entendí la respuesta de la IA.");
