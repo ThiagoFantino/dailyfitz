@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { StyleSheet, View, Image, Text } from "react-native";
 import { GoogleAPIKey, backendURL } from "@/config";
 import { GoogleGenerativeAI } from "@google/generative-ai";
@@ -10,52 +10,58 @@ const genAI = new GoogleGenerativeAI(GoogleAPIKey);
 export default function Response({ prompt, userId }) {
   const [generatedText, setGeneratedText] = useState("");
   const [createdRoutine, setCreatedRoutine] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [dots, setDots] = useState(".");
+  const [chatReady, setChatReady] = useState(false);
+  const chatRef = useRef(null);
+  const ejerciciosRef = useRef([]);
 
   useEffect(() => {
-    const fetchAndGenerate = async () => {
-      setLoading(true);
+    const initChat = async () => {
       try {
-        // 1. Obtener ejercicios disponibles
         const ejerciciosRes = await fetch(`${backendURL}/routines/exercises`);
         const ejercicios = await ejerciciosRes.json();
+        ejerciciosRef.current = ejercicios;
         const listaEjercicios = ejercicios.map((e) => `• ${e.name}`).join("\n");
 
-        // Rutinas por fecha
         const routinesResponse = await fetch(`${backendURL}/users/${userId}/routinesByDate`);
         const routinesJson = await routinesResponse.json();
         const historialDeRutinas = Object.entries(routinesJson).map(
-  ([fecha, rutinas]) => ` ${fecha}:\n${rutinas.map(r => `   🔹 ${r}`).join("\n")}`
-).join("\n\n");
-        console.log("Historial de rutinas:", historialDeRutinas);
+          ([fecha, rutinas]) => ` ${fecha}:\n${rutinas.map(r => `   🔹 ${r}`).join("\n")}`
+        ).join("\n\n");
 
-        // 2. Obtener rutinas predefinidas
         const rutinasRes = await fetch(`${backendURL}/routines?userId=${userId}`);
         const rutinas = await rutinasRes.json();
- const listaRutinas = rutinas.map((r) => {
-  const ejercicios = r.exercises.map((e) => {
-    return `${e.exercise.name}`;
-  }).join(" , ");
+        const listaRutinas = rutinas.map((r) => {
+          const ejercicios = r.exercises.map((e) => e.exercise.name).join(" , ");
+          return ` La rutina ${r.name} tiene ${ejercicios}`;
+        }).join("\n\n---------------------------\n\n");
 
-  return ` La rutina ${r.name} tiene ${ejercicios}`;
-}).join("\n\n---------------------------\n\n");
+        const fechaDeHoy = new Date().toISOString().slice(0, 10);
 
-console.log(listaRutinas);
+const contextPrompt = `
+Sos Fitzy, el asistente de fitness personal del usuario. Solo respondés preguntas relacionadas con fitness, entrenamiento físico, o preguntas básicas sobre vos, como tu nombre o la fecha actual.
 
-const fechaDeHoy = new Date().toISOString().slice(0, 10); // Ej: "2025-07-08"
+Si el usuario pregunta cómo funcionás o qué podes hacer, respondé con un resumen claro y amigable de tus capacidades y límites, incluyendo que:
+- Podés crear rutinas personalizadas.
+- Podés recomendar rutinas predefinidas.
+- Podés informar qué rutinas hizo el usuario en determinada fecha con los ejercicios que contiene.
+- No respondés preguntas fuera de fitness, salvo preguntas simples sobre vos o la fecha.
+- Si la pregunta está fuera de esos temas, respondés amablemente que solo podés ayudar con fitness.
 
+Si el usuario hace una pregunta fuera del contexto de fitness o fuera de esas preguntas simples, como historia, matemáticas, noticias u otras temáticas generales, respondé con:
+{
+  "tipo": "respuesta",
+  "respuesta": "Lo siento, solo puedo responder preguntas relacionadas con fitness y entrenamiento físico."
+}
 
-       const promptIA = `
-Sos Fitzy, el asistente de fitness personal del usuario. Podés hacer tres cosas:
+Podés hacer tres cosas:
 
 1. Si el usuario pide una rutina personalizada, creá una rutina desde cero usando los ejercicios disponibles.
 2. Solo recomendá una rutina predefinida si el usuario **pide una recomendación** o **no dice que quiere algo personalizado**.
-3. Si el usuario pregunta **qué rutinas hizo en una fecha o período**, buscá en el historial de rutinas realizadas (historialDeRutinas) y devolvé el detalle completo: nombre de la rutina y lista de ejercicios. Si no hay registro en la fecha consultada, decilo claramente.
+3. Si el usuario pregunta **qué rutinas hizo en una fecha o período**, buscá en el historial de rutinas realizadas (historialDeRutinas) y devolvé el detalle completo: nombre de la rutina y lista de ejercicios que contiene (no solo el nombre), mostrando claramente sets y repeticiones si está disponible. Si no hay registro en la fecha consultada, decilo claramente.
 
 📌 Si el usuario usa frases como “creame una rutina”, “quiero una rutina para mí”, “una rutina personalizada” o similares, asumí que quiere una rutina personalizada, aunque exista una predefinida parecida.
-
-El mensaje del usuario fue: "${prompt}"
 
 ⚠️ Muy importante: devolvé estrictamente uno de estos formatos:
 
@@ -65,8 +71,7 @@ El mensaje del usuario fue: "${prompt}"
   "nombre": "Nombre de la rutina",
   "descanso": 60,
   "ejercicios": [
-    { "name": "Nombre del ejercicio", "sets": 3, "reps": 12 },
-    ...
+    { "name": "Nombre del ejercicio", "sets": 3, "reps": 12 }
   ]
 }
 
@@ -77,18 +82,17 @@ El mensaje del usuario fue: "${prompt}"
   "razon": "Explicación de por qué la recomendás"
 }
 
-💬 Si el usuario pregunta sobre rutinas realizadas en una fecha (por ejemplo: “¿qué rutina hice ayer?” o “¿qué entrené el 4 de julio?”):
+💬 Si el usuario pregunta sobre rutinas realizadas en una fecha:
 {
   "tipo": "rutinas_por_fecha",
-  "respuesta": "Texto explicando las rutinas realizadas ese día, incluyendo sus ejercicios. Si no hay registro, indicarlo claramente."
+  "respuesta": "Texto explicando las rutinas realizadas ese día, con los ejercicios que contienen y detalles como series y repeticiones."
 }
 
-💬 Si el usuario hace una pregunta o comentario general:
+💬 Pregunta o comentario general (incluyendo preguntas simples sobre Fitzy, la fecha o tu funcionamiento):
 {
   "tipo": "respuesta",
   "respuesta": "Texto con la respuesta del asistente"
 }
-
 
 📋 Lista de ejercicios disponibles:
 ${listaEjercicios}
@@ -98,23 +102,47 @@ ${listaRutinas}
 
 🗓️ Historial de rutinas realizadas por el usuario:
 ${historialDeRutinas}
-
 📅 Fecha actual (hoy): ${fechaDeHoy}
-
-No devuelvas nada fuera del JSON.
 `;
 
 
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-        const result = await model.generateContent({
-  contents: [{ role: "user", parts: [{ text: promptIA }] }],
-  generationConfig: {
-    maxOutputTokens: 300, 
-  }
-});
+        const chat = model.startChat({
+          history: [{ role: "user", parts: [{ text: contextPrompt }] }],
+          generationConfig: { maxOutputTokens: 300 },
+        });
+        chatRef.current = chat;
+        setChatReady(true);
+      } catch (err) {
+        console.error("Error al inicializar contexto de IA:", err);
+      }
+    };
+    initChat();
+  }, [userId]);
+
+  useEffect(() => {
+    const fetchAndGenerate = async () => {
+      if (!prompt || !chatReady || !chatRef.current) {
+        console.log("⛔ chatRef no listo o no hay prompt:", { prompt, chatReady });
+        return;
+      }
+      setLoading(true);
+      try {
+        const result = await chatRef.current.sendMessage(prompt);
+        if (!result || !result.response) throw new Error("❌ No hay respuesta del modelo");
+
         const rawText = await result.response.text();
         const cleanText = rawText.replace(/```json|```/g, "").trim();
-        const parsed = JSON.parse(cleanText);
+
+        let parsed = null;
+        try {
+          parsed = JSON.parse(cleanText);
+        } catch (e) {
+          setGeneratedText("❌ Error al interpretar la respuesta de la IA.");
+          return;
+        }
+
+        const ejercicios = ejerciciosRef.current;
 
         if (parsed.tipo === "rutina") {
           const ejerciciosFinales = parsed.ejercicios.map((ej) => {
@@ -144,23 +172,21 @@ No devuelvas nada fuera del JSON.
           setGeneratedText(`✅ Rutina personalizada creada: **${parsed.nombre}**\n⏱️ Descanso entre series: ${parsed.descanso} segundos\n\n${[...parsed.ejercicios].reverse().map((e) => `• ${e.sets} series de ${e.reps} repeticiones de ${e.name}`).join("\n")}`);
         } else if (parsed.tipo === "recomendacion") {
           setGeneratedText(`📦 Recomendación: Te sugiero la rutina **${parsed.rutina}**.\n\n${parsed.razon}`);
-        } else if (parsed.tipo === "respuesta") {
-          setGeneratedText(parsed.respuesta);
-        } else if (parsed.tipo === "rutinas_por_fecha") {
+        } else if (["respuesta", "rutinas_por_fecha"].includes(parsed.tipo)) {
           setGeneratedText(parsed.respuesta);
         } else {
           setGeneratedText("❌ No entendí la respuesta de la IA.");
         }
+
       } catch (err) {
-        console.error("Error al generar respuesta:", err);
+        console.error("❌ Error general:", err);
         setGeneratedText("❌ Ocurrió un error generando la respuesta.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchAndGenerate();
-  }, [prompt, userId]);
+  }, [prompt, chatReady]);
 
   useEffect(() => {
     if (!loading) return;
@@ -201,5 +227,3 @@ const styles = StyleSheet.create({
     borderRadius: 14,
   },
 });
-
-
