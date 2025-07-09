@@ -99,10 +99,6 @@ const Routines = ({ userId }) => {
                 <Text style={styles.text}>{item.name}</Text>
               </Pressable>
 
-              {/* Botón de eliminar, solo en rutinas personalizadas */}
-              <Pressable onPress={() => deleteRoutine(item.id)} style={styles.deleteButton}>
-                <Text style={styles.deleteButtonText}>Eliminar</Text>
-              </Pressable>
             </View>
           ))}
         </>

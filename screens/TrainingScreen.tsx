@@ -127,11 +127,6 @@ const TrainingScreen = () => {
             </Text>
           </Pressable>
 
-          {/* Nuevo botón para terminar la rutina */}
-          <Pressable onPress={handleFinish} style={[styles.button, { backgroundColor: 'green', marginTop: 10, marginBottom:10 }]}>
-            <Text style={styles.buttonText}>TERMINAR RUTINA ACA</Text>
-          </Pressable>
-
           <View style={styles.buttonContainer}>
             <Pressable onPress={handleExit} style={styles.actionButton}>
               <Text style={styles.actionButtonText}>SALIR</Text>
